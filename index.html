@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Production Program</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="logo.png" alt="News Production Program Logo" class="logo"> <!-- Add your logo image here -->
+            <h1>News Production Program</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="login-selection">
+            <button onclick="showLogin('professor')" class="login-button">
+                <img src="professor-icon.png" alt="Professor" class="icon"> <!-- Add professor icon -->
+                Professor Login
+            </button>
+            <button onclick="showLogin('student')" class="login-button">
+                <img src="student-icon.png" alt="Student" class="icon"> <!-- Add student icon -->
+                Student Login
+            </button>
+        </div>
+        <div id="login" class="login-container">
+            <h2 id="login-title">Sign in</h2>
+            <input type="text" placeholder="Email/Username" id="username">
+            <input type="password" placeholder="Password" id="password">
+            <a href="#" class="forgot-password">Forgot password?</a>
+            <button onclick="submitLogin()" class="login-button">Login</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
