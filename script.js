@@ -24,7 +24,11 @@ studBtn.addEventListener("click", function() {
 
 // Show login form
 function showLogin(role) {
-    loginTitle.innerText = "Sign in";
+    if(role === "professor"){
+        loginTitle.innerText = "Professor Login";
+    } else if(role === "student"){
+        loginTitle.innerText = "Student Sign In";
+    }
     loginContainer.classList.add("active");
     loginContainer.style.display = "block"; // Fallback
 }
