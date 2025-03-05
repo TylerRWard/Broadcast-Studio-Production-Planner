@@ -1,3 +1,6 @@
+//js implementation
+
+
 // Get elements
 const profBtn = document.getElementById("professor-btn");
 const studBtn = document.getElementById("student-btn");
