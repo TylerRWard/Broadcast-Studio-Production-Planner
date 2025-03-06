@@ -18,7 +18,7 @@ This project, **Broadcast Studio Production Planner**, is designed to streamline
    ```bash
    git clone https://github.com/TylerRWard/Broadcast-Studio-Production-Planner.git
 2. to run the server you need to do these steps
-     npm install express if you don't have npm installed
-     node server.js
-     Then out this in your browser http://localhost:3000
+    * npm install express if you don't have npm installed
+    * node server.js
+    * Then out this in your browser http://localhost:3000
 
