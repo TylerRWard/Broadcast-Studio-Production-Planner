@@ -10,18 +10,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Production Program - Home</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="HomeStyles.css">
 </head>
 <body>
+    <!--header and logo-->
     <header>
         <div class="header-content">
-            <img src="./images/logo-transparent-svg.svg" alt="News Production Program Logo" class="logo"> <!-- Add your logo image here -->
+            <img src="./images/logo-transparent-svg.svg" alt="News Production Program Logo" class="logo">
             <h1>News Production Program</h1>
         </div>
     </header>
+    <!--Nav Bar-->
+    <div class ="nav-bar">
+        <button class="hamburger">
+            <img src="./images/hamberger.jpg" alt="Menu" class="hamburger-icon">
+        </button>
+        <div class="search-bar">
+            <input type = "search" placeholder = "Search..." class="search-input">
+        </div>
+    </div>
+
+
+    <!-- Buttons across the top-->
+    <div class="featureButtons">
+        <button class="feature-button">
+            <img src="./images/GradLogo.png" alt="date" class="date">
+        </button>
+
+        <button class="feature-button">
+            <img src="./images/key-solid.svg"alt="run" class="run">
+        </button>
+
+        <button class="feature-button">
+            <img src="./images/key-solid.svg"alt="templates" class="templates">
+        </button>
+
+        <button class="feature-button">
+            <img src="./images/key-solid.svg"alt="tools" class="tools">
+        </button>
+
+        <button class="feature-button">
+            <img src="./images/key-solid.svg"alt="filter" class="filter">
+        </button>
+
+        <button class="feature-button">
+            <img src="./images/key-solid.svg"alt="delete" class="delete">
+        </button>
+
+    </div>
+    <!--Working Directory-->
+    <div class="working-directory">
+        <h3>Working Directory</h3>
+        <ul class="file-list">
+            <ul class="file-list"></ul> <!-- Empty; populated by JavaScript -->
+        </ul>
+    </div>
+    <!--Main Content-->
     <div class="container">
         <h2>Welcome to the News Production Program</h2>
         <p>You have successfully logged in!</p>
     </div>
+
+    <script src="home.js"></script>
 </body>
 </html>
+    
+=
