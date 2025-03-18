@@ -1,30 +1,97 @@
 <!-- 
     @Author: Sandu Galbokka Hewa
-    @Version: 3/17/25
+    @Version: 3/18/25
 -->
-
 <!DOCTYPE html>
 <html>
     <head>
 
-        <title>Main Table</title>
+        <title></title>
         <style> 
 
-            .full-table{
-                background-color: rgb(99, 104, 141);
-                margin: 0.5px;
-                overflow-x: auto; /* Enable horizontal scrolling */
-               
+            /****************/
+
+            .main-content-div{
+                position: absolute;
+                height: 100%;
                 width: 100%;
-                height: 50%;
+                top: 0%;
+                left: 0%;
+                background-color: white;
+            }
+
+            .div-1{     /*Left most column (working directory)*/
+                position: absolute;
+                height: 99.7%;
+                width: 14.75%;
+                background-color: rgb(27, 30, 48);
+                top: 0.225%;
+                left: 0.125%;
+                border-radius: 5px;
+                color: white;
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+                
+            }
+
+            .div-2{     /*Top Right column (Table with all data: PAGE, CAM, SHOT....etc)*/
+                position: absolute;
+                height: 64.25%;
+                width: 84.875%;
+                top: 0.25%;
+                left: 15%;
+                background-color:rgb(99, 104, 141);
+                border-radius: 5px;
+            }
+
+            .div-3{     /*Bottom Middle column*/
+                position: absolute;
+                height: 35.125%;
+                width: 14.875%;
+                bottom: 0.125%;
+                left: 15%;
+                background-color:rgb(27, 30, 48);
+                border-radius: 5px;
+                color: white;
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+                
+            }
+
+            .div-4{     /*Bottom Right column (script)*/
+                position: absolute;
+                height: 35.125%;
+                width: 69.875%;
+                bottom: 0.125%;
+                left: 30%;
+                background-color:rgb(27, 30, 48);
+                border-radius: 5px;
+                color: white;
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
             }
 
 
+
+            .main-table{    /*Table with all data: PAGE, CAM, SHOT....etc*/
+                position: absolute;
+                background-color: rgb(99, 104, 141);
+                
+                overflow-x: auto; /* Enable horizontal scrolling */
+               
+                width: 100%;
+                height: 100%;
+            }
+
+            /* grid-header, grid-input, grid-data, grid-header, grid-input-data, grid-data-inside, shotDropdown These all are related to main-table */
             .grid-header,
             .grid-input,
             .grid-data{
                 display: grid;
-                grid-template-columns: 50px 50px 100px 100px 200px 100px 100px 100px 100px 50px 50px 100px 100px 200px 100px;
+                grid-template-columns: 60px 60px 100px 100px 200px 100px 100px 100px 100px 50px 60px 100px 100px 200px 100px ;
                 align-items: center;
                 text-align: center;
                 
@@ -58,82 +125,101 @@
             
             padding: 3px;
             font-size: 15px;
+
+           /****************/
         }
-        
-        
-    </style>
+
+        </style>
     </head>
-
-
 
     <body>
 
-        <div class="full-table">
+        <div class="main-content-div">
 
-            <div  class="grid-header">  <!--Column head-->
-                <div>PAGE</div>
-                <div>CAM</div>
-                <div>SHOT</div>
-                <div>TAL</div>
-                <div>SLUG</div>
-                <div>FORMAT</div>
-                <div>READ</div>
-                <div>SOT</div>
-                <div>TOTAL</div>
-                <div>OK</div>
-                <div>CH</div>
-                <div>WR</div>
-                <div>ED</div>
-                <div>MODIFIED</div>
-                <div>MODBY</div>
+
+            <div class="div-1">  <!-- /*Left most column (working directory)*/ --> Working Directory</div>
+
+
+
+            <div class="div-2">     <!--/*Top Right column (Table with all data: PAGE, CAM, SHOT....etc)*/-->
+
+                <div class="main-table">
+
+                    <div  class="grid-header">  <!--Column head-->
+                        <div>PAGE</div>
+                        <div>CAM</div>
+                        <div>SHOT</div>
+                        <div>TAL</div>
+                        <div>SLUG</div>
+                        <div>FORMAT</div>
+                        <div>READ</div>
+                        <div>SOT</div>
+                        <div>TOTAL</div>
+                        <div>OK</div>
+                        <div>CH</div>
+                        <div>WR</div>
+                        <div>ED</div>
+                        <div>MODIFIED</div>
+                        <div>MODBY</div>
+        
+                    </div>
+        
+                    
+                    <div class="grid-data js-grid-data"> </div> <!--This is where all the data in the list go-->
+        
+        
+                    <div class="grid-input">  <!--Input columns-->
+                        <input class="grid-input-data js-page" placeholder="page" maxlength="4">
+                        <input class="grid-input-data js-cam" placeholder="cam" type="number">
+                        <select id="shotDropdown">
+                            <option value="" disabled selected>Select a Shot</option> <!-- Placeholder -->
+                            <option value="1-SHOT">1-SHOT</option>
+                            <option value="OTS">OTS</option>
+                            <option value="2-SHOT">2-SHOT</option>
+                            <option value="3-SHOT">3-SHOT</option>
+                            <option value="CHROMA">CHROMA</option>
+                            <option value="NEWSROOM">NEWSROOM</option>
+                            <option value="PLASMA">PLASMA</option>
+                            <option value="INTERVIEW">INTERVIEW</option>
+                            <option value="LIVE">LIVE</option>
+                        </select>
+                        <input class="grid-input-data js-tal" placeholder="tal" maxlength="8">
+                        <input class="grid-input-data js-slug" placeholder="slug" maxlength="30">
+                        <input class="grid-input-data js-format" placeholder="format" maxlength="12">
+                        <input class="grid-input-data js-read" placeholder="read" type="time">  <!--Needs to create a function to calculate time-->
+                        <input class="grid-input-data js-sot" placeholder="sot" type="time">    <!--Needs to create a function to calculate time-->
+                        <input class="grid-input-data js-total" placeholder="total" type="time">    <!--Needs to create a function to calculate time-->
+                        <input class="grid-input-data js-ok" placeholder="ok" type="text">
+                        <input class="grid-input-data js-ch" placeholder="ch" maxlength="3">
+                        <input class="grid-input-data js-wr" placeholder="wr" maxlength="8">
+                        <input class="grid-input-data js-ed" placeholder="ed" maxlength="8">
+                        <input class="grid-input-data js-modified" placeholder="modified" type="datetime-local">
+                        <input class="grid-input-data js-modby" placeholder="mod by" maxlength="8">
+                    </div>
+        
+                    <button class="js-add-button" onclick="
+                        addToList();
+                    ">add</button>
+
+                </div>
+
 
             </div>
 
+
+            <div class="div-3">     <!--/*Bottom Middle column*/--> Sample files </div>
+
+            <div class="div-4">     <!--/*Bottom Right column (script)*/--> Script Editing</div>
             
-            <div class="grid-data js-grid-data"> </div> <!--This is where all the data in the list go-->
-
-
-            <div class="grid-input">  <!--Input colomns-->
-                <input class="grid-input-data js-page" placeholder="page" maxlength="4">
-                <input class="grid-input-data js-cam" placeholder="cam" type="number">
-                <select id="shotDropdown">
-                    <option value="" disabled selected>Select a Shot</option> <!-- Placeholder -->
-                    <option value="1-SHOT">1-SHOT</option>
-                    <option value="OTS">OTS</option>
-                    <option value="2-SHOT">2-SHOT</option>
-                    <option value="3-SHOT">3-SHOT</option>
-                    <option value="CHROMA">CHROMA</option>
-                    <option value="NEWSROOM">NEWSROOM</option>
-                    <option value="PLASMA">PLASMA</option>
-                    <option value="INTERVIEW">INTERVIEW</option>
-                    <option value="LIVE">LIVE</option>
-                </select>
-                <input class="grid-input-data js-tal" placeholder="tal" maxlength="8">
-                <input class="grid-input-data js-slug" placeholder="slug" maxlength="30">
-                <input class="grid-input-data js-format" placeholder="format" maxlength="12">
-                <input class="grid-input-data js-read" placeholder="read" type="time">  <!--Needs to create a function to calculate time-->
-                <input class="grid-input-data js-sot" placeholder="sot" type="time">    <!--Needs to create a function to calculate time-->
-                <input class="grid-input-data js-total" placeholder="total" type="time">    <!--Needs to create a function to calculate time-->
-                <input class="grid-input-data js-ok" placeholder="ok" type="text">
-                <input class="grid-input-data js-ch" placeholder="ch" maxlength="3">
-                <input class="grid-input-data js-wr" placeholder="wr" maxlength="8">
-                <input class="grid-input-data js-ed" placeholder="ed" maxlength="8">
-                <input class="grid-input-data js-modified" placeholder="modified" type="datetime-local">
-                <input class="grid-input-data js-modby" placeholder="mod by" maxlength="8">
-
-            </div>
 
         </div>
-
-        <button class="js-add-button" onclick="
-            addToList();
-        ">add</button>         
-
+   
+        
     </body>
-
 
     <script>
 
+        
     /////////////////////////////////////////////  the main list
     let table_data = [{
             PAGE: 'A01',
@@ -182,7 +268,6 @@
 
             table_data.forEach(function(data){
                 
-
                 Object.entries(data).forEach(([key,value])=>{
                     const html = `<div class="grid-data-inside">${value}</div>`;
                     wholehtml += html;
@@ -194,6 +279,7 @@
 
         showData();
 /////////////////////////////// for the SHOT DROPDOWN
+
         let SHOT;
             const shotDropdown = document.getElementById('shotDropdown');
             shotDropdown.addEventListener('change', function() {
@@ -252,7 +338,7 @@
             }
             
         }
-
+        
     </script>
 
 </html>
