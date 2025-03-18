@@ -81,9 +81,7 @@ header {
 /* New Working Directory Styling */
 .working-directory {
     text-align: left;
-    margin-left: 20px; /* Aligns with buttons */
-    margin-top: 20px;
-    font-size: 14px;
+    display: absolute;
     color: #333;
     background-color: #e0e0e0; /* Light gray background for distinction */
     padding: 10px 20px;
@@ -141,4 +139,124 @@ header {
     width: 30px;
     height: auto;
     margin: 0;
+}
+
+ /****************/
+
+ .main-content-div{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 240px;
+    left: 0%;
+    background-color: white;
+}
+
+.div-1{     /*Left most column (working directory)*/
+    position: absolute;
+    height: 99.7%;
+    width: 14.75%;
+    background-color: rgb(27, 30, 48);
+    top: 0.225%;
+    left: 0.125%;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    
+}
+
+.div-2{     /*Top Right column (Table with all data: PAGE, CAM, SHOT....etc)*/
+    position: absolute;
+    height: 64.25%;
+    width: 84.875%;
+    top: 0.25%;
+    left: 15%;
+    background-color:rgb(99, 104, 141);
+    border-radius: 5px;
+}
+
+.div-3{     /*Bottom Middle column*/
+    position: absolute;
+    height: 35.125%;
+    width: 14.875%;
+    bottom: 0.125%;
+    left: 15%;
+    background-color:rgb(27, 30, 48);
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    
+}
+
+.div-4{     /*Bottom Right column (script)*/
+    position: absolute;
+    height: 35.125%;
+    width: 69.875%;
+    bottom: 0.125%;
+    left: 30%;
+    background-color:rgb(27, 30, 48);
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+
+.main-table{    /*Table with all data: PAGE, CAM, SHOT....etc*/
+    position: absolute;
+    background-color: rgb(99, 104, 141);
+    
+    overflow-x: auto; /* Enable horizontal scrolling */
+   
+    width: 100%;
+    height: 100%;
+}
+
+/* grid-header, grid-input, grid-data, grid-header, grid-input-data, grid-data-inside, shotDropdown These all are related to main-table */
+.grid-header,
+.grid-input,
+.grid-data{
+    display: grid;
+    grid-template-columns: 60px 60px 100px 100px 200px 100px 100px 100px 100px 50px 60px 100px 100px 200px 100px ;
+    align-items: center;
+    text-align: center;
+    
+}
+
+.grid-header {
+    
+    color: white;
+    font-size: 15px;
+    padding: 5px;
+}
+
+
+.grid-input-data{  /* for the input tag*/
+    font-size: 15px;
+    padding: 3px;
+    
+}
+
+.grid-data-inside{   /* for the data already have in the list*/
+    color:white;
+    background-color: black;
+    font-size: 15px;
+    padding: 3px;
+    margin: 0.5px;
+    
+}
+
+
+#shotDropdown { /* for the SHOT colomn*/
+
+padding: 3px;
+font-size: 15px;
+
+/****************/
 }
