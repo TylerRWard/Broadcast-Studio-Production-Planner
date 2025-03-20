@@ -17,11 +17,19 @@ const pool = new Pool({
     port: 5432,                 // Default PostgreSQL port
 });
 
-pool.on("connect", () => {
-    console.log("Connected to PostgreSQL database");
-});
+pool.connect() 
+    .then(() =>{console.log("Connected!!")})
+    .catch(()=>{
+        console.log("Not Connected")
+    })
+module.exports={pool}
+
+app.use(express.json())
+app.use(express.urlencoded({extended:false}))
 
 
+
+//Directory code
 // Serve static files (HTML, CSS, JS)
 app.use(express.static(__dirname));
 
@@ -35,16 +43,18 @@ app.get("/directory", async (req, res) => {
     }
 });
 
-// New /news endpoint for PostgreSQL table
-app.get("/news", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM news");
-        res.json(result.rows);
-    } catch (error) {
-        console.error("Database Error:", error.message);
-        res.status(500).json({ error: "Failed to fetch news", details: error.message });
-    }
+//
+app.get("/", (req, res) => {
+    res.send("Hello from backend")
 });
+
+//querry database
+async function getData(){
+    const res=await pool.query("select * from users;")
+    console.log(res.rows)
+}
+
+getData();
 
 // Start the server
 app.listen(port, () => {
