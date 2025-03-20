@@ -58,14 +58,9 @@
         </button>
     </div>
     
-    <!--Working Directory-->
-    <div class="working-directory">
-        <h3>Working Directory</h3>
-        <ul class="file-list">
-            <ul class="file-list"></ul> <!-- Empty; populated by JavaScript -->
-        </ul>
-    </div>
+    
     <!--Main Content-->
+    <!--
     <div class="container">
         <h2>Welcome to the News Production Program</h2>
         <p>You have successfully logged in!</p>
@@ -79,6 +74,97 @@
                 </tr>
             </thread>
         </table>
+    </div>
+
+    -->
+
+    <div class="main-content-div">
+
+
+        <div class="div-1">  <!-- /*Left most column (working directory)*/ --> Working Directory
+
+            <!--Working Directory-->
+    <div class="working-directory">
+        <h3>Working Directory</h3>
+        <ul class="file-list">
+            <ul class="file-list"></ul> <!-- Empty; populated by JavaScript -->
+        </ul>
+    </div>
+        </div>
+
+
+
+        <div class="div-2">     <!--/*Top Right column (Table with all data: PAGE, CAM, SHOT....etc)*/-->
+
+            <div class="main-table">
+
+                <div  class="grid-header">  <!--Column head-->
+                    <div>PAGE</div>
+                    <div>CAM</div>
+                    <div>SHOT</div>
+                    <div>TAL</div>
+                    <div>SLUG</div>
+                    <div>FORMAT</div>
+                    <div>READ</div>
+                    <div>SOT</div>
+                    <div>TOTAL</div>
+                    <div>OK</div>
+                    <div>CH</div>
+                    <div>WR</div>
+                    <div>ED</div>
+                    <div>MODIFIED</div>
+                    <div>MODBY</div>
+    
+                </div>
+    
+                
+                <div class="grid-data js-grid-data"> </div> <!--This is where all the data in the list go-->
+    
+    
+                <div class="grid-input">  <!--Input columns-->
+                    <input class="grid-input-data js-page" placeholder="page" maxlength="4">
+                    <input class="grid-input-data js-cam" placeholder="cam" type="number">
+                    <select id="shotDropdown">
+                        <option value="" disabled selected>Select a Shot</option> <!-- Placeholder -->
+                        <option value="1-SHOT">1-SHOT</option>
+                        <option value="OTS">OTS</option>
+                        <option value="2-SHOT">2-SHOT</option>
+                        <option value="3-SHOT">3-SHOT</option>
+                        <option value="CHROMA">CHROMA</option>
+                        <option value="NEWSROOM">NEWSROOM</option>
+                        <option value="PLASMA">PLASMA</option>
+                        <option value="INTERVIEW">INTERVIEW</option>
+                        <option value="LIVE">LIVE</option>
+                    </select>
+                    <input class="grid-input-data js-tal" placeholder="tal" maxlength="8">
+                    <input class="grid-input-data js-slug" placeholder="slug" maxlength="30">
+                    <input class="grid-input-data js-format" placeholder="format" maxlength="12">
+                    <input class="grid-input-data js-read" placeholder="read" type="time">  <!--Needs to create a function to calculate time-->
+                    <input class="grid-input-data js-sot" placeholder="sot" type="time">    <!--Needs to create a function to calculate time-->
+                    <input class="grid-input-data js-total" placeholder="total" type="time">    <!--Needs to create a function to calculate time-->
+                    <input class="grid-input-data js-ok" placeholder="ok" type="text">
+                    <input class="grid-input-data js-ch" placeholder="ch" maxlength="3">
+                    <input class="grid-input-data js-wr" placeholder="wr" maxlength="8">
+                    <input class="grid-input-data js-ed" placeholder="ed" maxlength="8">
+                    <input class="grid-input-data js-modified" placeholder="modified" type="datetime-local">
+                    <input class="grid-input-data js-modby" placeholder="mod by" maxlength="8">
+                </div>
+    
+                <button class="js-add-button" onclick="
+                    addToList();
+                ">add</button>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="div-3">     <!--/*Bottom Middle column*/--> Sample files </div>
+
+        <div class="div-4">     <!--/*Bottom Right column (script)*/--> Script Editing</div>
+        
+
     </div>
 
     <script src="home.js"></script>
