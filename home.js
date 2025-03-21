@@ -39,6 +39,22 @@ searchInput.addEventListener("input", (e) => {
 });
 
 
+async function getData() {  // get data from backend
+    try {
+        const response = await fetch("http://localhost:3000/getData");
+        if (!response.ok) {
+            throw new Error("Failed to fetch data.");
+        }
+            const data = await response.json();
+            data.forEach((row) => {
+            console.log(row);
+        });
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error fetching data.");
+        }
+}
+
 
 /////////////////////////////////////////////  the main list
 let table_data = [{
