@@ -19,6 +19,10 @@
   "homepage": "https://github.com/TylerRWard/Broadcast-Studio-Production-Planner#readme",
   "dependencies": {
     "express": "^4.21.2",
-    "pg": "^8.13.3"
+    "pg": "^8.14.1",
+    "pg-promise": "^11.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }
