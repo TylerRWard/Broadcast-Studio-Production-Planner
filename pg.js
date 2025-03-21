@@ -1,6 +1,8 @@
 
 
-
+//this is connected to database now
+//need to connect this to server.js
+//need to implement
 
 const {Client} = require("pg")
 
