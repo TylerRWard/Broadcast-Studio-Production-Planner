@@ -39,16 +39,47 @@ searchInput.addEventListener("input", (e) => {
 });
 
 
-async function getData() {  // get data from backend
+getData(); // Load the data when entering to the website
+
+
+////////////////////// get data from backend
+let allData = [];
+
+async function getData() {  
     try {
         const response = await fetch("http://localhost:3000/getData");
         if (!response.ok) {
             throw new Error("Failed to fetch data.");
         }
+            allData = [];
             const data = await response.json();
+            console.log(data);
             data.forEach((row) => {
-            console.log(row);
-        });
+
+                const objectOrder = {   //// Change the order of the columns as we want in the website
+                    block : null,
+                    item_num : null,
+                    cam : null,
+                    shot : null, 
+                    tal : null, 
+                    slug : null, 
+                    format : null, 
+                    read : null, 
+                    backtime : null, 
+                    ok : null, 
+                    channel : null, 
+                    writer : null, 
+                    editor : null, 
+                    modified : null,
+                    show_date : null
+                }
+                row = Object.assign(objectOrder, row)
+                allData.push(row);
+                console.log(row);
+            });
+
+            showData();     /// Show the data in the table
+            
         } catch (error) {
             console.error("Error:", error);
             alert("Error fetching data.");
@@ -56,53 +87,13 @@ async function getData() {  // get data from backend
 }
 
 
-/////////////////////////////////////////////  the main list
-let table_data = [{
-    PAGE: 'A01',
-    CAM: '1',
-    SHOT: 'Shot 101',
-    TAL: 'EX',
-    SLUG: 'SluXYZ',
-    FORMAT: '4K',
-    READ: '10:30 AM',
-    SOT: '15:00',
-    TOTAL: '120',
-    OK: 'Yes',
-    CH: 'G',
-    WR: 'ABC',
-    ED: 'John',
-    MODIFIED: '2025-03-16',
-    MODBY: 'Admin'
-},
-{
-    PAGE: 'A01',
-    CAM: '1',
-    SHOT: 'Shot 101',
-    TAL: 'EX',
-    SLUG: 'SluXYZ',
-    FORMAT: '4K',
-    READ: '10:30 AM',
-    SOT: '15:00',
-    TOTAL: '120',
-    OK: 'Yes',
-    CH: 'G',
-    WR: 'ABC',
-    ED: 'John',
-    MODIFIED: '2025-03-16',
-    MODBY: 'Admin'
-}];
-
-
-
-/////////////////////////////////////////// This will show the main list
-
 let wholehtml = ``; // the html part for class="grid-data js-grid-data"
 
-function showData(){
+function showData(){   ///// Function for showing the data in the table
     
     wholehtml = ``;
 
-    table_data.forEach(function(data){
+    allData.forEach(function(data){
         
         Object.entries(data).forEach(([key,value])=>{
             const html = `<div class="grid-data-inside">${value}</div>`;
@@ -113,9 +104,9 @@ function showData(){
     });
 }
 
-showData();
-/////////////////////////////// for the SHOT DROPDOWN
 
+
+/////////////////////////////// for the SHOT DROPDOWN
 let SHOT;
     const shotDropdown = document.getElementById('shotDropdown');
     shotDropdown.addEventListener('change', function() {
@@ -128,37 +119,46 @@ let SHOT;
     }
 
 
-////////////////////////////////// This will track the missing data in the row when student try to add something to the main list.
+/////////////////////// This will track the missing data in the row when student try to add something to the main list.
 let missingDataList = [];
 
 function missingData(missed_data) {
     missingDataList.push(missed_data);
 }
 
-//////////////////////////////// Add a new data object into the main list.
-function addToList(){   
 
-    const PAGE = document.querySelector('.js-page').value || missingData('PAGE'); 
-    const CAM = document.querySelector('.js-cam').value || missingData('CAM');
-    const SHOT = logShotValue() || missingData('SHOT');
-    const TAL = document.querySelector('.js-tal').value || missingData('TAL');
-    const SLUG = document.querySelector('.js-slug').value || missingData('SLUG'); 
-    const FORMAT = document.querySelector('.js-format').value || missingData('FORMAT');
-    const READ = document.querySelector('.js-read').value || missingData('READ');
-    const SOT = document.querySelector('.js-sot').value || missingData('SOT');
-    const TOTAL = document.querySelector('.js-total').value || missingData('TOTAL');
-    const OK = document.querySelector('.js-ok').value || missingData('OKAY');
-    const CH = document.querySelector('.js-ch').value || missingData('CH');
-    const WR = document.querySelector('.js-wr').value || missingData('WR');
-    const ED = document.querySelector('.js-ed').value || missingData('ED');
-    const MODIFIED = document.querySelector('.js-modified').value || missingData('MODIFIED');
-    const MODBY = document.querySelector('.js-modby').value || missingData('MODBY');
+
+////////////////////// add data to backend
+async function addRowData() {
+    
+    const BLOCK = document.querySelector('.js-block').value || missingData('BLOCK'); 
+    const CAM = Number(document.querySelector('.js-cam').value); // || missingData('CAM');
+    const ITEMNUM = Number(document.querySelector('.js-itemnum').value) || missingData('ITEMNUM'); 
+    console.log(typeof ITEMNUM);
+    const SHOT = logShotValue(); // || missingData('SHOT');
+    const TAL = document.querySelector('.js-tal').value; // || missingData('TAL');
+    const SLUG = document.querySelector('.js-slug').value; // || missingData('SLUG'); 
+    const FORMAT = document.querySelector('.js-format').value; // || missingData('FORMAT');
+    const READ = document.querySelector('.js-read').value || null; // || missingData('READ');
+    //const SOT = document.querySelector('.js-sot').value // || missingData('SOT');
+    const BACKTIME = document.querySelector('.js-backtime').value || null; // || missingData('TOTAL');
+    
+    const checkbox = document.querySelector('.js-ok');
+                    console.log(checkbox.checked);
+
+    const OK = checkbox.checked ; // || missingData('OKAY');
+    const CH = document.querySelector('.js-ch').value; // || missingData('CH');
+    const WR = document.querySelector('.js-wr').value; // || missingData('WR');
+    const ED = document.querySelector('.js-ed').value; // || missingData('ED');
+    const MODIFIED = document.querySelector('.js-modified').value || null; // || missingData('MODIFIED');
+    const SHOWDATE = document.querySelector('.js-showdate').value || missingData('SHOWDATE');
 
     const lenOfList = missingDataList.length;
 
+    
+    let data;
     if(lenOfList === 0){
-        table_data.push({PAGE, CAM, SHOT, TAL, SLUG, FORMAT, READ, SOT, TOTAL, OK, CH, WR, ED, MODIFIED, MODBY});
-        showData(); 
+        data = {ITEMNUM, BLOCK, SHOWDATE, CAM, SHOT, TAL, SLUG, FORMAT, READ, BACKTIME, OK, CH, WR, ED, MODIFIED};
     } else {
         
         let forMessage = '';
@@ -172,5 +172,46 @@ function addToList(){
         alert(`You have missing data of ${forMessage}.`);
         missingDataList = [];
     }
+
     
+
+    console.log(JSON.stringify(data));
+
+    try {
+        const response = await fetch("http://localhost:3000/addRowData", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            alert("Data inserted successfully!");
+        } else {
+            alert("Failed to insert data.", forMessage);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error connecting to the server.");
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
