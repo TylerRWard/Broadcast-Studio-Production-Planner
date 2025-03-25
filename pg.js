@@ -1,5 +1,4 @@
 
-
 //this is connected to database now
 //need to connect this to server.js
 //need to implement
@@ -23,11 +22,8 @@ client.connect()
 
 module.exports = {client}
 
-
-
-
 async function getData(){
-    const res = await client.query("Select * from users_t")
+    const res = await client.query("Select * from scripts_t")
     console.log(res.rows)
     console.log("Happy Days")
     console.log("")

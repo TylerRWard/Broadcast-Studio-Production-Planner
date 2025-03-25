@@ -6,22 +6,20 @@ const pgp = require('pg-promise')();
 const app = express();
 const port = 3000;
 
+const directoryPath = __dirname;
 app.use(express.urlencoded({extended:false}))
 
 app.get("/", (req, res) => {
-    res.send("hello from backend")
-})
+    res.sendFile(path.join(directoryPath, 'home.html'), (err) => {
+        if(err){
+            res.status(500).send('Error loading home');
+        }
+    });
+});
 
-const client = require("./pg")
-async function getData(){
-    const res = await client.query("Select * from users_t")
-    console.log(res.rows)
-    console.log("Happy Days")
-    console.log("")
-}
+const client = require("./pg");
 
 
-getData()
 
 
 //folder directory 
