@@ -35,11 +35,14 @@
         </div>
         <div id="login" class="login-container">
             <h2 id="login-title">Sign in</h2>
-            <input type="text" placeholder="Email/Username" id="username">
-            <input type="password" placeholder="Password" id="password">
+            <input type="email" placeholder="Email" id="email"> <!-- ID must be "email" -->
+            <input type="password" placeholder="Password" id="password"> <!-- ID must be "password" -->
             <a href="#" class="forgot-password">Forgot password?</a>
             <div class="loginActuallButton">
                 <button onclick="submitLogin()" class="login-button">Login</button>
+            </div>
+            <div class="register-link">
+                <a href="register.html">Don't have an account? Register here</a>
             </div>
         </div>
     </div>

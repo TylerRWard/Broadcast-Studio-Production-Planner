@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs").promises;
 const path = require("path");
 const {Pool} = require("pg");
+const bcrypt = require("bcrypt");
 
 const app = express();
 const port = 3000;
@@ -29,6 +30,86 @@ module.exports={pool}
 
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
+app.use(express.static(__dirname));
+
+app.post("/register", async(req, res)=>{
+    const {name,email, password, userLevel} = req.body;
+    const saltRounds = 10;
+    console.log("Registration request received:", { name, email, userLevel }); // Debug log
+    try//hash
+    {
+        //valid input
+        if (!name || !password || !userLevel) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+       console.log("Generating password hash")
+        const passwordHash = await bcrypt.hash(password, saltRounds);
+        console.log("Password hash generated:", passwordHash); // Debug log
+     
+
+        const insertQuery=`
+        INSERT INTO users_t (name, password, email, user_level)
+        Values ($1::varchar, $2::varchar, $3::varchar, $4::varchar)
+        RETURNING name, email, user_level
+        `;
+        //debugging
+        console.log("Executing query with values:", [name, passwordHash, email, userLevel]); // Debug log
+        const result = await pool.query(insertQuery, [name, passwordHash, email, userLevel]);
+        console.log("Query result:", result.rows[0]); // Debug log)
+        res.status(201).json({
+            message:"User registered successfully",
+            user: result.rows[0]
+        });
+
+    }catch(err){
+        console.error("Detailed error:", err); // More detailed error logging
+        console.error("Error registering user:",err.message);
+        res.status(500).send("Failed to register user");
+    }
+});
+
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    console.log("Login request received:", { email }); // Debug log
+
+    try {
+        // Get user from database
+        const query = "SELECT * FROM users_t WHERE email = $1";
+        const result = await pool.query(query, [email]);
+
+        if (result.rows.length === 0) {
+            console.log("No user found with email:", email);
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        const user = result.rows[0];
+        
+        // Compare password with stored hash
+        const match = await bcrypt.compare(password, user.password);
+        
+        if (match) {
+            console.log("Login successful for:", email);
+            res.status(200).json({
+                message: "Login successful",
+                user: {
+                    
+                    name: user.name,
+                    email: user.email,
+                    userLevel: user.user_level
+                }
+            });
+        } else {
+            console.log("Password mismatch for:", email);
+            res.status(401).json({ message: "Invalid credentials" });
+        }
+    } catch (err) {
+        console.error("Error during login:", err.message);
+        res.status(500).send("Login failed");
+    }
+});
+
+
 
 // Start the server
 app.listen(port, () => {
@@ -109,7 +190,3 @@ async function getData(){
     console.log(res.rows)
 }
 */
-
-
-
-
