@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - News Production Program</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="./images/logo-transparent-svg.svg" alt="News Production Program Logo" class="logo">
+            <h1>News Production Program - Register</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="register-container">
+            <h2>Register New Account</h2>
+            <form id="register-form">
+                <input type="text" placeholder="Name" id="reg-name" required>
+                <input type="email" placeholder="Email" id="reg-email" required>
+                <input type="password" placeholder="Password" id="reg-password" required>
+                <select id="reg-user-level" required>
+                    <option value="" disabled selected>Select User Level</option>
+                    <option value="professor">Professor</option>
+                    <option value="student">Student</option>
+                </select>
+                <div class="register-buttons">
+                    <button type="submit" class="login-button">Register</button>
+                    <a href="index.html" class="back-to-login">Back to Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="register.js"></script>
+</body>
+</html>

@@ -63,9 +63,9 @@ async function submitLogin() {
             console.log("Login successful, redirecting...");
             localStorage.setItem("user", JSON.stringify(data.user));
             if (data.user.userLevel === "professor") {
-                window.location.href = "/professor-dashboard.html";
+                window.location.href = "/home.html";
             } else {
-                window.location.href = "/student-dashboard.html";
+                window.location.href = "/home.html";
             }
         } else {
             console.log("Login failed:", data.message);
