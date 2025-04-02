@@ -99,21 +99,22 @@
             <div class="main-table">
 
                 <div  class="grid-header">  <!--Column head-->
-                    <div>PAGE</div>
+                    <div>BLOCK</div>
+                    <div>ITEM #</div>
                     <div>CAM</div>
                     <div>SHOT</div>
                     <div>TAL</div>
                     <div>SLUG</div>
                     <div>FORMAT</div>
                     <div>READ</div>
-                    <div>SOT</div>
-                    <div>TOTAL</div>
+                   <!-- <div>SOT</div> -->
+                    <div>BACKTIME</div> <!--This should be total-->
                     <div>OK</div>
                     <div>CH</div>
                     <div>WR</div>
                     <div>ED</div>
                     <div>MODIFIED</div>
-                    <div>MODBY</div>
+                    <div>SHOW DATE</div>
     
                 </div>
     
@@ -122,7 +123,8 @@
     
     
                 <div class="grid-input">  <!--Input columns-->
-                    <input class="grid-input-data js-page" placeholder="page" maxlength="4">
+                    <input class="grid-input-data js-block" placeholder="block" maxlength="2">
+                    <input class="grid-input-data js-itemnum" placeholder="item #" type="number">
                     <input class="grid-input-data js-cam" placeholder="cam" type="number">
                     <select id="shotDropdown">
                         <option value="" disabled selected>Select a Shot</option> <!-- Placeholder -->
@@ -140,19 +142,25 @@
                     <input class="grid-input-data js-slug" placeholder="slug" maxlength="30">
                     <input class="grid-input-data js-format" placeholder="format" maxlength="12">
                     <input class="grid-input-data js-read" placeholder="read" type="time">  <!--Needs to create a function to calculate time-->
-                    <input class="grid-input-data js-sot" placeholder="sot" type="time">    <!--Needs to create a function to calculate time-->
-                    <input class="grid-input-data js-total" placeholder="total" type="time">    <!--Needs to create a function to calculate time-->
-                    <input class="grid-input-data js-ok" placeholder="ok" type="text">
+                   <!-- <input class="grid-input-data js-sot" placeholder="sot" type="time">    Needs to create a function to calculate time-->
+                    <input class="grid-input-data js-backtime" placeholder="backtime" type="time">    <!--Needs to create a function to calculate time-->
+                    <input class="grid-input-data js-ok" placeholder="ok" type="checkbox">
                     <input class="grid-input-data js-ch" placeholder="ch" maxlength="3">
                     <input class="grid-input-data js-wr" placeholder="wr" maxlength="8">
                     <input class="grid-input-data js-ed" placeholder="ed" maxlength="8">
                     <input class="grid-input-data js-modified" placeholder="modified" type="datetime-local">
-                    <input class="grid-input-data js-modby" placeholder="mod by" maxlength="8">
+                    <input class="grid-input-data js-showdate" placeholder="show date" type="date">
                 </div>
-    
-                <button class="js-add-button" onclick="
-                    addToList();
-                ">add</button>
+
+                
+
+                <button class="js-showdata-button" onclick=" /// This button just for testing for backend.
+                    getData();
+                ">show data</button>
+
+                <button class="js-addrowdata-button" onclick=" /// This button just for testing for backend.
+                    addRowData();
+                ">add row data</button>
 
             </div>
 

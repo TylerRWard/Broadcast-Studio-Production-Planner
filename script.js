@@ -1,6 +1,3 @@
-//js implementation
-
-
 // Get elements
 const profBtn = document.getElementById("professor-btn");
 const studBtn = document.getElementById("student-btn");
@@ -27,9 +24,9 @@ studBtn.addEventListener("click", function() {
 
 // Show login form
 function showLogin(role) {
-    if(role === "professor"){
-        loginTitle.innerText = "Professor Login";
-    } else if(role === "student"){
+    if (role === "professor") {
+        loginTitle.innerText = "Professor Sign In"; // Updated to "Sign In" for consistency
+    } else if (role === "student") {
         loginTitle.innerText = "Student Sign In";
     }
     loginContainer.classList.add("active");
@@ -37,15 +34,47 @@ function showLogin(role) {
 }
 
 // Submit login
-function submitLogin() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
+async function submitLogin() {
+    console.log("submitLogin function called"); // Debug
     
-    if (username === "admin" && password === "password") {
-        window.location.href = "home.html";
-    } else {
-        alert("Incorrect username or password. Please try again. If you forgot your password, click forgot password.");
-        document.getElementById("username").value = "";
-        document.getElementById("password").value = "";
+    const email = document.getElementById("email").value.trim(); // Changed to email
+    const password = document.getElementById("password").value.trim();
+
+    console.log("Frontend - Email:", email); // Debug
+    console.log("Frontend - Password:", password);
+
+    if (!email || !password) {
+        alert("Please enter both email and password");
+        return;
+    }
+
+    try {
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            console.log("Login successful, redirecting...");
+            localStorage.setItem("user", JSON.stringify(data.user));
+            if (data.user.userLevel === "professor") {
+                window.location.href = "/professor-dashboard.html";
+            } else {
+                window.location.href = "/student-dashboard.html";
+            }
+        } else {
+            console.log("Login failed:", data.message);
+            alert(data.message || "Incorrect email or password. Please try again.");
+            document.getElementById("email").value = "";
+            document.getElementById("password").value = "";
+        }
+    } catch (error) {
+        console.error("Login error:", error);
+        alert("An error occurred during login. Please try again.");
     }
 }
