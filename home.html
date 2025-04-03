@@ -10,20 +10,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Production Program - Home</title>
-    <link rel="stylesheet" href="HomeStyles.css">
+    <link rel="stylesheet" href="/static/HomeStyles.css">
 </head>
 <body>
     <!--header and logo-->
     <header>
         <div class="header-content">
-            <img src="./images/logo-transparent-svg.svg" alt="News Production Program Logo" class="logo">
+            <img src="./public/images/logo-transparent-svg.svg" alt="News Production Program Logo" class="logo">
             <h1>News Production Program</h1>
         </div>
     </header>
     <!--Nav Bar-->
     <div class ="nav-bar">
         <button class="hamburger">
-            <img src="./images/hamberger.jpg" alt="Menu" class="hamburger-icon">
+            <img src="./public/images/hamberger.jpg" alt="Menu" class="hamburger-icon">
         </button>
         <div class="search-bar">
             <input type = "search" placeholder = "Search..." class="search-input">
@@ -34,49 +34,37 @@
     <!-- Buttons across the top-->
     <div class="featureButtons">
         <button class="feature-button">
-            <img src="./images/GradLogo.png" alt="date" class="date">
+            <img src="./public/images/GradLogo.png" alt="date" class="date">
         </button>
 
         <button class="feature-button">
-            <img src="./images/key-solid.svg"alt="run" class="run">
+            <img src="./public/images/key-solid.svg"alt="run" class="run">
         </button>
 
         <button class="feature-button">
-            <img src="./images/key-solid.svg"alt="templates" class="templates">
+            <img src="./public/images/key-solid.svg"alt="templates" class="templates">
         </button>
 
         <button class="feature-button">
-            <img src="./images/key-solid.svg"alt="tools" class="tools">
+            <img src="./public/images/key-solid.svg"alt="tools" class="tools">
         </button>
 
         <button class="feature-button">
-            <img src="./images/key-solid.svg"alt="filter" class="filter">
+            <img src="./public/images/key-solid.svg"alt="filter" class="filter">
         </button>
 
-        <button class="feature-button">
-            <img src="./images/key-solid.svg"alt="delete" class="delete">
+        <button id="user-management-btn" class="feature-button">
+            <span>User Management</span>
         </button>
+        <button id="logout-btn">Logout</button>
+    <script>
+        document.getElementById("logout-btn").addEventListener("click", async () => {
+            await fetch("/logout", { method: "POST" });
+            window.location.href = "/login.html";
+        });
+    </script>
     </div>
     
-    
-    <!--Main Content-->
-    <!--
-    <div class="container">
-        <h2>Welcome to the News Production Program</h2>
-        <p>You have successfully logged in!</p>
-        <h3>News Table</h3>
-        <table class = "news-table">
-            <thread>
-                <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Content</th>
-                </tr>
-            </thread>
-        </table>
-    </div>
-
-    -->
 
     <div class="main-content-div">
 
@@ -175,7 +163,7 @@
 
     </div>
 
-    <script src="home.js"></script>
+    <script src="/static/home.js"></script>
 </body>
 </html>
     

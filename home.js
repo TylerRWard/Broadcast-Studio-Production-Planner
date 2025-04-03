@@ -38,7 +38,15 @@ searchInput.addEventListener("input", (e) => {
     });
 });
 
-
+// User Management button
+document.getElementById("user-management-btn").addEventListener("click", () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.userLevel === "professor") {
+        window.location.href = "/user-management.html";
+    } else {
+        alert("You don't have permission to access this page.");
+    }
+});
 getData(); // Load the data when entering to the website
 
 

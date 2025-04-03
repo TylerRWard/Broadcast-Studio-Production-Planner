@@ -23,4 +23,6 @@ This project, **Broadcast Studio Production Planner**, is designed to streamline
     * Then out this in your browser http://localhost:3000
 
 
-make sure to run this npm install bcrypt for encryption
+make sure to run this 
+* npm install bcrypt for encryption
+* npm install express-session
