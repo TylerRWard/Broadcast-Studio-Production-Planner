@@ -192,19 +192,42 @@ header {
     
 }
 
-.div-4{     /*Bottom Right column (script)*/
+/* Script Box */
+.scriptBox-container {
     position: absolute;
     height: 35.125%;
     width: 69.875%;
     bottom: 0.125%;
     left: 30%;
-    background-color:rgb(27, 30, 48);
+    background-color: rgb(27, 30, 48);
     border-radius: 5px;
     color: white;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.scriptBox-heading {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px; 
     text-align: center;
+}
+
+.scriptBox {
+    background-color: white;
+    border-radius: 5px;
+    color: black;
     font-size: 16px;
     font-weight: bold;
+    padding: 10px;
+    resize: none; 
+    border: 2px solid rgb(99, 104, 141);
+    outline: none;
+    flex-grow: 1; 
 }
+
+/******************************/
 
 
 
