@@ -1,12 +1,10 @@
-<!--make log in work with enter key-->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Production Program</title>
-    <link rel="stylesheet" href="/public/login.css">
+    <link rel="stylesheet" href="/public/css/login.css">
 </head>
 <body>
     <header>
@@ -32,15 +30,16 @@
         </div>
         <div id="login" class="login-container">
             <h2 id="login-title">Sign in</h2>
-            <input type="email" placeholder="Email" id="email">
-            <input type="password" placeholder="Password" id="password">
-            <a href="#" class="forgot-password">Forgot password?</a>
-            <div class="loginActuallButton">
-                <button onclick="submitLogin()" class="login-button">Login</button>
-            </div>
-
+            <form id="login-form" onsubmit="event.preventDefault(); submitLogin();">
+                <input type="email" placeholder="Email" id="email" required>
+                <input type="password" placeholder="Password" id="password" required>
+                <a href="#" class="forgot-password">Forgot password?</a>
+                <div class="loginActuallButton">
+                    <button type="submit" class="login-button">Login</button>
+                </div>
+            </form>
         </div>
     </div>
-    <script src="/public/script.js"></script>
+    <script src="/public/js/script.js"></script>
 </body>
 </html>

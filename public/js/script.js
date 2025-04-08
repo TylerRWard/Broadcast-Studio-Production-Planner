@@ -35,13 +35,10 @@ function showLogin(role) {
 
 // Submit login
 async function submitLogin() {
-    console.log("submitLogin function called"); // Debug
-    
     const email = document.getElementById("email").value.trim(); // Changed to email
     const password = document.getElementById("password").value.trim();
 
-    console.log("Frontend - Email:", email); // Debug
-    console.log("Frontend - Password:", password);
+
 
     if (!email || !password) {
         alert("Please enter both email and password");
