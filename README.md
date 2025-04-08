@@ -22,7 +22,7 @@ This project, **Broadcast Studio Production Planner**, is designed to streamline
     * node server.js
     * Then out this in your browser http://localhost:3000
 
-
-make sure to run this 
-* npm install bcryptjs for encryption
-* npm install express-session
+## Requirements
+    * npm install bcryptjs for encryption
+    * npm install express-session
+    
