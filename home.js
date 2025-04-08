@@ -1,4 +1,4 @@
-function loadFiles() {
+/*function loadFiles() {
     fetch("/directory")
         .then(response => {
             if (!response.ok) throw new Error("Failed to fetch directory");
@@ -27,7 +27,7 @@ function attachFileListeners() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", loadFiles);
+document.addEventListener("DOMContentLoaded", loadFiles); */
 
 const searchInput = document.querySelector(".search-input");
 searchInput.addEventListener("input", (e) => {
@@ -47,7 +47,7 @@ document.getElementById("user-management-btn").addEventListener("click", () => {
         alert("You don't have permission to access this page.");
     }
 });
-getData(); // Load the data when entering to the website
+//getData(); // Load the data when entering to the website
 
 
 ////////////////////// get data from backend
@@ -113,7 +113,7 @@ function showData(){   ///// Function for showing the data in the table
 }
 
 
-
+/*
 /////////////////////////////// for the SHOT DROPDOWN
 let SHOT;
     const shotDropdown = document.getElementById('shotDropdown');
@@ -208,7 +208,7 @@ async function addRowData() {
 
 
 
-
+*/
 
 
 

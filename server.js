@@ -2,7 +2,7 @@ const express = require("express");
 const fs = require("fs").promises;
 const path = require("path");
 const { Pool } = require("pg");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const session = require("express-session");
 
 const app = express();
@@ -163,6 +163,22 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
     }
 });
 
+
+
+app.get("/directory", isAuthenticated, async (req, res) => {
+    try {
+        const files = await fs.readdir(path.join(__dirname));
+        res.json({ files, path: __dirname });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to read directory" });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
+
+/*
 app.get("/getData", isAuthenticated, async (req, res) => {
     const select_query = "SELECT * FROM scripts_t";
     try {
@@ -189,15 +205,114 @@ app.post("/addRowData", isAuthenticated, async (req, res) => {
     }
 });
 
-app.get("/directory", isAuthenticated, async (req, res) => {
-    try {
-        const files = await fs.readdir(path.join(__dirname));
-        res.json({ files, path: __dirname });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to read directory" });
+*/
+////// Add Template
+
+app.post("/add-template", isAuthenticated, async(req, res) => {
+    const {templateName, columnNames} = req.body;
+    const insert_query = "insert into template_t2 (template_version, needed_columns) values ($1, $2)";
+    try{
+        const result = await pool.query(insert_query, [templateName, columnNames]);
+        console.log(result);
+        res.status(200).send("Data inserted successfully!");
+    } catch (err) {
+        console.error("Error inserting data:", err.message);
+        res.status(500).send("Failed to insert data.");
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+
+//////// Get Templates
+app.get("/get-templates", isAuthenticated, async (req, res) => {
+    const select_query = "select template_version from template_t2";
+    try {
+        const result = await pool.query(select_query);
+        res.status(200).json(result);
+        console.log(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+
+/////////Get Column Names
+app.get("/get-column-names/:version", isAuthenticated, async (req, res) => {
+    const { version } = req.params;  // Extract version from the request URL
+    const select_query = "SELECT needed_columns FROM template_t2 WHERE template_version = $1";
+    try {
+        const result = await pool.query(select_query, [version]);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+////////////Delete a template version.
+app.delete("/delete-template", isAuthenticated, async (req, res) => {
+    const { template_version } = req.body;
+
+    const delete_query = "DELETE FROM template_t2 WHERE template_version = $1";
+    try {
+        const result = await pool.query(delete_query, [template_version]);
+        if (result.rowCount > 0) {
+            res.status(200).send("Template deleted successfully!");
+        } else {
+            res.status(404).send("Template not found.");
+        }
+    } catch (err) {
+        console.error("Error deleting template:", err.message);
+        res.status(500).send("Failed to delete template.");
+    }
+});
+
+
+//////Add rundown
+app.post("/add-rundown", isAuthenticated, async(req, res) => {
+    const {show_name, show_date, folder, active, template_version} = req.body;
+    const insert_query = "insert into rundown_t2 (show_name, show_date, folder, active, template_version) values ($1, $2, $3, $4, $5)";
+    try{
+        const result = await pool.query(insert_query, [show_name, show_date, folder, active, template_version]);
+        console.log(result);
+        res.status(200).send("Data inserted successfully!");
+    } catch (err) {
+        console.error("Error inserting data:", err.message);
+        res.status(500).send("Failed to insert data.");
+    }
+});
+
+
+//////Get the relevant columns for specific show name and show date
+app.get("/get-column-names/:show_name/:show_date", isAuthenticated, async (req, res) => {
+    const { show_name, show_date } = req.params;
+
+    const select_query = `
+                    select tt.needed_columns from template_t2 tt 
+                    join rundown_t2 rt on rt.template_version = tt.template_version
+                    where rt.show_name = $1 
+	                and rt.show_date = $2
+                    `;
+    try {
+        const result = await pool.query(select_query, [show_name, show_date]);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+
+//////Get rundown list 
+app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
+    const select_query = `
+                    select show_name, show_date from rundown_t2
+                    `;
+    try {
+        const result = await pool.query(select_query);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
 });

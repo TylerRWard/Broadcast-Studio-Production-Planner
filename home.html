@@ -10,7 +10,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Production Program - Home</title>
-    <link rel="stylesheet" href="HomeStyles.css">
+    <link rel="stylesheet" href="static/HomeStyles.css">
+    <link rel="stylesheet" href="static/table.css">
 </head>
 <body>
     <!--header and logo-->
@@ -45,14 +46,9 @@
             <img src="./public/images/key-solid.svg"alt="templates" class="templates">
         </button>
 
-        <button class="feature-button">
-            <img src="./public/images/key-solid.svg"alt="tools" class="tools">
-        </button>
+        <button id="addStartBreakButton">Start/Break</button>
 
-        <button class="feature-button">
-            <img src="./public/images/key-solid.svg"alt="filter" class="filter">
-        </button>
-
+        <button id="templatesButton">View</button>
         <button id="user-management-btn" class="feature-button">
             <span>User Management</span>
         </button>
@@ -65,94 +61,130 @@
     </script>
     </div>
     
+    <!--template box-->
+    <div id="templateBox">
+        <div>
+            <table class="js-show-templates"></table>
+            <button id="openModalBtn" onclick=" document.getElementById('templateBox').style.display='none';">Custom</button>
+        </div>
+       
+      </div>
+
+    <!--Add Start /Break box-->
+    <div id="startBreakBox">
+        <div>
+            <button id="add-start-row" onclick=" document.getElementById('startBreakBox').style.display='none';">Add Start</button>
+            <br>
+            <button id="add-break-row" onclick=" document.getElementById('startBreakBox').style.display='none';">Add Break</button>
+        </div>
+        
+    </div>
+
+    
+
+    <!-- Modal Window -->
+    <div id="simpleModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModalBtn" class="close-btn">&times;</span>
+            <h2>Select desired columns</h2>
+            <div class="checkbox-temp"> <input type="checkbox" id="exceptID" checked onclick="return false;"> <label>BLOCK </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" id="exceptID" checked onclick="return false;"> <label>ITEM_NUM </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" id="exceptID" checked onclick="return false;"> <label>MODIFIED </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" id="exceptID" checked onclick="return false;"> <label>MOD_BY </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-cam" onclick="
+                if(checkedStatus('.js-check-cam')) 
+                    {addColumn('CAM');}
+                else
+                    {deleteColumn('CAM');}"> <label>CAM </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-shot" onclick="
+                if(checkedStatus('.js-check-shot')) 
+                    {addColumn('SHOT');}
+                else
+                    {deleteColumn('SHOT');}
+                "> <label>SHOT </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-tal" onclick="
+                if(checkedStatus('.js-check-tal')) 
+                    {addColumn('TAL');}
+                else
+                    {deleteColumn('TAL');}"> <label>TAL </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-slug" onclick="
+                if(checkedStatus('.js-check-slug')) 
+                    {addColumn('SLUG');}
+                else
+                    {deleteColumn('SLUG');}"> <label>SLUG </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-format" onclick="
+                if(checkedStatus('.js-check-format')) 
+                    {addColumn('FORMAT');}
+                else
+                    {deleteColumn('FORMAT');}"> <label>FORMAT </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-read" onclick="
+                if(checkedStatus('.js-check-read')) 
+                    {addColumn('READ');}
+                else
+                    {deleteColumn('READ');}"> <label>READ </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-sot" onclick="
+                if(checkedStatus('.js-check-sot')) 
+                    {addColumn('SOT');}
+                else
+                    {deleteColumn('SOT');}"> <label>SOT </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-total" onclick="
+                if(checkedStatus('.js-check-total')) 
+                    {addColumn('TOTAL');}
+                else
+                    {deleteColumn('TOTAL');}"> <label>TOTAL </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-ok" onclick="
+                if(checkedStatus('.js-check-ok')) 
+                    {addColumn('OK');}
+                else
+                    {deleteColumn('OK');}"> <label>OK </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-channel" onclick="
+                if(checkedStatus('.js-check-channel')) 
+                    {addColumn('CHANNEL');}
+                else
+                    {deleteColumn('CHANNEL');}"> <label>CHANNEL </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-writer" onclick="
+                if(checkedStatus('.js-check-writer')) 
+                    {addColumn('WRITER');}
+                else
+                    {deleteColumn('WRITER');}"> <label>WRITER </label> </div>
+            <div class="checkbox-temp"> <input type="checkbox" class="js-check-editor" onclick="
+                if(checkedStatus('.js-check-editor')) 
+                    {addColumn('EDITOR');}
+                else
+                    {deleteColumn('EDITOR');}"> <label>EDITOR </label> </div>
+
+            <div> <input class="js-input-temp-name input-temp-name-css" placeholder="template name" type="text" onkeydown="enter(event.key);">
+                <button class="add-button-css" onclick="createTemplate()">Add</button>
+            </div>
+        </div>
+    </div>
 
     <div class="main-content-div">
 
 
-        <div class="div-1">  <!-- /*Left most column (working directory)*/ --> Working Directory
+    <div class="div-1">  <!-- /*Left most column (working directory)*/ --> Working Directory
 
-            <!--Working Directory-->
-    <div class="working-directory">
-        <h3>Working Directory</h3>
-        <ul class="file-list">
-            <ul class="file-list"></ul> <!-- Empty; populated by JavaScript -->
-        </ul>
-    </div>
+        <div> 
+            <input class="js-script-name input-temp-name-css" placeholder="script name">
+            <input class="js-show-date" placeholder="show date" type="date">
+            <input class="js-folder-name input-temp-name-css" placeholder="folder name(default is main)">
+            <br>
+            <button class="js-add-script add-button-css" onclick="addScript();getRundownList();">Add</button>
+
         </div>
 
+        <br>
+        <div class="css-files"> Files</div>
+        <div class="js-rundown-list css-rundown-list"></div>
+    </div>
 
+
+    <div class="div-rundown-name js-create">View A Template</div>
 
         <div class="div-2">     <!--/*Top Right column (Table with all data: PAGE, CAM, SHOT....etc)*/-->
 
-            <div class="main-table">
-
-                <div  class="grid-header">  <!--Column head-->
-                    <div>BLOCK</div>
-                    <div>ITEM #</div>
-                    <div>CAM</div>
-                    <div>SHOT</div>
-                    <div>TAL</div>
-                    <div>SLUG</div>
-                    <div>FORMAT</div>
-                    <div>READ</div>
-                   <!-- <div>SOT</div> -->
-                    <div>BACKTIME</div> <!--This should be total-->
-                    <div>OK</div>
-                    <div>CH</div>
-                    <div>WR</div>
-                    <div>ED</div>
-                    <div>MODIFIED</div>
-                    <div>SHOW DATE</div>
-    
-                </div>
-    
+            <table id="data-table" class="js-create-script table-css"></table>
                 
-                <div class="grid-data js-grid-data"> </div> <!--This is where all the data in the list go-->
-    
-    
-                <div class="grid-input">  <!--Input columns-->
-                    <input class="grid-input-data js-block" placeholder="block" maxlength="2">
-                    <input class="grid-input-data js-itemnum" placeholder="item #" type="number">
-                    <input class="grid-input-data js-cam" placeholder="cam" type="number">
-                    <select id="shotDropdown">
-                        <option value="" disabled selected>Select a Shot</option> <!-- Placeholder -->
-                        <option value="1-SHOT">1-SHOT</option>
-                        <option value="OTS">OTS</option>
-                        <option value="2-SHOT">2-SHOT</option>
-                        <option value="3-SHOT">3-SHOT</option>
-                        <option value="CHROMA">CHROMA</option>
-                        <option value="NEWSROOM">NEWSROOM</option>
-                        <option value="PLASMA">PLASMA</option>
-                        <option value="INTERVIEW">INTERVIEW</option>
-                        <option value="LIVE">LIVE</option>
-                    </select>
-                    <input class="grid-input-data js-tal" placeholder="tal" maxlength="8">
-                    <input class="grid-input-data js-slug" placeholder="slug" maxlength="30">
-                    <input class="grid-input-data js-format" placeholder="format" maxlength="12">
-                    <input class="grid-input-data js-read" placeholder="read" type="time">  <!--Needs to create a function to calculate time-->
-                   <!-- <input class="grid-input-data js-sot" placeholder="sot" type="time">    Needs to create a function to calculate time-->
-                    <input class="grid-input-data js-backtime" placeholder="backtime" type="time">    <!--Needs to create a function to calculate time-->
-                    <input class="grid-input-data js-ok" placeholder="ok" type="checkbox">
-                    <input class="grid-input-data js-ch" placeholder="ch" maxlength="3">
-                    <input class="grid-input-data js-wr" placeholder="wr" maxlength="8">
-                    <input class="grid-input-data js-ed" placeholder="ed" maxlength="8">
-                    <input class="grid-input-data js-modified" placeholder="modified" type="datetime-local">
-                    <input class="grid-input-data js-showdate" placeholder="show date" type="date">
-                </div>
-
-                
-
-                <button class="js-showdata-button" onclick=" /// This button just for testing for backend.
-                    getData();
-                ">show data</button>
-
-                <button class="js-addrowdata-button" onclick=" /// This button just for testing for backend.
-                    addRowData();
-                ">add row data</button>
-
-            </div>
-
-
         </div>
 
 
@@ -168,7 +200,11 @@
 
     </div>
 
+    
+
     <script src="/static/home.js"></script>
+    <script src="/static/table.js"></script>
+    <script src="/static/tableActual.js"></script>
 </body>
 </html>
     

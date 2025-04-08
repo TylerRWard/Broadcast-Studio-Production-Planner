@@ -80,7 +80,7 @@ header {
 
 /* New Working Directory Styling */
 .working-directory {
-    text-align: left;
+    text-align: center;
     display: absolute;
     color: #333;
     background-color: #e0e0e0; /* Light gray background for distinction */
@@ -167,38 +167,60 @@ header {
     
 }
 
-.div-2{     /*Top Right column (Table with all data: PAGE, CAM, SHOT....etc)*/
+.div-rundown-name{
     position: absolute;
-    height: 64.25%;
+    height: 3%;
     width: 84.875%;
-    top: 0.25%;
-    left: 15%;
-    background-color:rgb(99, 104, 141);
-    border-radius: 5px;
-}
-
-.div-3{     /*Bottom Middle column*/
-    position: absolute;
-    height: 35.125%;
-    width: 14.875%;
-    bottom: 0.125%;
+    top: 0.125%;
     left: 15%;
     background-color:rgb(27, 30, 48);
     border-radius: 5px;
     color: white;
-    text-align: center;
-    font-size: 16px;
-    font-weight: bold;
-    
+    font-size: 15px;
+    padding-top: 2px;
+    padding-left: 4px;
+    display: flex;
+    justify-content: flex-start; /* Horizontal left */
 }
+
+.div-2 {
+    position: absolute;
+    height: 61.25%;
+    width: 84.875%;
+    top: 3.25%;
+    left: 15%;
+    background-color: rgb(59, 67, 88);
+    
+    overflow-y: auto; /* Allow vertical scrolling */
+   
+}
+
+#data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#data-table thead {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 5; /* Ensure headers stay above table content */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow for visual separation */
+}
+
+#data-table td {
+    border: 0.1px solid #ddd;
+    padding: 0px;
+}
+
 
 /* Script Box */
 .scriptBox-container {
     position: absolute;
     height: 35.125%;
-    width: 69.875%;
+    width: 84.875%;
     bottom: 0.125%;
-    left: 30%;
+    left: 15%;
     background-color: rgb(27, 30, 48);
     border-radius: 5px;
     color: white;
