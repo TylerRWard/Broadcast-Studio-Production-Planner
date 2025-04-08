@@ -1,0 +1,88 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+    color: #B5A36A;
+  }
+
+  header {
+    display: flex;
+    justify-content: center; /* Center contents horizontally */
+    align-items: center;
+    padding: 20px;
+    position: fixed;  
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10; 
+    background-color: hsl(0, 0%, 0%, .5);
+    color: white;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+
+  .bg-image {
+    background-image: url("/public/images/DesignV4.png");
+    filter: blur(2px);
+    -webkit-filter: blur(2px);
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: fixed;
+    width: 100%;
+    z-index: -1;
+  }
+
+  .logo {
+    width: 150px;  
+    height: auto;
+    padding-right: 30px;
+  }
+
+  .content-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+    padding-left: 5%;
+  }
+  
+  .text-box {
+    max-width: 600px;
+    color: white;
+    margin-top: -150px;
+  }
+  
+  .button-container {
+    position: absolute;
+    top: calc(100% - 300px); 
+    left: 50%;
+    transform: translateX(-50%); 
+    z-index: 1;
+  }
+  
+  .main-button {
+    padding: 20px 40px;  
+    font-size: 3rem;   
+    background-color: #B5A36A;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+  }
+  
+  .main-button:hover {
+    background-color: hsl(46, 34%, 45%);
+  }

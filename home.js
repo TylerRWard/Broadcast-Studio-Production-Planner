@@ -211,6 +211,35 @@ async function addRowData() {
 */
 
 
+// calculating the script read time
+function calculateTime(textarea) {
+    const text = textarea.value.trim();
+    const words = text.split(/\s+/).filter(word => word.length > 0).length;
+    const wpm = 183;
+    const totalSeconds = Math.ceil((words / wpm) * 60);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    // Get the container of the textarea
+    const container = textarea.closest(".scriptBox-container");
+    // Get the heading inside that container
+    const heading = container.querySelector(".scriptBox-heading");
+    // Update the headings text
+    heading.textContent = `Script Editing (Current length: ${minutes} min ${seconds} sec)`;
+
+   // store the read time and script after hitting submit
+    document.getElementById("scriptSubmit").onclick = function() {
+        // save the script to a string
+        const textarea = document.querySelector(".scriptBox");
+        const scriptText = textarea.value;
+        // clear the textarea
+        textarea.value = "";
+        heading.textContent = `Script Editing (Current length: 0 min 0 sec)`;
+        // log the script and the final time after submitting
+        console.log(`Script: \n${scriptText}`)
+        console.log(`Final time: ${totalSeconds} seconds`);
+        alert(`Time saved: ${Math.floor(totalSeconds / 60)} min ${totalSeconds % 60} sec`);
+    };
+}
 
 
 
