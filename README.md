@@ -24,5 +24,5 @@ This project, **Broadcast Studio Production Planner**, is designed to streamline
 
 
 make sure to run this 
-* npm install bcrypt for encryption
+* npm install bcryptjs for encryption
 * npm install express-session
