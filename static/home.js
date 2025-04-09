@@ -41,7 +41,7 @@ searchInput.addEventListener("input", (e) => {
 // User Management button
 document.getElementById("user-management-btn").addEventListener("click", () => {
     const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.userLevel === "professor") {
+    if (user && user.adminLevel === "professor") {
         window.location.href = "/user-management.html";
     } else {
         alert("You don't have permission to access this page.");

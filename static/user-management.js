@@ -7,13 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const name = document.getElementById("add-name").value;
             const email = document.getElementById("add-email").value;
             const password = document.getElementById("add-password").value;
-            const userLevel = document.getElementById("add-user-level").value;
+            const adminLevel = document.getElementById("add-user-level").value;
 
             try {
                 const response = await fetch("/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, password, email, userLevel })
+                    body: JSON.stringify({ name, password, email, adminLevel })
                 });
                 const data = await response.json();
                 if (response.ok) {

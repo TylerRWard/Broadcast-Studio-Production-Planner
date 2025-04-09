@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Production Program</title>
+    <title>News Production Program - Login</title>
     <link rel="stylesheet" href="/public/css/login.css">
 </head>
 <body>
@@ -14,28 +14,18 @@
         </div>
     </header>
     <div class="container">
-        <div class="login-selection">
-            <button class="login-button" id="professor-btn">
-                <div class="button-content">
-                    <img src="/public/images/SchoolLogo.png" alt="Professor" class="icon">
-                    <h1>Professor Login</h1>
-                </div>
-            </button>
-            <button class="login-button" id="student-btn">
-                <div class="button-content">
-                    <img src="/public/images/GradLogo.png" alt="Student" class="icon">
-                    <h1>Student Login</h1>
-                </div>
-            </button>
-        </div>
-        <div id="login" class="login-container">
-            <h2 id="login-title">Sign in</h2>
+        <div class="login-container">
+            <h2>Login</h2>
             <form id="login-form" onsubmit="event.preventDefault(); submitLogin();">
-                <input type="email" placeholder="Email" id="email" required>
-                <input type="password" placeholder="Password" id="password" required>
-                <a href="#" class="forgot-password">Forgot password?</a>
+                <div class="input-wrapper">
+                    <input type="email" placeholder="Email" id="email" required>
+                </div>
+                <div class="input-wrapper">
+                    <input type="password" placeholder="Password" id="password" required>
+                </div>
+                <h4>Contact Professor to reset password</h4>
                 <div class="loginActuallButton">
-                    <button type="submit" class="login-button">Login</button>
+                    <button type="submit" class="login-button">Log In</button>
                 </div>
             </form>
         </div>

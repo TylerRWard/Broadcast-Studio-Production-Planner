@@ -71,7 +71,7 @@ app.post("/login", async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
             req.session.isAuthenticated = true;
-            req.session.user = { name: user.name, email: user.email, userLevel: user.user_level };
+            req.session.user = { name: user.name, email: user.email, adminLevel: user.admin_level };
             res.status(200).json({
                 message: "Login successful",
                 user: req.session.user
@@ -95,19 +95,19 @@ app.post("/logout", (req, res) => {
 });
 //register user
 app.post("/register", isAuthenticated, async (req, res) => {
-    const { name, email, password, userLevel } = req.body;
+    const { name, email, password, adminLevel } = req.body;
     const saltRounds = 10;
     try {
-        if (!name || !password || !userLevel) {
+        if (!name || !password || !adminLevel) {
             return res.status(400).json({ message: "Missing required fields" });
         }
         const passwordHash = await bcrypt.hash(password, saltRounds);
         const insertQuery = `
-            INSERT INTO users_t2 (name, password, email, user_level)
+            INSERT INTO users_t2 (name, password, email, admin_level)
             VALUES ($1::varchar, $2::varchar, $3::varchar, $4::varchar)
-            RETURNING name, email, user_level
+            RETURNING name, email, admin_level
         `;
-        const result = await pool.query(insertQuery, [name, passwordHash, email, userLevel]);
+        const result = await pool.query(insertQuery, [name, passwordHash, email, adminLevel]);
         res.status(201).json({
             message: "User registered successfully",
             user: result.rows[0]
