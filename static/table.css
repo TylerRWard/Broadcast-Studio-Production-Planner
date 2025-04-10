@@ -1,0 +1,297 @@
+#templatesButton, #addStartBreakButton {
+    padding: 0.5rem 1rem;
+  }
+
+  #templateBox {
+    position: absolute;
+    display: none;
+    background: #fff;
+    border: 1px solid #aaa;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    min-width: 120px;
+    text-align: left;
+  }
+
+  #startBreakBox{
+    position: absolute;
+    display: none;
+    background: #fff;
+    border: 1px solid #aaa;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    min-width: 120px;
+    text-align: left;
+  }
+
+/* Modal Style */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed at the top */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust positioning to perfectly center */
+    width: 300px; /* Set width of the modal */
+    height: 500px; /* Set height of the modal */
+    background-color: white; /* White background */
+    border: 1px solid #888; /* Border */
+    z-index: 1000; /* Make sure the modal appears on top */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow for a better effect */
+    padding: 5px;
+}
+
+/* Modal Content */
+.modal-content {
+    padding: 1px;
+}
+
+/* Close Button */
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.css-rundown-list{
+    background-color: white;
+    color: black;
+    padding: 10px;
+    font-weight: normal;
+    align-items: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .list-temp-css, .list-rundown-css {
+    padding: 8px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: border 0.02s ease;
+  }
+  
+  .list-temp-css:hover , .list-rundown-css:hover{
+    border: 2px solid;
+  }
+
+
+
+.div1-css{
+    background-color: rgb(40, 74, 102);
+    color:black;
+    padding: 10px;
+    margin: 5px;
+}
+
+
+.checkbox-temp{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Optional: adds space between checkbox and text */
+}
+
+/* Optional: Style the checkbox */
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.input-temp-name-css, .js-show-date{
+    margin-top: 5px;
+    margin-right: 5px;
+    height: 25px;
+    width: 200px;
+    border-radius: 2px;
+    border-width: 1px;
+
+}
+
+.js-show-date{
+    height: 22px;
+    align-items: center;
+}
+
+.add-button-css{
+    height: 23px;
+    cursor: pointer;
+    background-color: rgb(10, 12, 41);
+    color: white;
+    border-color: rgb(51, 55, 80);
+    border-radius: 5px;
+}
+
+.table-temp-css{
+    max-width: 150px;
+    overflow-x: auto;
+    font-size: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    padding:2px;
+    text-align: left;
+    
+    
+}
+
+
+
+.css-files{
+    align-items: center;
+    padding: 10px;
+}
+
+.css-rundown-list{
+    background-color: white;
+    color: black;
+    text-align: left;
+    padding: 10px;
+    font-weight: normal;
+}
+
+#openModalBtn, #add-start-row, #add-break-row{
+    background-color: white;
+    color: black;
+    overflow-x: auto;
+    font-size: 15px;
+    cursor: pointer;
+    padding-left:5px;
+    border: none;
+
+}
+
+.selectable{
+    background-color: white;
+    color: black;
+    border-color: black;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+ /* Style for selected row */
+ .selected {
+    background-color: rgb(4, 8, 44);
+    color: white;
+    border-color: rgb(0, 0, 0);
+    border-radius: 5px;              
+}
+
+
+
+.table-css {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.BLOCK { width: 3.5%; }
+.ITEM_NUM { width: 5%; }
+.CAM { width: 3%; }
+.SHOT { width: 7%; }
+.TAL { width: 7%; }
+.SLUG { width: 20%; }
+.FORMAT { width: 8%; }
+.READ { width: 4%; }
+.SOT { width: 4%; }
+.TOTAL { width: 4%; }
+.OK { width: 7%; }
+.CHANNEL { width: 3%; }
+.WRITER { width: 6%; }
+.EDITOR { width: 6%; }
+.MODIFIED { width: 7%; }
+.MOD_BY { width: 6%; }
+
+
+.grid-input-data{
+    width: 95%;
+    height: 17px;
+    font-size: 15px;
+    border: none;
+    text-align: center;
+    background-color: black;
+    color: #fff;
+}
+
+.js-ID{
+    width: 80%;
+
+}
+
+.js-CAM{
+    width: 90%;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+td {
+    text-align: center;
+
+}
+
+.table-head-css{
+    background-color: rgb(59, 67, 88);
+    color: white;
+    font-weight: bold;
+    font-size: 18;
+    height: 24px;
+}
+
+.table-data-css{
+    background-color: black;
+    color: white;
+    font-size: 16;
+    height: 25px;
+}
+
+
+select {
+    border: none;
+    color: white;             /* text color */
+    background-color: black;  /* background color */
+        
+  }
+
+  select option {
+    color: white;
+    background-color: black;
+  }
+
+.temp-view-table {
+    background-color:white ;
+}
+
+.shotDropdown{ /* for the SHOT colomn*/
+
+    width: 100%;
+    font-size: 10px;
+    
+    /****************/
+    }
+
+.okDropdown{
+    width: 100%;
+    font-size: 10px;
+    
+}

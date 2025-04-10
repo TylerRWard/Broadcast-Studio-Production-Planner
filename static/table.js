@@ -1,5 +1,12 @@
-getRundownList();
-getTemplates();
+let temp_columns = ['BLOCK', 'ITEM_NUM'];  // Collecting columns for creating new template version.
+let temp_name;                       // The name of new template version
+let template_versions = [];          // All created template versions so far --Will hold only names of each template versions
+let selectedTemplate ='';            // Template that selected from the template list
+let columnNames;
+let rundownList = []
+
+//getRundownList();
+//getTemplates();
 
 
 const btn = document.getElementById('templatesButton');
@@ -25,13 +32,19 @@ btn2.addEventListener('click', () => {
 // Optional: close if clicked outside either box
 document.addEventListener('click', (e) => {
   if (
-    !box.contains(e.target) && e.target !== btn &&
-    !box2.contains(e.target) && e.target !== btn2
+    !box.contains(e.target) && e.target !== btn
   ) {
     box.style.display = 'none';
-    box2.style.display = 'none';
   }
 });
+
+document.addEventListener('click', (e) => {
+    if (
+      !box2.contains(e.target) && e.target !== btn2
+    ) {
+      box2.style.display = 'none';
+    }
+  });
 
 
 // Get modal and buttons
@@ -56,26 +69,28 @@ document.addEventListener('click', function(event) {
     }
   });
 
+ //  creating a template as desired before inserting data into it.
+//let template = ['BLOCK', 'ITEM_NUM'];
 
 function addColumn(columnName){
-    let index = template.indexOf(columnName);
+    let index = temp_columns.indexOf(columnName);
     
     if(index===-1)
     {
-        template.push(columnName);
+        temp_columns.push(columnName); // add column names once they check the box.
     }   
 }
 
 function deleteColumn(columnName){
-    let index = template.indexOf(columnName);
+    let index = temp_columns.indexOf(columnName);
 
     if(index!==-1)
     {
-        template.splice(index, 1);
+        temp_columns.splice(index, 1); // remove column names once they uncheck the box
     }
 }
 
-function checkedStatus(js_check_what){
+function checkedStatus(js_check_what){  // make every check box uncheck once they add a new template version
     const if_check = document.querySelector(js_check_what);
     
     if(if_check.checked)
@@ -84,29 +99,27 @@ function checkedStatus(js_check_what){
         {return false;}
 }
 
-function enter(key) {
+function enter(key) { 
     if (key === 'Enter')
         { createTemplate(); }
 }
 
 
-let template = ['BLOCK', 'ITEM_NUM'];
-let temp_name;
+//let temp_name; // give a name for that template you created
 
 function createTemplate(){
     temp_name = document.querySelector(".js-input-temp-name").value;
 
     if(temp_name===""){
-        alert("Please give a name for the template!");}
+        alert("Please give a name for the template!");} //making sure they give a name for their newly created template
     else if(temp_name in template_versions){
         alert(`${temp_name} is already reserved. Please give another name for the template
         or delete previous ${temp_name} template from the template table!`);
     }
     else{
-        template.push('MODIFIED', 'MOD_BY');
+        temp_columns.push('MODIFIED', 'MOD_BY');
 
-        addTemplate();
-        
+        addTemplate(); // adding newly created template into database
 
         let checkboxes = document.querySelectorAll('input[type="checkbox"]');
     
@@ -123,11 +136,12 @@ function createTemplate(){
 
 }
 
+// Add a template to the database
 async function addTemplate() {
     
     const data = {
         templateName:temp_name, 
-        columnNames: template
+        columnNames: temp_columns
     }
 
     console.log(JSON.stringify(data));
@@ -139,6 +153,7 @@ async function addTemplate() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
+            credentials: "include"
         });
 
         if (response.ok) {
@@ -153,9 +168,9 @@ async function addTemplate() {
     }
 }
 
-let template_versions = [];
+//let template_versions = [];
 
-async function getTemplates() {  
+async function getTemplates() {  // get all the template versions' names from the database
     try {
         const response = await fetch("http://localhost:3000/get-templates");
         if (!response.ok) {
@@ -163,14 +178,14 @@ async function getTemplates() {
         }
             template_versions = [];
             const data = await response.json();
-            console.log(data.rows);
+            //console.log(data.rows);
 
             data.rows.forEach((row) => {
                 template_versions.push(row.template_version);
             });
             
             console.log(template_versions);
-            showTemplates();
+            showTemplates(); // After getting all the names, show those template in view section.
             
             
         } catch (error) {
@@ -181,43 +196,61 @@ async function getTemplates() {
 
 }
 
-let selectedTemplate ='';
-let columnNames;
-
-async function getColumnNames(selectedTemplate) {
-    try {
-        const response = await fetch(`http://localhost:3000/get-column-names/${selectedTemplate}`);
-        if (!response.ok) throw new Error("Failed to fetch data.");
-        
-        const data = await response.json();
-        console.log("Column Names:", data);
-        columnNames = data.rows[0].needed_columns.replace(/[{}"]/g, '').split(',');
-        console.log(columnNames);
-        drawTable(selectedTemplate)
-    } catch (error) {
-        console.error("Fetch error:", error);
-        alert("Error fetching data.");
-    }
-}
-
-
 function showTemplates(){
     let showHTML = ``;
 
     template_versions.forEach((key) => {
-        console.log(key);
-        const html = `<tr><td class="table-temp-css selectable">${key}</td></tr>`;
+        //console.log(key);
+        const html = `<li class="list-temp-css">${key}</li>`;
         showHTML += html;
-        showHTML += `<tr><td></td></tr>`
     });
     
-    document.querySelector(".js-show-templates").innerHTML = showHTML;
+    document.querySelector(".js-all-template-versions").innerHTML = showHTML;
+
+    const myList = document.querySelector('.js-all-template-versions');
+    let isListFocused = false; //this is for delete function
+    let selectedItem = null;
+
+// Click on list item
+myList.addEventListener('click', (e) => {
+  if (e.target && e.target.tagName === 'LI') {
+    selectedItem = e.target;
+    selectedTemplate = "";
+    selectedTemplate = selectedItem.innerHTML
+    isListFocused = true;
+    console.log('You clicked:', selectedTemplate);
+    getColumnNames(selectedTemplate)
+  }
+});
+
+// Click outside the list
+document.addEventListener('click', (e) => {
+  if (!myList.contains(e.target)) {
+    isListFocused = false;
+    selectedItem = null;
+  }
+});
+
+}
+//Do not delete this, I'm working on deleting an item once they press down the delete button
+/*
+// Keydown for delete/backspace
+document.addEventListener('keydown', (e) => {
+  if (isListFocused && selectedItem && (e.key === 'Delete' || e.key === 'Backspace')) {
+    console.log('Delete key used on:', selectedItem.innerHTML);
+   // deleteTemplate(selectedItem.innerHTML)
+    selectedItem = null;
+    isListFocused = false;
+  }
+});
+
+}
 
     let clickTimer = null;
     let isClicked = false;
 
-    
-    document.querySelector(".js-show-templates").querySelectorAll('.selectable').forEach(row => {
+    ///////////////////// This needs to be changed
+    document.querySelector(".js-all-template-versions").querySelectorAll('.selectable').forEach(row => {
         row.addEventListener('click', function(event) {
         // If a double-click is detected, ignore the single click
         if (clickTimer !== null) {
@@ -264,7 +297,6 @@ function showTemplates(){
     });
 }
 
-
 function selectRow(row) {
     // Remove the 'selected' class from all rows
     let rows = document.querySelectorAll('.selectable');
@@ -272,7 +304,7 @@ function selectRow(row) {
 
     // Add the 'selected' class to the clicked row
     row.classList.add('selected');
-}
+}*/
 
 
 
@@ -296,6 +328,26 @@ async function deleteTemplate(temp_name) {
     }
 }
 
+
+//let selectedTemplate ='';
+//let columnNames;
+
+/// Get relevant columns names for selected template from view list.
+async function getColumnNames(selectedTemplate) {
+    try {
+        const response = await fetch(`http://localhost:3000/get-column-names/${selectedTemplate}`);
+        if (!response.ok) throw new Error("Failed to fetch data.");
+        
+        const data = await response.json();
+        console.log("Column Names:", data);
+        columnNames = data.rows[0].needed_columns.replace(/[{}"]/g, '').split(',');
+        console.log(columnNames);
+        drawTable(selectedTemplate)
+    } catch (error) {
+        console.error("Fetch error:", error);
+        alert("Error fetching data.");
+    }
+}
 
 
 
@@ -366,11 +418,11 @@ const dataInputObject = {
 
     'FORMAT': `<input class="grid-input-data js-FORMAT" placeholder="" maxlength="12">`,
 
-    'READ': `<input class="grid-input-data js-READ" placeholder="" type="time">`,
+    'READ': `<input class="grid-input-data js-READ" placeholder="">`,
 
-    'SOT': `<input class="grid-input-data js-SOT" placeholder="" type="time">`,
+    'SOT': `<input class="grid-input-data js-SOT" placeholder="">`,
 
-    'TOTAL': `<input class="grid-input-data js-TOTAL" placeholder="" type="time">`,
+    'TOTAL': `<input class="grid-input-data js-TOTAL" placeholder="">`,
 
     'OK': `<select class="okDropdown">
                         <option value="" disabled selected>status</option> <!-- Placeholder -->
@@ -402,13 +454,13 @@ const table = document.getElementById('data-table');
 table.addEventListener('click', function(event) {
     const target = event.target.closest('td');
 
-    if(target.tagName ==='INPUT' ||  target.tagName ==='TD'){ ///////////////////// This should be changed!!!!
+    if((target.tagName ==='INPUT' ||  target.tagName ==='TD') && selectedRundown.show_name===""){ ///////////////////// This should be changed!!!!
         if(fileName ==='')
-        {alert("Please give a name and directory to your script before begin editing!")}
+        {alert("This is just a view of a template. Please give a name and a date, and then select the rundown you want from the file directory.")}
     }
 })
 
-let rundownList = []
+//let rundownList = []
 
 ////// geting rundown list
 
@@ -423,24 +475,25 @@ async function getRundownList() {
         data.rows.forEach( function (row) {
             rundownList.push(row)
         });
-        showRundownList(rundownList);
+        showRundownList(rundownList)
         
     } catch (error) {
         console.error("Fetch error:", error);
         alert("Error fetching data.");
     }
-}
 
+    
+}
 
 
 function showRundownList(rundownList){
     let innerHTML = ``;
 
     rundownList.forEach(item => {
-        let HTML = `<p class="selectable" >${item.show_name}</p>`
+        let HTML = `<li class="list-rundown-css">${item.show_name}</li>`
         innerHTML += HTML;
     })
 
-    document.querySelector('.js-rundown-list').innerHTML = innerHTML;
+    document.querySelector('.js-all-rundowns').innerHTML = innerHTML;
 }
 

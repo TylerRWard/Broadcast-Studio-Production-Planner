@@ -1,4 +1,11 @@
-//let infoOfScripts = [];
+////// Selected rundown details from the rundown list
+let selectedRundown = {
+    show_name: '',
+    show_date: '',
+    needed_columns: []
+}
+
+
 
 let active = true; ///////////////////// need to heck if the user in active or archive
 
@@ -6,7 +13,7 @@ async function addScript() {
     const show_name = document.querySelector('.js-script-name').value; 
     const show_date = document.querySelector('.js-show-date').value;
     const folder = document.querySelector('.js-folder-name'). value;
-    const template_version = selectedTemplate;
+    const template_version = 'Default';
 
     if (show_name==="" || show_date==="")
         alert("You have missing data.");
@@ -14,8 +21,7 @@ async function addScript() {
         const data = {show_name, show_date, folder, active, template_version};
         document.querySelector('.js-script-name').value = '';
         document.querySelector('.js-show-date').value = '';
-        //drawActualTable(templateVersion, scriptName, showDate);
-        //infoOfScripts.push(infoOfScript); 
+        console.log(data)
         
         try{
             const response = await fetch("http://localhost:3000/add-rundown", {
@@ -28,9 +34,9 @@ async function addScript() {
 
             if (response.ok) {
                 alert("Data inserted successfully!");
-                getTemplates();
+                getRundownList();
             } else {
-                alert("Failed to insert data.", forMessage);
+                alert("Failed to insert data.");
             }
         } catch (error) {
             console.error("Error:", error);
@@ -43,15 +49,34 @@ async function addScript() {
 
 /////// if someone clicks a file name, it should open its rundown
 
-///// for now, let's assume file they click 
+const myRundownList = document.querySelector('.js-all-rundowns');
+let isRundownListFocused = false; //this is for delete function
+let selectedRundownItem = null;
 
-let selectedRundown = {
-    show_name: 'Sports - Baseball',
-    show_date: '2025-04-06',
-    needed_columns: []
-}
+// Click on list item
+myRundownList.addEventListener('click', (e) => {
+  if (e.target && e.target.tagName === 'LI') {
+    selectedRundownItem = e.target;
+    selectedRundown.show_name = "";
+    selectedRundown.show_name = selectedRundownItem.innerHTML
+    isRundownListFocused = true;
+    console.log('You clicked:', selectedRundown.show_name);
+    selectedRundown.show_date = rundownList.find(rundown => rundown.show_name === selectedRundown.show_name).show_date.slice(0, 10);
+    console.log('You clicked:', selectedRundown.show_date);
+    getColumnNamesForShow(selectedRundown.show_name, selectedRundown.show_date)
+  }
+});
 
-/////// Get the relevant columns for selectedRundown
+// Click outside the list
+document.addEventListener('click', (e) => {
+  if (!myRundownList.contains(e.target)) {
+    isRundownListFocused = false;
+    selectedRundownItem = null;
+  }
+});
+
+
+//getColumnNamesForShow(selectedRundown.show_name, selectedRundown.show_date);
 
 async function getColumnNamesForShow(show_name, show_date) {
     try {
@@ -69,11 +94,6 @@ async function getColumnNamesForShow(show_name, show_date) {
     }
 }
 
-getColumnNamesForShow(selectedRundown.show_name, selectedRundown.show_date);
-
-
-
-
 
 //// Draw a script with row IDs
 
@@ -82,8 +102,6 @@ function drawActualTable(columnNames, scriptName, showDate){
 
     let headHTML=``;
     let dataHTML=``;
-
-    
 
     columnNames.forEach(function (column) {
         const rowHTML = `<th class="table-head-css ${column}">${column}</th>`

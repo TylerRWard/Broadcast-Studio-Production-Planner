@@ -251,57 +251,9 @@ header {
 
 /******************************/
 
-
-
-.main-table{    /*Table with all data: PAGE, CAM, SHOT....etc*/
-    position: absolute;
-    background-color: rgb(99, 104, 141);
-    
-    overflow-x: auto; /* Enable horizontal scrolling */
-   
-    width: 100%;
-    height: 100%;
-}
-
-/* grid-header, grid-input, grid-data, grid-header, grid-input-data, grid-data-inside, shotDropdown These all are related to main-table */
-.grid-header,
-.grid-input,
-.grid-data{
-    display: grid;
-    grid-template-columns: 60px 60px 100px 100px 200px 100px 100px 100px 100px 50px 60px 100px 100px 200px 100px ;
-    align-items: center;
-    text-align: center;
-    
-}
-
-.grid-header {
-    
-    color: white;
-    font-size: 15px;
-    padding: 5px;
-}
-
-
 .grid-input-data{  /* for the input tag*/
     font-size: 15px;
     padding: 3px;
     
 }
 
-.grid-data-inside{   /* for the data already have in the list*/
-    color:white;
-    background-color: black;
-    font-size: 15px;
-    padding: 3px;
-    margin: 0.5px;
-    
-}
-
-
-#shotDropdown { /* for the SHOT colomn*/
-
-padding: 3px;
-font-size: 15px;
-
-/****************/
-}
