@@ -22,11 +22,37 @@ client.connect()
 
 module.exports = {client}
 
-async function getData(){
-    const res = await client.query("Select * from scripts_t")
-    console.log(res.rows)
-    console.log("Happy Days")
-    console.log("")
-}
 
-getData();
+async function getData() {
+    try {
+      const res = await client.query("SELECT * FROM scripts_t");
+      return res.rows;
+    } catch (error) {
+      console.error("Erro ao buscar dados do banco:", error);
+      throw error; // repassa o erro para quem chamou a função
+    }
+  }
+
+data = getData();
+
+console.log(data) // this is not working
+
+__dirname = '/Users/renatofilho/Desktop/Broadcast-Studio-Production-Planner/'
+
+const fs = require('fs');
+const path = require('path');
+
+// Convertemos os valores para uma linha do CSV
+const values = Object.values(data).join(',');
+
+// Juntamos tudo
+const csvContent = `${values}`;
+
+// Caminho e nome do arquivo
+const filePath = path.join(__dirname, 'saida.csv');
+
+// Salvamos o CSV
+fs.writeFileSync(filePath, csvContent, 'utf8');
+
+console.log('Arquivo CSV salvo em:', filePath);
+
