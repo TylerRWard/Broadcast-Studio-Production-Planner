@@ -30,39 +30,38 @@ app.use(session({
     saveUninitialized: false,
     cookie: { secure: false }
 }));
-//Middlewere to check authentication
+
 const isAuthenticated = (req, res, next) => {
     if (req.session.isAuthenticated) {
         return next();
     }
-    res.redirect("/");
+    res.redirect("/login.html");
 };
 
-//Serve static files from /public
 app.use("/public", express.static(path.join(__dirname, "public")));
-app.use("/static", isAuthenticated, express.static(path.join(__dirname,"static" )));
-//serve landing page as root
+
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname,"public", "landingPage.html"));
-});
-//Serve login page
-app.get("/login.html", (req,res)=>{
-    res.sendFile(path.join(__dirname, "public", "login.html"));
+    res.redirect("/login.html");
 });
 
-//protect specific routs
+app.get("/login.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "login.html"));
+});
+
+app.use("/static", isAuthenticated, express.static(__dirname));
+
 app.get("/home.html", isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname,"views", "home.html"));
+    res.sendFile(path.join(__dirname, "home.html"));
 });
 
 app.get("/user-management.html", isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname,"views", "user-management.html"));
+    res.sendFile(path.join(__dirname, "user-management.html"));
 });
-//handle log in 
+
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
-        const query = "SELECT * FROM users_t2 WHERE email = $1";
+        const query = "SELECT * FROM users_t WHERE email = $1";
         const result = await pool.query(query, [email]);
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "Invalid credentials" });
@@ -71,7 +70,7 @@ app.post("/login", async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
             req.session.isAuthenticated = true;
-            req.session.user = { name: user.name, email: user.email, adminLevel: user.admin_level };
+            req.session.user = { name: user.name, email: user.email, userLevel: user.user_level };
             res.status(200).json({
                 message: "Login successful",
                 user: req.session.user
@@ -84,7 +83,7 @@ app.post("/login", async (req, res) => {
         res.status(500).send("Login failed");
     }
 });
-//handle log out
+
 app.post("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -93,21 +92,21 @@ app.post("/logout", (req, res) => {
         res.status(200).json({ message: "Logged out successfully" });
     });
 });
-//register user
+
 app.post("/register", isAuthenticated, async (req, res) => {
-    const { name, email, password, adminLevel } = req.body;
+    const { name, email, password, userLevel } = req.body;
     const saltRounds = 10;
     try {
-        if (!name || !password || !adminLevel) {
+        if (!name || !password || !userLevel) {
             return res.status(400).json({ message: "Missing required fields" });
         }
         const passwordHash = await bcrypt.hash(password, saltRounds);
         const insertQuery = `
-            INSERT INTO users_t2 (name, password, email, admin_level)
+            INSERT INTO users_t (name, password, email, user_level)
             VALUES ($1::varchar, $2::varchar, $3::varchar, $4::varchar)
-            RETURNING name, email, admin_level
+            RETURNING name, email, user_level
         `;
-        const result = await pool.query(insertQuery, [name, passwordHash, email, adminLevel]);
+        const result = await pool.query(insertQuery, [name, passwordHash, email, userLevel]);
         res.status(201).json({
             message: "User registered successfully",
             user: result.rows[0]
@@ -117,12 +116,12 @@ app.post("/register", isAuthenticated, async (req, res) => {
         res.status(500).send("Failed to register user");
     }
 });
-//delete user
+
 app.delete("/delete-user", isAuthenticated, async (req, res) => {
     const { email } = req.body;
     console.log("Delete request received for:", email);
     try {
-        const query = "DELETE FROM users_t2 WHERE email = $1 RETURNING email";
+        const query = "DELETE FROM users_t WHERE email = $1 RETURNING email";
         const result = await pool.query(query, [email]);
         if (result.rowCount === 0) {
             console.log("No user found with email:", email);
@@ -135,7 +134,7 @@ app.delete("/delete-user", isAuthenticated, async (req, res) => {
         res.status(500).json({ message: "Failed to delete user" });
     }
 });
-//change password
+
 app.put("/change-password", isAuthenticated, async (req, res) => {
     const { email, newPassword } = req.body;
     const saltRounds = 10;
@@ -146,7 +145,7 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
         }
         const passwordHash = await bcrypt.hash(newPassword, saltRounds);
         const query = `
-            UPDATE users_t2
+            UPDATE users_t 
             SET password = $1 
             WHERE email = $2 
             RETURNING email, name
@@ -164,7 +163,8 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
     }
 });
 
-//directory listing
+
+
 app.get("/directory", isAuthenticated, async (req, res) => {
     try {
         const files = await fs.readdir(path.join(__dirname));
@@ -174,15 +174,38 @@ app.get("/directory", isAuthenticated, async (req, res) => {
     }
 });
 
-//catch invalid routs
-app.use((req, res) => {
-    res.redirect("/");
-});
-
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
 
+/*
+app.get("/getData", isAuthenticated, async (req, res) => {
+    const select_query = "SELECT * FROM scripts_t";
+    try {
+        const result = await pool.query(select_query);
+        res.status(200).json(result.rows);
+        console.log(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+app.post("/addRowData", isAuthenticated, async (req, res) => {
+    console.log("Received Data:", req.body);
+    const { ITEMNUM, BLOCK, SHOWDATE, CAM, SHOT, TAL, SLUG, FORMAT, READ, BACKTIME, OK, CH, WR, ED, MODIFIED } = req.body;
+    const insert_query = "INSERT INTO scripts_t (item_num, block, show_date, cam, shot, tal, slug, format, read, backtime, ok, channel, writer, editor, modified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)";
+    try {
+        const result = await pool.query(insert_query, [ITEMNUM, BLOCK, SHOWDATE, CAM, SHOT, TAL, SLUG, FORMAT, READ, BACKTIME, OK, CH, WR, ED, MODIFIED]);
+        console.log(result);
+        res.status(200).send("Data inserted successfully!");
+    } catch (err) {
+        console.error("Error inserting data:", err.message);
+        res.status(500).send("Failed to insert data.");
+    }
+});
+
+*/
 ////// Add Template
 
 app.post("/add-template", isAuthenticated, async(req, res) => {
@@ -291,5 +314,46 @@ app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
     } catch (err) {
         console.error("Error fetching data:", err.message);
         res.status(500).send("Failed to fetch data.");
+    }
+});
+
+
+app.post("/add-row-slots_t", isAuthenticated, async (req, res) => {
+    const { item_num, block, show_date, show_name, line_id } = req.body;
+
+    const client = await pool.connect();
+    try {
+        await client.query("BEGIN");
+
+        await client.query(
+            `INSERT INTO slots_t2 (item_num, block, show_date, show_name)
+             VALUES ($1, $2, $3, $4)`,
+            [item_num, block, show_date, show_name]
+        );
+
+        await client.query(
+            `INSERT INTO speaking_t2 (line_id) VALUES ($1)`,
+            [line_id]
+        );
+
+        await client.query(
+            `INSERT INTO scripts_t2 (line_id) VALUES ($1)`,
+            [line_id]
+        );
+
+        await client.query(
+            `INSERT INTO connection_t2 (line_id, item_num, block, show_date, show_name)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [line_id, item_num, block, show_date, show_name]
+        );
+
+        await client.query("COMMIT");
+        res.status(200).send("Data inserted successfully!");
+    } catch (err) {
+        await client.query("ROLLBACK");
+        console.error("Error inserting data:", err.message);
+        res.status(500).send("Failed to insert data.");
+    } finally {
+        client.release();
     }
 });

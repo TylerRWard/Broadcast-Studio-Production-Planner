@@ -1,0 +1,233 @@
+/* Apply box-sizing globally */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+
+header {
+    background: #333;
+    color: white;
+    padding: 10px 20px; /* Added horizontal padding for consistency */
+    border-bottom: 2px solid #000;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%; /* Prevent overflow */
+}
+
+.logo {
+    width: 50px;
+    height: auto;
+}
+
+.container {
+    margin: 50px auto;
+    padding: 20px;
+    max-width: 600px;
+    background: #ccc;
+    border: 2px solid #000;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.nav-bar {
+    background-color: #4a4a4a;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 2px solid #000;
+    gap: 20px; /* Space between hamburger and search */
+}
+
+.hamburger {
+    display: flex;
+    align-items: center;
+}
+
+.hamburger-icon {
+    width: 30px;
+    height: auto;
+    cursor: pointer;
+}
+
+.search-input {
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    width: 200px;
+    background-color: #fff;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #666;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+/* New Working Directory Styling */
+.working-directory {
+    text-align: center;
+    display: absolute;
+    color: #333;
+    background-color: #e0e0e0; /* Light gray background for distinction */
+    padding: 10px 20px;
+    width: fit-content; /* Only as wide as its content */
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+.working-directory h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+.file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.file-item {
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.file-item:hover {
+    background-color: #d0d0d0;
+}
+.featureButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    gap: 15px;
+    padding-left: 20px;
+    padding-top: 20px;
+    width: 100%;
+}
+
+.feature-button {
+    font-size: 20px;
+    padding: 15px 25px;
+    width: 100px;
+    background-color: #333;
+    color: white;
+    border: 2px solid #000;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.feature-button:hover {
+    background-color: #555;
+}
+
+.feature-button img {
+    width: 30px;
+    height: auto;
+    margin: 0;
+}
+
+ /****************/
+
+ .main-content-div{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 240px;
+    left: 0%;
+    background-color: white;
+}
+
+.div-1{     /*Left most column (working directory)*/
+    position: absolute;
+    height: 99.7%;
+    width: 14.75%;
+    background-color: rgb(27, 30, 48);
+    top: 0.225%;
+    left: 0.125%;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    
+}
+
+.div-rundown-name{
+    position: absolute;
+    height: 3%;
+    width: 84.875%;
+    top: 0.125%;
+    left: 15%;
+    background-color:rgb(27, 30, 48);
+    border-radius: 5px;
+    color: white;
+    font-size: 15px;
+    padding-top: 2px;
+    padding-left: 4px;
+    display: flex;
+    justify-content: flex-start; /* Horizontal left */
+}
+
+.div-2 {
+    position: absolute;
+    height: 61.25%;
+    width: 84.875%;
+    top: 3.25%;
+    left: 15%;
+    background-color: rgb(59, 67, 88);
+    
+    overflow-y: auto; /* Allow vertical scrolling */
+   
+}
+
+
+/* Script Box */
+.scriptBox-container {
+    position: absolute;
+    height: 35.125%;
+    width: 84.875%;
+    bottom: 0.125%;
+    left: 15%;
+    background-color: rgb(27, 30, 48);
+    border-radius: 5px;
+    color: white;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.scriptBox-heading {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px; 
+    text-align: center;
+}
+
+.scriptBox {
+    background-color: white;
+    border-radius: 5px;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    resize: none; 
+    border: 2px solid rgb(99, 104, 141);
+    outline: none;
+    flex-grow: 1; 
+}
+

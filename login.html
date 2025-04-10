@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Production Program</title>
+    <link rel="stylesheet" href="/public/login.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="/public/images/logo-transparent-svg.svg" alt="News Production Program Logo" class="logo">
+            <h1>News Production Program</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="login-selection">
+            <button class="login-button" id="professor-btn">
+                <div class="button-content">
+                    <img src="/public/images/SchoolLogo.png" alt="Professor" class="icon">
+                    <h1>Professor Login</h1>
+                </div>
+            </button>
+            <button class="login-button" id="student-btn">
+                <div class="button-content">
+                    <img src="/public/images/GradLogo.png" alt="Student" class="icon">
+                    <h1>Student Login</h1>
+                </div>
+            </button>
+        </div>
+        <div id="login" class="login-container">
+            <h2 id="login-title">Sign in</h2>
+            <input type="email" placeholder="Email" id="email">
+            <input type="password" placeholder="Password" id="password">
+            <a href="#" class="forgot-password">Forgot password?</a>
+            <div class="loginActuallButton">
+                <button onclick="submitLogin()" class="login-button">Login</button>
+            </div>
+
+        </div>
+    </div>
+    <script src="/public/script.js"></script>
+</body>
+</html>
