@@ -62,7 +62,7 @@ app.get("/user-management.html", isAuthenticated, (req, res) => {
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
-        const query = "SELECT * FROM users_t WHERE email = $1";
+        const query = "SELECT * FROM users_t2 WHERE email = $1";
         const result = await pool.query(query, [email]);
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "Invalid credentials" });
