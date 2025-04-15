@@ -3,7 +3,6 @@
     @Version: 3/4/25
 -->
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,6 +18,11 @@
         <div class="header-content">
             <img src="./public/images/logo-transparent-svg.svg" alt="News Production Program Logo" class="logo">
             <h1>News Production Program</h1>
+            <div class = "header-buttons">
+                <button id="user-management-btn" class="header-button">User Management</button>
+                <button id="logout-btn" class = "header-button">Logout</button>
+
+            </div>
         </div>
     </header>
     <!--Nav Bar-->
@@ -31,28 +35,10 @@
         </div>
     </div>
 
-
     <!-- Buttons across the top-->
     <div class="featureButtons">
-        <button class="feature-button">
-            <img src="./public/images/GradLogo.png" alt="date" class="date">
-        </button>
-
-        <button class="feature-button">
-            <img src="./public/images/key-solid.svg"alt="run" class="run">
-        </button>
-
-        <button class="feature-button">
-            <img src="./public/images/key-solid.svg"alt="templates" class="templates">
-        </button>
-
         <button id="addStartBreakButton">Start/Break</button>
-
-        <button id="templatesButton">View</button>
-        <button id="user-management-btn" class="feature-button">
-            <span>User Management</span>
-        </button>
-        <button id="logout-btn">Logout</button>
+        <button id="templatesButton">View</button>       
     <script>
         document.getElementById("logout-btn").addEventListener("click", async () => {
             await fetch("/logout", { method: "POST" });

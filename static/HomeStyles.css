@@ -12,23 +12,56 @@ body {
 }
 
 header {
-    background: #333;
-    color: white;
-    padding: 10px 20px; /* Added horizontal padding for consistency */
-    border-bottom: 2px solid #000;
+    background-color: #f8f8f8; /* Adjust as needed */
+    padding: 10px 20px;
+    border-bottom: 1px solid gray;
 }
 
 .header-content {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    max-width: 100%; /* Prevent overflow */
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .logo {
-    width: 50px;
-    height: auto;
+    height: 40px;
+    margin-right: 10px;
+}
+
+h1 {
+    flex-grow: 1;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+}
+
+.header-button {
+    background-color: #007bff; /* Blue for User Management, adjust as needed */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.header-button#logout-btn {
+    background-color: #dc3545; /* Red for Logout */
+}
+
+.header-button:hover {
+    background-color: #0056b3; /* Darker blue on hover for User Management */
+}
+
+.header-button#logout-btn:hover {
+    background-color: #c82333; /* Darker red on hover for Logout */
 }
 
 .container {
