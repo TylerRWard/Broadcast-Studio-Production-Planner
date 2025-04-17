@@ -4,6 +4,7 @@ const path = require("path");
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
+const { isatty } = require("tty");
 
 const app = express();
 const port = 3000;
@@ -30,6 +31,9 @@ app.use(session({
     saveUninitialized: false,
     cookie: { secure: false }
 }));
+
+
+
 //Middlewere to check authentication
 const isAuthenticated = (req, res, next) => {
     if (req.session.isAuthenticated) {
@@ -37,6 +41,93 @@ const isAuthenticated = (req, res, next) => {
     }
     res.redirect("/login.html");
 };
+
+// ************************************DIRECTORY************************************************************************ //
+
+app.get("/directory", async (req, res) => {
+    const select_query = `
+        SELECT 
+            ft.folder AS folder_topic,
+            r.show_name
+        FROM 
+            folder_topics_t5 ft
+        LEFT JOIN 
+            rundown_t5 r ON ft.folder = r.folder
+        WHERE 
+            ft.folder IS NOT NULL AND ft.folder != ''
+        ORDER BY 
+            ft.folder, r.show_name;
+    `;
+    try {
+        const result = await pool.query(select_query);
+        console.log("Server: Directory Data:", result.rows);
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+app.post("/add-folder", async (req, res) => {
+    const { folder } = req.body;
+  
+    if (!folder || folder.trim() === "") {
+      return res.status(400).json({ error: "Folder name required." });
+    }
+  
+    const insert_query = `INSERT INTO folder_topics_t5 (folder) VALUES ($1)`;
+  
+    try {
+      await pool.query(insert_query, [folder.trim()]);
+      console.log(`Server: Added folder "${folder}"`);
+      res.status(201).json({ message: "Folder added successfully." });
+    } catch (err) {
+      console.error("Error adding folder:", err.message);
+      res.status(500).json({ error: "Failed to add folder." });
+    }
+  });
+
+// ******************************************************************************************************************** //
+
+app.post("/add-template", isAuthenticated, async(req, res) => {
+    const {templateName, columnNames} = req.body;
+    const insert_query = "insert into template_t2 (template_version, needed_columns) values ($1, $2)";
+    try{
+        const result = await pool.query(insert_query, [templateName, columnNames]);
+        console.log(result);
+        res.status(200).send("Data inserted successfully!");
+    } catch (err) {
+        console.error("Error inserting data:", err.message);
+        res.status(500).send("Failed to insert data.");
+    }
+});
+
+
+//////// Get Templates
+app.get("/get-templates", isAuthenticated, async (req, res) => {
+    const select_query = "select template_version from template_t2";
+    try {
+        const result = await pool.query(select_query);
+        res.status(200).json(result);
+        console.log(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+/////////Get Column Names
+app.get("/get-column-names/:version", isAuthenticated, async (req, res) => {
+    const { version } = req.params;  // Extract version from the request URL
+    const select_query = "SELECT needed_columns FROM template_t2 WHERE template_version = $1";
+    try {
+        const result = await pool.query(select_query, [version]);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
 
 //Serve static files from /public
 app.use("/public", express.static(path.join(__dirname, "public")));
@@ -164,16 +255,6 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
     }
 });
 
-//directory listing
-app.get("/directory", isAuthenticated, async (req, res) => {
-    try {
-        const files = await fs.readdir(path.join(__dirname));
-        res.json({ files, path: __dirname });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to read directory" });
-    }
-});
-
 //catch invalid routs
 app.use((req, res) => {
     res.redirect("/");
@@ -185,46 +266,9 @@ app.listen(port, () => {
 
 ////// Add Template
 
-app.post("/add-template", isAuthenticated, async(req, res) => {
-    const {templateName, columnNames} = req.body;
-    const insert_query = "insert into template_t2 (template_version, needed_columns) values ($1, $2)";
-    try{
-        const result = await pool.query(insert_query, [templateName, columnNames]);
-        console.log(result);
-        res.status(200).send("Data inserted successfully!");
-    } catch (err) {
-        console.error("Error inserting data:", err.message);
-        res.status(500).send("Failed to insert data.");
-    }
-});
 
 
-//////// Get Templates
-app.get("/get-templates", isAuthenticated, async (req, res) => {
-    const select_query = "select template_version from template_t2";
-    try {
-        const result = await pool.query(select_query);
-        res.status(200).json(result);
-        console.log(result);
-    } catch (err) {
-        console.error("Error fetching data:", err.message);
-        res.status(500).send("Failed to fetch data.");
-    }
-});
 
-
-/////////Get Column Names
-app.get("/get-column-names/:version", isAuthenticated, async (req, res) => {
-    const { version } = req.params;  // Extract version from the request URL
-    const select_query = "SELECT needed_columns FROM template_t2 WHERE template_version = $1";
-    try {
-        const result = await pool.query(select_query, [version]);
-        res.status(200).json(result);
-    } catch (err) {
-        console.error("Error fetching data:", err.message);
-        res.status(500).send("Failed to fetch data.");
-    }
-});
 
 ////////////Delete a template version.
 app.delete("/delete-template", isAuthenticated, async (req, res) => {
