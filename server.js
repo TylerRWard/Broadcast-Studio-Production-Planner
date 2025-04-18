@@ -4,7 +4,6 @@ const path = require("path");
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
-const { isatty } = require("tty");
 
 const app = express();
 const port = 3000;
@@ -32,9 +31,6 @@ app.use(session({
     cookie: { secure: false }
 }));
 
-
-
-//Middlewere to check authentication
 const isAuthenticated = (req, res, next) => {
     if (req.session.isAuthenticated) {
         return next();
@@ -42,118 +38,30 @@ const isAuthenticated = (req, res, next) => {
     res.redirect("/login.html");
 };
 
-// ************************************DIRECTORY************************************************************************ //
-
-app.get("/directory", async (req, res) => {
-    const select_query = `
-        SELECT 
-            ft.folder AS folder_topic,
-            r.show_name
-        FROM 
-            folder_topics_t5 ft
-        LEFT JOIN 
-            rundown_t5 r ON ft.folder = r.folder
-        WHERE 
-            ft.folder IS NOT NULL AND ft.folder != ''
-        ORDER BY 
-            ft.folder, r.show_name;
-    `;
-    try {
-        const result = await pool.query(select_query);
-        console.log("Server: Directory Data:", result.rows);
-        res.status(200).json(result.rows);
-    } catch (err) {
-        console.error("Error fetching data:", err.message);
-        res.status(500).send("Failed to fetch data.");
-    }
-});
-
-app.post("/add-folder", async (req, res) => {
-    const { folder } = req.body;
-  
-    if (!folder || folder.trim() === "") {
-      return res.status(400).json({ error: "Folder name required." });
-    }
-  
-    const insert_query = `INSERT INTO folder_topics_t5 (folder) VALUES ($1)`;
-  
-    try {
-      await pool.query(insert_query, [folder.trim()]);
-      console.log(`Server: Added folder "${folder}"`);
-      res.status(201).json({ message: "Folder added successfully." });
-    } catch (err) {
-      console.error("Error adding folder:", err.message);
-      res.status(500).json({ error: "Failed to add folder." });
-    }
-  });
-
-// ******************************************************************************************************************** //
-
-app.post("/add-template", isAuthenticated, async(req, res) => {
-    const {templateName, columnNames} = req.body;
-    const insert_query = "insert into template_t2 (template_version, needed_columns) values ($1, $2)";
-    try{
-        const result = await pool.query(insert_query, [templateName, columnNames]);
-        console.log(result);
-        res.status(200).send("Data inserted successfully!");
-    } catch (err) {
-        console.error("Error inserting data:", err.message);
-        res.status(500).send("Failed to insert data.");
-    }
-});
-
-
-//////// Get Templates
-app.get("/get-templates", isAuthenticated, async (req, res) => {
-    const select_query = "select template_version from template_t2";
-    try {
-        const result = await pool.query(select_query);
-        res.status(200).json(result);
-        console.log(result);
-    } catch (err) {
-        console.error("Error fetching data:", err.message);
-        res.status(500).send("Failed to fetch data.");
-    }
-});
-
-/////////Get Column Names
-app.get("/get-column-names/:version", isAuthenticated, async (req, res) => {
-    const { version } = req.params;  // Extract version from the request URL
-    const select_query = "SELECT needed_columns FROM template_t2 WHERE template_version = $1";
-    try {
-        const result = await pool.query(select_query, [version]);
-        res.status(200).json(result);
-    } catch (err) {
-        console.error("Error fetching data:", err.message);
-        res.status(500).send("Failed to fetch data.");
-    }
-});
-
-//Serve static files from /public
 app.use("/public", express.static(path.join(__dirname, "public")));
-app.use("/static", isAuthenticated, express.static(path.join(__dirname,"static" )));
-//serve landing page as root
+
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname,"public", "landingPage.html"));
-});
-//Serve login page
-app.get("/login.html", (req,res)=>{
-    res.sendFile(path.join(__dirname, "public", "login.html"));
+    res.redirect("/login.html");
 });
 
-//protect specific routs
+app.get("/login.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "login.html"));
+});
+
+app.use("/static", isAuthenticated, express.static(__dirname));
+
 app.get("/home.html", isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname,"views", "home.html"));
+    res.sendFile(path.join(__dirname, "home.html"));
 });
 
 app.get("/user-management.html", isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname,"views", "user-management.html"));
+    res.sendFile(path.join(__dirname, "user-management.html"));
 });
-//handle log in 
+
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
-        const query = "SELECT * FROM users_t2 WHERE email = $1";
+        const query = "SELECT * FROM users_t WHERE email = $1";
         const result = await pool.query(query, [email]);
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "Invalid credentials" });
@@ -162,7 +70,7 @@ app.post("/login", async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
             req.session.isAuthenticated = true;
-            req.session.user = { name: user.name, email: user.email, adminLevel: user.admin_level };
+            req.session.user = { name: user.name, email: user.email, userLevel: user.user_level };
             res.status(200).json({
                 message: "Login successful",
                 user: req.session.user
@@ -175,7 +83,7 @@ app.post("/login", async (req, res) => {
         res.status(500).send("Login failed");
     }
 });
-//handle log out
+
 app.post("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -184,21 +92,21 @@ app.post("/logout", (req, res) => {
         res.status(200).json({ message: "Logged out successfully" });
     });
 });
-//register user
+
 app.post("/register", isAuthenticated, async (req, res) => {
-    const { name, email, password, adminLevel } = req.body;
+    const { name, email, password, userLevel } = req.body;
     const saltRounds = 10;
     try {
-        if (!name || !password || !adminLevel) {
+        if (!name || !password || !userLevel) {
             return res.status(400).json({ message: "Missing required fields" });
         }
         const passwordHash = await bcrypt.hash(password, saltRounds);
         const insertQuery = `
-            INSERT INTO users_t2 (name, password, email, admin_level)
+            INSERT INTO users_t (name, password, email, user_level)
             VALUES ($1::varchar, $2::varchar, $3::varchar, $4::varchar)
-            RETURNING name, email, admin_level
+            RETURNING name, email, user_level
         `;
-        const result = await pool.query(insertQuery, [name, passwordHash, email, adminLevel]);
+        const result = await pool.query(insertQuery, [name, passwordHash, email, userLevel]);
         res.status(201).json({
             message: "User registered successfully",
             user: result.rows[0]
@@ -208,12 +116,12 @@ app.post("/register", isAuthenticated, async (req, res) => {
         res.status(500).send("Failed to register user");
     }
 });
-//delete user
+
 app.delete("/delete-user", isAuthenticated, async (req, res) => {
     const { email } = req.body;
     console.log("Delete request received for:", email);
     try {
-        const query = "DELETE FROM users_t2 WHERE email = $1 RETURNING email";
+        const query = "DELETE FROM users_t WHERE email = $1 RETURNING email";
         const result = await pool.query(query, [email]);
         if (result.rowCount === 0) {
             console.log("No user found with email:", email);
@@ -226,7 +134,7 @@ app.delete("/delete-user", isAuthenticated, async (req, res) => {
         res.status(500).json({ message: "Failed to delete user" });
     }
 });
-//change password
+
 app.put("/change-password", isAuthenticated, async (req, res) => {
     const { email, newPassword } = req.body;
     const saltRounds = 10;
@@ -237,7 +145,7 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
         }
         const passwordHash = await bcrypt.hash(newPassword, saltRounds);
         const query = `
-            UPDATE users_t2
+            UPDATE users_t 
             SET password = $1 
             WHERE email = $2 
             RETURNING email, name
@@ -255,26 +163,97 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
     }
 });
 
-//catch invalid routs
-app.use((req, res) => {
-    res.redirect("/");
+
+
+app.get("/directory", isAuthenticated, async (req, res) => {
+    try {
+        const files = await fs.readdir(path.join(__dirname));
+        res.json({ files, path: __dirname });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to read directory" });
+    }
 });
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
 
+/*
+app.get("/getData", isAuthenticated, async (req, res) => {
+    const select_query = "SELECT * FROM scripts_t";
+    try {
+        const result = await pool.query(select_query);
+        res.status(200).json(result.rows);
+        console.log(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+app.post("/addRowData", isAuthenticated, async (req, res) => {
+    console.log("Received Data:", req.body);
+    const { ITEMNUM, BLOCK, SHOWDATE, CAM, SHOT, TAL, SLUG, FORMAT, READ, BACKTIME, OK, CH, WR, ED, MODIFIED } = req.body;
+    const insert_query = "INSERT INTO scripts_t (item_num, block, show_date, cam, shot, tal, slug, format, read, backtime, ok, channel, writer, editor, modified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)";
+    try {
+        const result = await pool.query(insert_query, [ITEMNUM, BLOCK, SHOWDATE, CAM, SHOT, TAL, SLUG, FORMAT, READ, BACKTIME, OK, CH, WR, ED, MODIFIED]);
+        console.log(result);
+        res.status(200).send("Data inserted successfully!");
+    } catch (err) {
+        console.error("Error inserting data:", err.message);
+        res.status(500).send("Failed to insert data.");
+    }
+});
+
+*/
 ////// Add Template
 
+app.post("/add-template", isAuthenticated, async(req, res) => {
+    const {templateName, columnNames} = req.body;
+    const insert_query = "insert into template_t5 (template_version, needed_columns) values ($1, $2)";
+    try{
+        const result = await pool.query(insert_query, [templateName, columnNames]);
+        //console.log(result);
+        res.status(200).send("Data inserted successfully!");
+    } catch (err) {
+        console.error("Error inserting data:", err.message);
+        res.status(500).send("Failed to insert data.");
+    }
+});
 
 
+//////// Get Templates
+app.get("/get-templates", isAuthenticated, async (req, res) => {
+    const select_query = "select template_version from template_t5";
+    try {
+        const result = await pool.query(select_query);
+        res.status(200).json(result);
+        //console.log(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
 
+
+/////////Get Column Names
+app.get("/get-column-names/:version", isAuthenticated, async (req, res) => {
+    const { version } = req.params;  // Extract version from the request URL
+    const select_query = "SELECT needed_columns FROM template_t5 WHERE template_version = $1";
+    try {
+        const result = await pool.query(select_query, [version]);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
 
 ////////////Delete a template version.
 app.delete("/delete-template", isAuthenticated, async (req, res) => {
     const { template_version } = req.body;
 
-    const delete_query = "DELETE FROM template_t2 WHERE template_version = $1";
+    const delete_query = "DELETE FROM template_t4 WHERE template_version = $1";
     try {
         const result = await pool.query(delete_query, [template_version]);
         if (result.rowCount > 0) {
@@ -291,11 +270,23 @@ app.delete("/delete-template", isAuthenticated, async (req, res) => {
 
 //////Add rundown
 app.post("/add-rundown", isAuthenticated, async(req, res) => {
-    const {show_name, show_date, folder, active, template_version} = req.body;
-    const insert_query = "insert into rundown_t2 (show_name, show_date, folder, active, template_version) values ($1, $2, $3, $4, $5)";
-    try{
-        const result = await pool.query(insert_query, [show_name, show_date, folder, active, template_version]);
-        console.log(result);
+    const { show_name, show_date, folder, active, template_version } = req.body;
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        await client.query(
+            'INSERT INTO folder_topics_t5 (folder) VALUES ($1)',
+            [folder]
+        );
+
+        await client.query(
+            'INSERT INTO rundown_t5 (show_name, show_date, folder, active, template_version) VALUES ($1, $2, $3, $4, $5)',
+            [show_name, show_date, folder, active, template_version]
+        );
+
+        await client.query('COMMIT');
         res.status(200).send("Data inserted successfully!");
     } catch (err) {
         console.error("Error inserting data:", err.message);
@@ -309,8 +300,8 @@ app.get("/get-column-names/:show_name/:show_date", isAuthenticated, async (req, 
     const { show_name, show_date } = req.params;
 
     const select_query = `
-                    select tt.needed_columns from template_t2 tt 
-                    join rundown_t2 rt on rt.template_version = tt.template_version
+                    select tt.needed_columns from template_t5 tt 
+                    join rundown_t5 rt on rt.template_version = tt.template_version
                     where rt.show_name = $1 
 	                and rt.show_date = $2
                     `;
@@ -327,7 +318,7 @@ app.get("/get-column-names/:show_name/:show_date", isAuthenticated, async (req, 
 //////Get rundown list 
 app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
     const select_query = `
-                    select show_name, show_date from rundown_t2
+                    select show_name, show_date from rundown_t5
                     `;
     try {
         const result = await pool.query(select_query);
@@ -335,5 +326,182 @@ app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
     } catch (err) {
         console.error("Error fetching data:", err.message);
         res.status(500).send("Failed to fetch data.");
+    }
+});
+
+
+app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
+    const { item_num, block, show_date, show_name, row_num } = req.body;
+
+    const insert_query = "insert into scripts_t5 (show_name, show_date, row_num, block, item_num, modified) values ($1, $2, $3, $4, $5, now() AT TIME ZONE 'America/Chicago')";
+    try{
+        const result = await pool.query(insert_query, [show_name, show_date, row_num, block, item_num]);
+        //console.log(result);
+        res.status(200).send("Data inserted successfully!");
+    } catch (err) {
+        console.error("Error inserting data:", err.message);
+        res.status(500).send("Failed to insert data.");
+    }
+});
+
+
+//////Get the data of relevant rundown from scripts_t4
+app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, res) => {
+   
+    const { show_name, show_date } = req.params;
+
+    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, read, ok, channel,editor, modified, sot, total from scripts_t5
+                    where show_name = $1 and show_date = $2
+                    order by row_num`;
+    try {
+        const result = await pool.query(select_query, [show_name, show_date]);
+        //console.log(result);
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+
+//update-data-in-rundown
+app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, row_number, block, item_num, column_name, data } = req.body;
+
+    const update_query = `
+                UPDATE scripts_t5
+                SET ${column_name} = $6, modified = now() AT TIME ZONE 'America/Chicago'
+                WHERE show_name = $1 and show_date = $2 and row_num=$3 and block=$4 and item_num=$5 ;
+    `;
+    try{
+        const result = await pool.query(update_query, [show_name, show_date, row_number, block, item_num, data]);
+        //console.log(result);
+        res.status(200).send("Data inserted successfully!");
+    } catch (err) {
+        console.error("Error inserting data:", err.message);
+        res.status(500).send("Failed to insert data.");
+    }
+});
+
+
+//show-just-update-data
+app.post("/show-just-update-data", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, row_number, column_name } = req.body;
+
+    const select_query = `
+                select ${column_name}, modified, row_num from scripts_t5
+                where show_name = $1 and show_date = $2 and row_num = $3 ;
+    `;
+    try{
+        const result = await pool.query(select_query, [show_name, show_date, row_number]);
+        //console.log(result);
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+
+///Delete a selected row
+app.delete("/delete-a-row", isAuthenticated, async (req, res) => {
+    const { row_num, show_name, show_date } = req.body;
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const deleteResult = await client.query(
+            `DELETE FROM scripts_t5 
+             WHERE row_num = $1 
+             AND show_name = $2 
+             AND show_date = $3;`,
+            [row_num, show_name, show_date]
+        );
+
+        if (deleteResult.rowCount === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).send("RowID not found.");
+        }
+
+        await client.query(
+            `UPDATE scripts_t5  
+             SET row_num = row_num - 1
+             WHERE row_num > $1
+               AND show_name =  $2
+               AND show_date = $3;`,
+            [row_num, show_name, show_date]
+        );
+
+        await client.query('COMMIT');
+        res.status(200).send("Row deleted successfully.");
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error("Error deleting rowID:", err.message);
+        res.status(500).send("Failed to delete rowID.");
+    } finally {
+        client.release();
+    }
+});
+
+
+// shift existing rows down
+app.post("/shift-rows-down", isAuthenticated, async (req, res) => {
+    const { row_num, show_name, show_date } = req.body;
+
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        await client.query(`
+            UPDATE scripts_t5  
+            SET row_num = row_num + 1
+            WHERE row_num > $1
+              AND show_name = $2 
+              AND show_date = $3;
+        `, [row_num, show_name, show_date]);
+
+        await client.query('COMMIT');
+        res.status(200).send("Row space reserved successfully!");
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error("Error shifting rows:", err.message);
+        res.status(500).send("Failed to shift rows.");
+    } finally {
+        client.release();
+    }
+});
+
+
+///Insert a start row
+app.post("/insert-start-row", isAuthenticated, async (req, res) => {
+    const {show_name, show_date } = req.body;
+
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        await client.query(`
+            UPDATE scripts_t5  
+            SET row_num = row_num + 1
+            WHERE show_name = $1 
+              AND show_date = $2;
+        `, [show_name, show_date]);
+
+        await client.query(`
+            insert into scripts_t5 (show_name, show_date, row_num, block, item_num, modified)
+            values ($1, $2, 1, 'A', 0, now() AT TIME ZONE 'America/Chicago')
+        `, [ show_name, show_date]);
+
+        await client.query('COMMIT');
+        res.status(200).send("Inserted Start Row successfully!");
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error("Error inserting start row:", err.message);
+        res.status(500).send("Failed to insert start row.");
+    } finally {
+        client.release();
     }
 });
