@@ -32,7 +32,7 @@ header {
 
 h1 {
     flex-grow: 1;
-    font-size: 1.5rem;
+    font-size: 2.5rem;
     margin: 0;
 }
 
@@ -75,7 +75,7 @@ h1 {
 }
 
 .nav-bar {
-    background-color: #4a4a4a;
+    background-color: rgb(27, 30, 48);
     height: 50px;
     display: flex;
     justify-content: space-between;
@@ -180,7 +180,7 @@ h1 {
     position: absolute;
     height: 100%;
     width: 100%;
-    top: 240px;
+    top: 110px;
     left: 0%;
     background-color: white;
 }
@@ -190,7 +190,7 @@ h1 {
     height: 99.7%;
     width: 14.75%;
     background-color: rgb(27, 30, 48);
-    top: 0.225%;
+    top: 0.125%;
     left: 0.125%;
     border-radius: 5px;
     color: white;

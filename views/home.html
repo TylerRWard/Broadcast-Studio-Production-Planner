@@ -27,9 +27,15 @@
     </header>
     <!--Nav Bar-->
     <div class ="nav-bar">
+        <!--
         <button class="hamburger">
             <img src="./public/images/hamberger.jpg" alt="Menu" class="hamburger-icon">
         </button>
+        -->
+        <div>
+            <button id="addStartBreakButton">Start/Break</button>
+            <button id="templatesButton">View</button>  
+        </div>
         <div class="search-bar">
             <input type = "search" placeholder = "Search..." class="search-input">
         </div>
@@ -37,8 +43,7 @@
 
     <!-- Buttons across the top-->
     <div class="featureButtons">
-        <button id="addStartBreakButton">Start/Break</button>
-        <button id="templatesButton">View</button>       
+              
     <script>
         document.getElementById("logout-btn").addEventListener("click", async () => {
             await fetch("/logout", { method: "POST" });
@@ -182,7 +187,7 @@
 
     <script src="/static/home.js"></script>
     <script src="/static/table.js"></script>
-    <script src="/static/tableActual.js"></script>
+    <script src="/static/tableContinued.js"></script>
 </body>
 </html>
     

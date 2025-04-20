@@ -196,6 +196,24 @@ input[type="checkbox"] {
 }
 
 
+#data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#data-table thead {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 5; /* Ensure headers stay above table content */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow for visual separation */
+}
+
+#data-table td {
+    border: 0.1px solid #ddd;
+    padding: 0px;
+}
+
 
 .table-css {
     width: 100%;

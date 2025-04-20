@@ -3,11 +3,9 @@ let temp_name;                       // The name of new template version
 let template_versions = [];          // All created template versions so far --Will hold only names of each template versions
 let selectedTemplate ='';            // Template that selected from the template list
 let columnNames;
-let rundownList = []
 
-//getRundownList();
-//getTemplates();
-
+getTemplates();
+let selectedRundown = {};
 
 const btn = document.getElementById('templatesButton');
 const box = document.getElementById('templateBox');
@@ -144,7 +142,7 @@ async function addTemplate() {
         columnNames: temp_columns
     }
 
-    console.log(JSON.stringify(data));
+    //console.log(JSON.stringify(data));
 
     try {
         const response = await fetch("http://localhost:3000/add-template", {
@@ -153,7 +151,6 @@ async function addTemplate() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
-            credentials: "include"
         });
 
         if (response.ok) {
@@ -168,7 +165,7 @@ async function addTemplate() {
     }
 }
 
-//let template_versions = [];
+
 
 async function getTemplates() {  // get all the template versions' names from the database
     try {
@@ -184,7 +181,7 @@ async function getTemplates() {  // get all the template versions' names from th
                 template_versions.push(row.template_version);
             });
             
-            console.log(template_versions);
+            //console.log(template_versions);
             showTemplates(); // After getting all the names, show those template in view section.
             
             
@@ -219,6 +216,9 @@ myList.addEventListener('click', (e) => {
     selectedTemplate = selectedItem.innerHTML
     isListFocused = true;
     console.log('You clicked:', selectedTemplate);
+    selectedRundown.show_name = "";
+    selectedRundown.show_date = "";
+    selectedRundown.needed_columns = []
     getColumnNames(selectedTemplate)
   }
 });
@@ -339,10 +339,10 @@ async function getColumnNames(selectedTemplate) {
         if (!response.ok) throw new Error("Failed to fetch data.");
         
         const data = await response.json();
-        console.log("Column Names:", data);
+        //console.log("Column Names:", data);
         columnNames = data.rows[0].needed_columns.replace(/[{}"]/g, '').split(',');
         console.log(columnNames);
-        drawTable(selectedTemplate)
+        drawTable(selectedTemplate);
     } catch (error) {
         console.error("Fetch error:", error);
         alert("Error fetching data.");
@@ -460,40 +460,4 @@ table.addEventListener('click', function(event) {
     }
 })
 
-//let rundownList = []
-
-////// geting rundown list
-
-async function getRundownList() {
-    try {
-        const response = await fetch(`http://localhost:3000/get-rundown-list`);
-        if (!response.ok) throw new Error("Failed to fetch data.");
-        
-        const data = await response.json();
-        console.log("Rundown List: ", data.rows);
-        rundownList = [];
-        data.rows.forEach( function (row) {
-            rundownList.push(row)
-        });
-        showRundownList(rundownList)
-        
-    } catch (error) {
-        console.error("Fetch error:", error);
-        alert("Error fetching data.");
-    }
-
-    
-}
-
-
-function showRundownList(rundownList){
-    let innerHTML = ``;
-
-    rundownList.forEach(item => {
-        let HTML = `<li class="list-rundown-css">${item.show_name}</li>`
-        innerHTML += HTML;
-    })
-
-    document.querySelector('.js-all-rundowns').innerHTML = innerHTML;
-}
 

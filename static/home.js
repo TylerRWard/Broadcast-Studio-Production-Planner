@@ -82,7 +82,8 @@ function calculateTime(textarea) {
 
 
 
-
+let active = true;
+const template_version = 'Default';
 
 
 // DIRECTORY
@@ -139,7 +140,8 @@ async function getDirectory() {
           li.style.cursor = "pointer";
   
           li.addEventListener("click", () => {
-            console.log(`Show clicked: "${name}"`);
+            console.log(`Show clicked: "${name}" ${folder}`);
+            getDetailsRundown(name, folder, active, template_version);
           });
   
           ul.appendChild(li);
@@ -154,6 +156,40 @@ async function getDirectory() {
       container.appendChild(details);
     });
   
+
+    // Fetch the details of selected rundown.
+    async function getDetailsRundown(name, folder, active, template_version) {
+
+      const params = new URLSearchParams({
+        show_name: name,
+        folder: folder,
+        active: active,
+        template_version: template_version
+      });
+
+      try {
+        const response = await fetch(`http://localhost:3000/get-details-rundown?${params.toString()}`, {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json",
+          },
+      });
+        if (!response.ok) throw new Error("Error Fetching Data");
+        
+        const resData = await response.json();
+        console.log("Column Names:", resData);
+
+        selectedRundown.show_name = name;
+        selectedRundown.show_date = resData[0].show_date.slice(0, 10);
+        selectedRundown.needed_columns = resData[0].needed_columns.replace(/[{}"]/g, '').split(',');
+        drawActualTable(selectedRundown.needed_columns, selectedRundown.show_name, selectedRundown.show_date);
+        
+        } catch (error) {
+        console.error("Fetch error:", error);
+        alert("Error fetching data.");
+    }
+    }
+
     // --- ADD FOLDER UI ---
   
     // Add folder button
