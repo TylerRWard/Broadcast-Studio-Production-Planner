@@ -82,10 +82,44 @@ function drop(event) {
             tableBody.insertBefore(draggedRow, targetRow.nextSibling);
         }
 
-        console.log("Row moved successfully!");
+       dragAndDropInDB(draggedIndex+1, targetIndex+1);
+        console.log("Row moved successfully!", draggedIndex+1, "  ", targetIndex+1);
     }
 }
 
+
+async function dragAndDropInDB(draggedIndx, targetIndx) {
+    const data = {
+        show_name: selectedRundown.show_name,
+        show_date: selectedRundown.show_date,
+        draggedIndx: draggedIndx,
+        targetIndx: targetIndx,
+        tempID: -1
+    }
+
+    console.log(JSON.stringify(data));
+
+    try {
+        const response = await fetch("http://localhost:3000/update-after-dragNdrop", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            alert("Dragged and dropped successfully!");
+            
+        } else {
+            alert("Failed to drop data.", forMessage);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error connecting to the server.");
+    }
+    
+}
 
 
 

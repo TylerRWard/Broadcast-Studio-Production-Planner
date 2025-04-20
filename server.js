@@ -488,7 +488,6 @@ app.post("/show-just-update-data", isAuthenticated, async (req, res) => {
 });
 
 
-///Delete a selected row
 app.delete("/delete-a-row", isAuthenticated, async (req, res) => {
     const { row_num, show_name, show_date } = req.body;
 
@@ -496,38 +495,59 @@ app.delete("/delete-a-row", isAuthenticated, async (req, res) => {
     try {
         await client.query('BEGIN');
 
-        const deleteResult = await client.query(
-            `DELETE FROM scripts_t5 
+        // Step 1: Check if this row_num exists
+        const existsCheck = await client.query(
+            `SELECT 1 FROM scripts_t5
              WHERE row_num = $1 
              AND show_name = $2 
              AND show_date = $3;`,
             [row_num, show_name, show_date]
         );
 
-        if (deleteResult.rowCount === 0) {
-            await client.query('ROLLBACK');
-            return res.status(404).send("RowID not found.");
+        if (existsCheck.rowCount > 0) {
+            // It exists: Delete and then update the rest
+            await client.query(
+                `DELETE FROM scripts_t5 
+                 WHERE row_num = $1 
+                 AND show_name = $2 
+                 AND show_date = $3;`,
+                [row_num, show_name, show_date]
+            );
+
+            await client.query(
+                `UPDATE scripts_t5  
+                 SET row_num = row_num - 1
+                 WHERE row_num > $1
+                   AND show_name = $2
+                   AND show_date = $3;`,
+                [row_num, show_name, show_date]
+            );
+
+            await client.query('COMMIT');
+            return res.status(200).send("Row deleted and others shifted.");
+        } else {
+            // It doesn't exist: Only update the row_nums (shift up)
+            await client.query(
+                `UPDATE scripts_t5  
+                 SET row_num = row_num - 1
+                 WHERE row_num > $1
+                   AND show_name = $2
+                   AND show_date = $3;`,
+                [row_num, show_name, show_date]
+            );
+
+            await client.query('COMMIT');
+            return res.status(200).send("No row deleted, but row numbers updated.");
         }
-
-        await client.query(
-            `UPDATE scripts_t5  
-             SET row_num = row_num - 1
-             WHERE row_num > $1
-               AND show_name =  $2
-               AND show_date = $3;`,
-            [row_num, show_name, show_date]
-        );
-
-        await client.query('COMMIT');
-        res.status(200).send("Row deleted successfully.");
     } catch (err) {
         await client.query('ROLLBACK');
-        console.error("Error deleting rowID:", err.message);
-        res.status(500).send("Failed to delete rowID.");
+        console.error("Error in conditional delete:", err.message);
+        res.status(500).send("Failed to process delete/update.");
     } finally {
         client.release();
     }
 });
+
 
 
 // shift existing rows down
@@ -604,3 +624,69 @@ app.post("/insert-start-row", isAuthenticated, async (req, res) => {
         client.release();
     }
 });
+
+
+//update-after-dragNdrop
+app.post("/update-after-dragNdrop", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, draggedIndx, targetIndx, tempID } = req.body;
+
+    const tempUpdate = `
+            UPDATE scripts_t5  
+            SET row_num = $4
+            WHERE row_num = $3
+              AND show_name = $1 
+              AND show_date = $2;
+    `;
+
+    const ifTargetLower = `
+            UPDATE scripts_t5  
+            SET row_num = row_num + 1
+            WHERE row_num >= $4 and row_num < $3
+              AND show_name = $1 
+              AND show_date = $2;
+    `;
+
+    const ifTargetHigher = `
+            UPDATE scripts_t5  
+            SET row_num = row_num - 1
+            WHERE row_num > $3 and row_num <= $4
+              AND show_name = $1 
+              AND show_date = $2;
+    `;
+
+    const updateTarget = `
+            UPDATE scripts_t5  
+            SET row_num = $3
+            WHERE row_num = $4
+              AND show_name = $1 
+              AND show_date = $2;
+    ;`
+
+    const client = await pool.connect();
+
+    try{
+
+        await client.query('BEGIN');
+
+        await pool.query(tempUpdate, [show_name, show_date, draggedIndx, tempID]);
+
+        if(draggedIndx > targetIndx)
+        {
+            await pool.query(ifTargetLower, [show_name, show_date, draggedIndx, targetIndx]);
+        }
+        else if(draggedIndx < targetIndx)
+        {
+            await pool.query(ifTargetHigher, [show_name, show_date, draggedIndx, targetIndx]);
+        }
+
+        await pool.query(updateTarget, [show_name, show_date, targetIndx, tempID]);
+
+        await client.query('COMMIT');
+
+        res.status(200).send("Dragged and dropped successfully!");
+    } catch (err) {
+        console.error("Error dropping data:", err.message);
+        res.status(500).send("Failed to drop data.");
+    }
+});
+
