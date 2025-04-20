@@ -167,16 +167,8 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
 });
 
 //serve landing page as root
-//app.get("/", (req, res) => {
-  //  res.sendFile(path.join(__dirname,"public", "landingPage.html"));
-//});
-
-//catch invalid routs
-//app.use((req, res) => {
-//    res.redirect("/");
-
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "landingPage.html"));
 });
 
 
@@ -603,4 +595,18 @@ app.post("/insert-start-row", isAuthenticated, async (req, res) => {
     } finally {
         client.release();
     }
+});
+
+
+
+
+
+
+// catch invalid routes
+app.use((req, res) => {
+    res.redirect("/");
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
 });
