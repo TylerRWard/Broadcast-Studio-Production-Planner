@@ -166,18 +166,6 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
     }
 });
 
-//serve landing page as root
-//app.get("/", (req, res) => {
-  //  res.sendFile(path.join(__dirname,"public", "landingPage.html"));
-//});
-
-//catch invalid routs
-//app.use((req, res) => {
-//    res.redirect("/");
-
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
 
 
 // ************************************DIRECTORY************************************************************************ //
@@ -690,3 +678,55 @@ app.post("/update-after-dragNdrop", isAuthenticated, async (req, res) => {
     }
 });
 
+//find-next-block-break
+app.get("/find-next-block-break/:show_name/:show_date", isAuthenticated, async (req, res) => {
+    const { show_name, show_date } = req.params;
+
+    const select_query = `
+        SELECT CHR(ASCII(block) + 1) AS next_block
+        FROM scripts_t5
+        WHERE show_name = $1 
+          AND show_date = $2
+          AND item_num = 0
+        ORDER BY block DESC
+        LIMIT 1;
+    `;
+
+    try {
+        const result = await pool.query(select_query, [show_name, show_date]);
+
+        let nextBlock;
+
+        if (result.rows.length === 0) {
+            nextBlock = 'B';  // Default if no item_num = 0 rows
+        } else {
+            nextBlock = result.rows[0].next_block;
+        }
+
+        res.status(200).json({ next_block: nextBlock });
+
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
+
+
+//insert-a-break-row
+app.post("/insert-a-break-row", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, breakBlock, row_num } = req.body;
+
+    const select_query = `
+        INSERT INTO scripts_t5 (show_name, show_date, row_num, block, item_num, modified)
+            VALUES ($1, $2, $4, $3, 0, now() AT TIME ZONE 'America/Chicago');
+    `;
+
+    try {
+        const result = await pool.query(select_query, [show_name, show_date, breakBlock, row_num]);
+
+        res.status(200).send("Inserted Break Row successfully!");
+    } catch (err) {
+        console.error("Error inserting break row:", err.message);
+        res.status(500).send("Failed to insert break row.");
+    }
+});

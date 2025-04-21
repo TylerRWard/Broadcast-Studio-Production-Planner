@@ -438,9 +438,9 @@ const dataInputObject = {
 
     'EDITOR': `<input class="grid-input-data js-EDITOR" placeholder="" maxlength="8">`,
 
-    'MODIFIED': `<input class="grid-input-data js-MODIFIED" placeholder="" >`, //type="datetime-local"
+    'MODIFIED': ``, //type="datetime-local"
 
-    'MOD_BY': `<input class="grid-input-data js-MOD_BY" placeholder="" maxlength="8">`,
+    'MOD_BY': ``,
 }
 
 function createARowInput(temp_name){

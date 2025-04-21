@@ -431,6 +431,10 @@ async function showUpdateData(previousTypedData, selectedRundown) {
                 tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value = responsedData[0][column.toLowerCase()];
                 console.log(tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value, responsedData[0][column.toLowerCase()]);
             }
+            else if(column === "MOD_BY")
+            {
+                tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}]`).textContent = responsedData[0][column.toLowerCase()];
+            }
             else
             {
                 tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] input`).value = responsedData[0][column.toLowerCase()];
@@ -441,7 +445,7 @@ async function showUpdateData(previousTypedData, selectedRundown) {
 
             const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
 
-            tableActual.rows[responsedData[0].row_num].querySelector(`[data-column="MODIFIED"] input`).value = centralTimeString;
+            tableActual.rows[responsedData[0].row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
 
 
             //alert("Update just inserted data successfully!");
@@ -488,6 +492,19 @@ async function insertRowScripts_t() {
             alert(message); // Shows "Duplicate: this block and item_num already exist for this show."
             tableActual.rows[data.row_num].querySelector('[data-column="BLOCK"] input').value = "";
             tableActual.rows[data.row_num].querySelector('[data-column="ITEM_NUM"] input').value = "";
+
+            previousTypedData.row_number = data.row_num;
+
+            previousTypedData.column_name = "BLOCK";
+            showUpdateData(previousTypedData, selectedRundown)
+
+            previousTypedData.column_name = "ITEM_NUM";
+            showUpdateData(previousTypedData, selectedRundown)
+
+            previousTypedData.row_number = null;
+            previousTypedData.column_name = null;
+
+
         } else {
             alert("Failed to insert data.");
         }
@@ -524,6 +541,29 @@ function showScriptsData(data) {
         if(data[i].item_num === 0)
         {
             console.log("start or break");
+
+            if(data[i].block === "A")
+            {
+                tableActual.rows[1].innerHTML = '';
+                drawStart(tableActual.rows[1]);
+
+            }
+            else{
+                tableActual.rows[(data[i].row_num)].innerHTML = '';
+                drawBreak(tableActual.rows[(data[i].row_num)], data[i].block);
+            }
+
+            const date = new Date(data[i].modified);
+            const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
+            tableActual.rows[(data[i].row_num)].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+
+            tableActual.rows[(data[i].row_num)].querySelector(`[data-column="BLOCK"] input`).value = data[i].block;
+            tableActual.rows[(data[i].row_num)].querySelector(`[data-column="ITEM_NUM"] input`).value = data[i].item_num;
+            tableActual.rows[(data[i].row_num)].querySelector(`[data-column="MOD_BY"]`).textContent = data[i].mod_by;
+
+            tableActual.rows[(data[i].row_num)].querySelector('[data-column="BLOCK"] input').readOnly = true;
+            tableActual.rows[(data[i].row_num)].querySelector('[data-column="ITEM_NUM"] input').readOnly = true;
+            
         }
         else
         {
@@ -534,7 +574,7 @@ function showScriptsData(data) {
                 {
                     const date = new Date(data[i].modified);
                     const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
-                    tableActual.rows[(data[i].row_num)].querySelector(`[data-column=${column}] input`).value = centralTimeString;
+                    tableActual.rows[(data[i].row_num)].querySelector(`[data-column=${column}]`).textContent = centralTimeString;
                 }
                 else if ((column === "SHOT") ||(column === "OK"))
                 {
@@ -543,6 +583,10 @@ function showScriptsData(data) {
                     selectElem.value = data[i][column.toLowerCase()] ?? ''; // fallback to '' (usually the placeholder)
 
                 }
+                else if(column === "MOD_BY")
+                    {
+                        tableActual.rows[data[i].row_num].querySelector(`[data-column=${column}]`).textContent = data[i][column.toLowerCase()];
+                    }
                 else
                 {
                     tableActual.rows[(data[i].row_num)].querySelector(`[data-column=${column}] input`).value = data[i][column.toLowerCase()];
@@ -697,15 +741,30 @@ addStartRow.addEventListener('click', function () {
     
     // Insert a new row at the top of tbody
     const startRow = tbody.insertRow(0);
+
+    drawStart(startRow);
+    
+    tbody.rows[0].querySelector(`[data-column="BLOCK"] input`).value = "A";
+    tbody.rows[0].querySelector(`[data-column="ITEM_NUM"] input`).value = 0;
+
+    insertStart(selectedRundown);
+
+})
+
+
+function drawStart(startRow){
     startRow.classList.add('start-row');
     //startRow.style.backgroundColor = '#f1f1f1';
 
     let numOfColumns = selectedRundown.needed_columns.length;
     console.log(selectedTemplate, numOfColumns)
 
+    startRow.setAttribute("draggable", "false");
+    
+
     let innerStart = `
-    <td data-column="BLOCK" class="table-data-css BLOCK" style="color:black; background-color: #f9f9f9;">${createARowInput("BLOCK")}</td>
-    <td data-column="ITEM_NUM" class="table-data-css ITEM_NUM" style="color:black; background-color: #f9f9f9;">${createARowInput("ITEM_NUM")}</td>
+    <td data-column="BLOCK" class="table-data-css BLOCK" style="color:white; background-color: black;">${createARowInput("BLOCK")}</td>
+    <td data-column="ITEM_NUM" class="table-data-css ITEM_NUM" style="color:white; background-color: black;">${createARowInput("ITEM_NUM")}</td>
 `
     document.querySelector('.start-row').innerHTML +=  innerStart;
 
@@ -717,18 +776,13 @@ addStartRow.addEventListener('click', function () {
     mergedCell.style.fontWeight = 'bold';
 
     innerStart = `
-    <td data-column="MODIFIED" class="table-data-css MODIFIED" style="color:black; background-color: #f9f9f9;">${createARowInput("MODIFIED")}</td>
-    <td data-column="MOD_BY" class="table-data-css MOD_BY" style="color:black; background-color: #f9f9f9;">${createARowInput("MOD_BY")}</td>
+    <td data-column="MODIFIED" class="table-data-css MODIFIED" style="color:white; background-color: black;">${createARowInput("MODIFIED")}</td>
+    <td data-column="MOD_BY" class="table-data-css MOD_BY" style="color:white; background-color: black;">${createARowInput("MOD_BY")}</td>
 
     `
     document.querySelector('.start-row').innerHTML += innerStart;
     
-
-    console.log(document.querySelector('.start-row').innerHTML)
-
-    insertStart(selectedRundown);
-
-})
+}
 
 async function insertStart(selectedRundown) {
     const data = {
@@ -754,29 +808,48 @@ async function insertStart(selectedRundown) {
     }
 }
 
+
+
 const addBreakRowButton = document.getElementById('add-break-row');
 
  // Add Break Row Button (insert after the selected row)
- addBreakRowButton.addEventListener('click', function () {
+ addBreakRowButton.addEventListener('click', async function () {
     if (!focusedRow) {
-      console.warn("Please select a row to insert the break row after.");
+      alert("Please select a row to insert the break row.");
       return;
     }
 
-    const breakRow = tableActual.insertRow(focusedRow.rowIndex + 1);  // Insert after the selected row
-    let breakBlock = focusedRow.rowIndex + 1;
+    const breakBlock = await findNextBlockForBreak(selectedRundown.show_name, selectedRundown.show_date);
+    if (breakBlock) {
+        const row_num = focusedRow.rowIndex + 1;
+        insertBreak(selectedRundown, breakBlock, row_num);
+    
+
+        const breakRow = tableActual.insertRow(row_num);  // Insert after the selected row
+        drawBreak(breakRow, breakBlock);        
+
+        breakRow.querySelector(`[data-column="BLOCK"] input`).value = breakBlock;
+        breakRow.querySelector(`[data-column="ITEM_NUM"] input`).value = 0;
+
+        console.log('Break row inserted after the selected row');
+
+    }
+    
+  });
+
+  function drawBreak(breakRow, breakBlock){
+
     breakRow.classList.add(`break-row${breakBlock}`);
 
-    document.querySelector(`.break-row${breakBlock}`).innerHTML= ``;
-    //breakRow.style.backgroundColor = '#f9f9f9'; // Style for distinction
+    breakRow.setAttribute("draggable", "false");
 
     let numOfColumns = selectedRundown.needed_columns.length;
     console.log(selectedTemplate, numOfColumns)
 
     let innerBreak = `
-    <td data-column="BLOCK" class="table-data-css BLOCK" style="color:black; background-color: #f9f9f9;">${createARowInput("BLOCK")}</td>
-    <td data-column="ITEM_NUM" class="table-data-css ITEM_NUM" style="color:black; background-color: #f9f9f9;">${createARowInput("ITEM_NUM")}</td>
-`
+    <td data-column="BLOCK" class="table-data-css BLOCK" style="color:white; background-color: black;">${createARowInput("BLOCK")}</td>
+    <td data-column="ITEM_NUM" class="table-data-css ITEM_NUM" style="color:white; background-color: black;">${createARowInput("ITEM_NUM")}</td>
+`;
     document.querySelector(`.break-row${breakBlock}`).innerHTML +=  innerBreak;
 
     const mergedCell = breakRow.insertCell();
@@ -787,11 +860,55 @@ const addBreakRowButton = document.getElementById('add-break-row');
     mergedCell.style.fontWeight = 'bold';
 
     innerBreak = `
-    <td data-column="MODIFIED" class="table-data-css MODIFIED" style="color:black; background-color: #f9f9f9;">${createARowInput("MODIFIED")}</td>
-    <td data-column="MOD_BY" class="table-data-css MOD_BY" style="color:black; background-color: #f9f9f9;">${createARowInput("MOD_BY")}</td>
+    <td data-column="MODIFIED" class="table-data-css MODIFIED" style="color:white; background-color: black;">${createARowInput("MODIFIED")}</td>
+    <td data-column="MOD_BY" class="table-data-css MOD_BY" style="color:white; background-color: black;">${createARowInput("MOD_BY")}</td>
 
     `
     document.querySelector(`.break-row${breakBlock}`).innerHTML += innerBreak;
 
-    console.log('Break row inserted after the selected row');
-  });
+  }
+
+  //Find next available block for break
+  async function findNextBlockForBreak(show_name, show_date) {
+    try {
+        const response = await fetch(`http://localhost:3000/find-next-block-break/${show_name}/${show_date}`);
+        if (!response.ok) throw new Error("Failed to fetch data.");
+        
+        const data = await response.json();
+        console.log(data.next_block);
+        return data.next_block;
+
+    } catch (error) {
+        console.error("Fetch error:", error);
+        alert("Error fetching data.");
+    }
+    
+  }
+
+
+  async function insertBreak(selectedRundown, breakBlock, row_num) {
+    const data = {
+        show_name: selectedRundown.show_name,
+        show_date: selectedRundown.show_date,
+        breakBlock: breakBlock,
+        row_num: row_num
+    }
+    console.log(data.breakBlock)
+
+    try {
+        const response = await fetch(`http://localhost:3000/insert-a-break-row`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) throw new Error("Failed to insert break row.");
+
+        console.log(`Break row inserted successfully!`);
+    } catch (error) {
+        console.error("insert error:", error);
+        alert("Error inserting break row.");
+    }
+}
