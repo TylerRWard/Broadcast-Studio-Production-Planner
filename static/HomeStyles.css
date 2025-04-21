@@ -435,5 +435,40 @@ details summary {
   }
 
 
+  .add-show-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .add-show-form input,
+  .add-show-form button {
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+  
+  .add-show-form button {
+    padding: 4px 8px;        /* Smaller padding */
+    font-size: 13px;         /* Slightly smaller font */
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .add-show-form button:hover {
+    background-color: #45a049;
+  }
+  
+
+
 
   

@@ -166,6 +166,12 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
     }
 });
 
+//serve landing page as root
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname,"public", "landingPage.html"));
+});
+
+
 
 
 // ************************************DIRECTORY************************************************************************ //
@@ -729,4 +735,57 @@ app.post("/insert-a-break-row", isAuthenticated, async (req, res) => {
         console.error("Error inserting break row:", err.message);
         res.status(500).send("Failed to insert break row.");
     }
+
 });
+
+app.post("/add-show", async (req, res) => {
+    const { show_name, show_date, folder, template_version } = req.body;
+  
+    // Validate inputs
+    if (!show_name || !show_date || !folder || !template_version) {
+      return res.status(400).json({ error: "Show name, date, folder, and template version are required." });
+    }
+  
+    try {
+      // Confirm that the selected template version exists
+      const checkTemplate = await pool.query(
+        "SELECT * FROM template_t5 WHERE template_version = $1",
+        [template_version]
+      );
+  
+      if (checkTemplate.rows.length === 0) {
+        return res.status(400).json({ error: `Template version "${template_version}" does not exist.` });
+      }
+  
+      // Insert the show into rundown_t5
+      const insert_query = `
+        INSERT INTO rundown_t5 (show_name, show_date, folder, active, template_version)
+        VALUES ($1, $2, $3, true, $4)
+      `;
+  
+      await pool.query(insert_query, [
+        show_name.trim(),
+        show_date,
+        folder.trim(),
+        template_version.trim()
+      ]);
+  
+      console.log(`✅ Server: Added show "${show_name}" with template "${template_version}"`);
+      res.status(201).json({ message: "Show added successfully." });
+  
+    } catch (err) {
+      console.error("❌ Error adding show:", err.message);
+      res.status(500).json({ error: "Failed to add show." });
+    }
+  });
+
+
+
+
+//catch invalid routs
+app.use((req, res) => {
+    res.redirect("/");
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`)});
