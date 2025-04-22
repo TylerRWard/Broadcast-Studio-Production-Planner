@@ -156,11 +156,16 @@
 
 
         <!-- /*Left most column (working directory)*/ --> 
-        <div class="div-1">  
+        <div class="div-1">
             <h2 style="color: #B5A36A;">Directory</h2>
-
             <div id="folderList"></div>
-        </div>
+          
+            <button id="add-folder-btn" class="add-folder-btn">Add a folder</button>
+            <form id="add-folder-form" class="add-folder-form" style="display: none;">
+              <input type="text" placeholder="Folder name" required />
+              <button type="submit">Submit</button>
+            </form>
+          </div>
     
     
         <div class="div-rundown-name js-create">View A Template</div>

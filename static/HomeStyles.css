@@ -400,7 +400,7 @@ details summary {
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    width: 250px; 
+    width: 100%; 
   }
   
   .add-folder-btn:hover {
@@ -418,6 +418,7 @@ details summary {
     padding: 6px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    width: 100%; 
     max-width: 50%;
   }
   
@@ -438,6 +439,7 @@ details summary {
   .add-show-form {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
     margin-top: 0.5rem;
     width: 100%;
@@ -446,11 +448,13 @@ details summary {
   
   .add-show-form input,
   .add-show-form button {
+    width: 80%;
     padding: 6px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-family: Arial, sans-serif;
     font-size: 14px;
+    text-align: center;
   }
   
   .add-show-form button {

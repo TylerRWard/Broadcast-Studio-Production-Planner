@@ -87,6 +87,11 @@ const template_version = 'Default';
 
 
 // DIRECTORY
+document.addEventListener("DOMContentLoaded", () => {
+  getDirectory();
+  setupAddFolderForm();
+});
+
 async function getDirectory() {
   try {
     const response = await fetch("http://localhost:3000/directory");
@@ -98,200 +103,169 @@ async function getDirectory() {
   }
 }
 
-
-
 function renderDirectory(rows) {
-  // Get the container for the folder list
   const container = document.getElementById("folderList");
-  container.innerHTML = ""; // Clear any existing content
+  container.innerHTML = "";
 
-  // Group shows by folder_topic (folder name)
   const groups = rows.reduce((acc, { folder_topic, show_name }) => {
     if (!acc[folder_topic]) acc[folder_topic] = [];
     if (show_name) acc[folder_topic].push(show_name);
     return acc;
   }, {});
 
-  // Loop through each folder group
   Object.entries(groups).forEach(([folder, shows]) => {
-    const details = document.createElement("details");
-    const summary = document.createElement("summary");
-
-    // Folder title in <summary>
-    const title = document.createElement("span");
-    title.textContent = folder;
-    summary.appendChild(title);
-    details.appendChild(summary);
-
-    // Container for folder contents (show list + add show UI)
-    const folderContent = document.createElement("div");
-    folderContent.classList.add("folder-content");
-
-    // If shows exist in folder, render them as list
-    if (shows.length) {
-      const ul = document.createElement("ul");
-      shows.forEach(name => {
-        const li = document.createElement("li");
-        li.textContent = name;
-
-        // Apply smaller font and styling
-        li.style.cursor = "pointer";
-        li.style.fontSize = "0.9rem"; // Slightly smaller text
-        li.style.fontFamily = "Arial, sans-serif";
-        li.style.padding = "4px 0";
-
-        // Click event for show
-        li.addEventListener("click", () => {
-          console.log(`Show clicked: "${name}" ${folder}`);
-          getDetailsRundown(name, folder, active, template_version);
-        });
-
-        ul.appendChild(li);
-      });
-      folderContent.appendChild(ul);
-    } else {
-      // Display message if no shows in folder
-      const p = document.createElement("p");
-      p.textContent = "No shows available";
-      folderContent.appendChild(p);
-    }
-
-    // --- ADD SHOW BUTTON AND FORM ---
-
-    // Button to trigger adding a show
-    const addShowBtn = document.createElement("button");
-    addShowBtn.textContent = "Add a Show";
-    addShowBtn.classList.add("add-btn");
-    folderContent.appendChild(addShowBtn);
-
-    // Form to enter show name + date
-    const addShowForm = document.createElement("form");
-    addShowForm.style.display = "none";
-    addShowForm.classList.add("add-show-form");
-
-    // Show name input
-    const showNameInput = document.createElement("input");
-    showNameInput.type = "text";
-    showNameInput.placeholder = "Show name";
-    showNameInput.required = true;
-
-    // Show date input (calendar)
-    const showDateInput = document.createElement("input");
-    showDateInput.type = "date";
-    showDateInput.required = true;
-
-    // Submit button
-    const submitBtn = document.createElement("button");
-    submitBtn.type = "submit";
-    submitBtn.textContent = "Submit";
-
-    // Assemble form
-    addShowForm.appendChild(showNameInput);
-    addShowForm.appendChild(showDateInput);
-    addShowForm.appendChild(submitBtn);
-
-    // Toggle form on button click
-    addShowBtn.addEventListener("click", (e) => {
-      e.stopPropagation(); // Prevent closing the details tag
-      addShowForm.style.display = addShowForm.style.display === "none" ? "flex" : "none";
-    });
-
-    // Handle form submission
-    addShowForm.addEventListener("submit", async (e) => {
-      e.preventDefault(); // Stop page reload
-
-      const showName = showNameInput.value.trim();
-      const showDate = showDateInput.value;
-
-      if (!showName || !showDate) {
-        alert("Both Show Name and Date are required.");
-        return;
-      }
-
-      // Log new show data
-      console.log(`📦 Adding show to "${folder}"`);
-      console.log(`Show Name: ${showName}`);
-      console.log(`Show Date: ${showDate}`);
-
-      // Clear and hide form
-      showNameInput.value = "";
-      showDateInput.value = "";
-      addShowForm.style.display = "none";
-
-      // NOTE: Add code to send this to the backend if needed
-    });
-
-    folderContent.appendChild(addShowForm); // Add form to folder
-    details.appendChild(folderContent);     // Add content to folder
-    container.appendChild(details);         // Add folder to container
+    const folderElement = createFolderElement(folder, shows);
+    container.appendChild(folderElement);
   });
+}
 
-  // --- FUNCTION TO FETCH DETAILS OF A SHOW ---
+function createFolderElement(folder, shows) {
+  const details = document.createElement("details");
+  const summary = document.createElement("summary");
 
-  async function getDetailsRundown(name, folder, active, template_version) {
-    const params = new URLSearchParams({
-      show_name: name,
-      folder: folder,
-      active: active,
-      template_version: template_version
-    });
+  const title = document.createElement("span");
+  title.textContent = folder;
+  summary.appendChild(title);
 
-    try {
-      const response = await fetch(`http://localhost:3000/get-details-rundown?${params.toString()}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-      });
+  const folderContent = document.createElement("div");
+  folderContent.classList.add("folder-content");
 
-      if (!response.ok) throw new Error("Error Fetching Data");
+  const showList = createShowList(shows, folder);
+  folderContent.appendChild(showList);
 
-      const resData = await response.json();
-      console.log("Column Names:", resData);
+  const addShowForm = createAddShowForm(folder);
+// Create the add icon button next to folder title
+const addIcon = document.createElement("button");
+addIcon.classList.add("add-btn");
+addIcon.title = "Add a show";
 
-      selectedRundown.show_name = name;
-      selectedRundown.show_date = resData[0].show_date.slice(0, 10);
-      selectedRundown.needed_columns = resData[0].needed_columns.replace(/[{}"]/g, '').split(',');
-      drawActualTable(selectedRundown.needed_columns, selectedRundown.show_name, selectedRundown.show_date);
+addIcon.addEventListener("click", (e) => {
+  e.stopPropagation(); // Prevent collapsing the <details>
+  addShowForm.style.display = addShowForm.style.display === "none" ? "flex" : "none";
+});
 
-    } catch (error) {
-      console.error("Fetch error:", error);
-      alert("Error fetching data.");
-    }
+  summary.appendChild(addIcon);
+  details.appendChild(summary);
+  folderContent.appendChild(addShowForm)
+  details.appendChild(folderContent);
+
+  return details;
+}
+
+function createShowList(shows, folder) {
+  if (shows.length === 0) {
+    const p = document.createElement("p");
+    p.textContent = "No shows available";
+    return p;
   }
 
-  // --- ADD FOLDER SECTION ---
+  const ul = document.createElement("ul");
+  shows.forEach(name => {
+    const li = document.createElement("li");
+    li.textContent = name;
+    li.style.cursor = "pointer";
+    li.style.fontSize = "0.9rem";
+    li.style.fontFamily = "Arial, sans-serif";
+    li.style.padding = "4px 0";
 
-  // Button to show/hide add-folder form
-  const addFolderBtn = document.createElement("button");
-  addFolderBtn.textContent = "Add a folder";
-  addFolderBtn.classList.add("add-folder-btn");
+    li.addEventListener("click", () => {
+      console.log(`Show clicked: "${name}" ${folder}`);
+      getDetailsRundown(name, folder, active, template_version);
+    });
 
-  // Folder input form
-  const addForm = document.createElement("form");
-  addForm.classList.add("add-folder-form");
-  addForm.style.display = "none";
+    ul.appendChild(li);
+  });
 
-  // Input field for folder name
-  const input = document.createElement("input");
-  input.type = "text";
-  input.placeholder = "Enter folder name";
-  input.required = true;
+  return ul;
+}
 
-  // Submit button
+function createAddShowForm(folder) {
+  const form = document.createElement("form");
+  form.style.display = "none";
+  form.classList.add("add-show-form");
+
+  const nameInput = document.createElement("input");
+  nameInput.type = "text";
+  nameInput.placeholder = "Show name";
+  nameInput.required = true;
+
+  const dateInput = document.createElement("input");
+  dateInput.type = "date";
+  dateInput.required = true;
+
   const submit = document.createElement("button");
   submit.type = "submit";
   submit.textContent = "Submit";
 
-  // Assemble folder form
-  addForm.appendChild(input);
-  addForm.appendChild(submit);
+  form.appendChild(nameInput);
+  form.appendChild(dateInput);
+  form.appendChild(submit);
 
-  // Toggle form on button click
-  addFolderBtn.addEventListener("click", () => {
-    addForm.style.display = addForm.style.display === "none" ? "flex" : "none";
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const showName = nameInput.value.trim();
+    const showDate = dateInput.value;
+
+    if (!showName || !showDate) {
+      alert("Both Show Name and Date are required.");
+      return;
+    }
+
+    console.log(`📦 Adding show to "${folder}"`);
+    console.log(`Show Name: ${showName}`);
+    console.log(`Show Date: ${showDate}`);
+
+    nameInput.value = "";
+    dateInput.value = "";
+    form.style.display = "none";
+
+    // NOTE: You can add the fetch call to POST this to your backend here
   });
 
-  // Handle new folder submission
-  addForm.addEventListener("submit", async (e) => {
+  return form;
+}
+
+async function getDetailsRundown(name, folder, active, template_version) {
+  const params = new URLSearchParams({
+    show_name: name,
+    folder,
+    active,
+    template_version
+  });
+
+  try {
+    const response = await fetch(`http://localhost:3000/get-details-rundown?${params}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    });
+
+    if (!response.ok) throw new Error("Error Fetching Data");
+
+    const resData = await response.json();
+    console.log("Column Names:", resData);
+
+    selectedRundown.show_name = name;
+    selectedRundown.show_date = resData[0].show_date.slice(0, 10);
+    selectedRundown.needed_columns = resData[0].needed_columns.replace(/[{}"]/g, '').split(',');
+
+    drawActualTable(selectedRundown.needed_columns, selectedRundown.show_name, selectedRundown.show_date);
+  } catch (error) {
+    console.error("Fetch error:", error);
+    alert("Error fetching data.");
+  }
+}
+
+function setupAddFolderForm() {
+  const form = document.getElementById("add-folder-form");
+  const input = form.querySelector("input");
+  const button = document.getElementById("add-folder-btn");
+
+  button.addEventListener("click", () => {
+    form.style.display = form.style.display === "none" ? "flex" : "none";
+  });
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const folder = input.value.trim();
     if (!folder) return;
@@ -307,7 +281,7 @@ function renderDirectory(rows) {
 
       if (response.ok) {
         console.log("Folder added:", folder);
-        // NOTE: Refresh folder list here if needed
+        getDirectory(); // Refresh list
       } else {
         console.error("Error adding folder:", data.error);
       }
@@ -316,17 +290,10 @@ function renderDirectory(rows) {
     }
 
     input.value = "";
-    addForm.style.display = "none";
+    form.style.display = "none";
   });
-
-  // Add folder UI to the container
-  container.appendChild(addFolderBtn);
-  container.appendChild(addForm);
 }
-  
-  
-  
-  document.addEventListener("DOMContentLoaded", getDirectory);
+
   
   
   

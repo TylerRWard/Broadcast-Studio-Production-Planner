@@ -426,10 +426,9 @@ const dataInputObject = {
 
     'OK': `<select class="okDropdown">
                         <option value="" disabled selected>status</option> <!-- Placeholder -->
-                        <option value="option-1">option 1</option>
-                        <option value="option-2">option 2</option>
-                        <option value="option-3">option-3</option>
-                        <option value="option-4">option-4</option>
+                        <option value="option-1" style="text-align: center;">🔴</option>
+                        <option value="option-2" style="text-align: center;">🟡</option>
+                        <option value="option-3" style="text-align: center;">🟢</option>
                     </select>`,
 
     'CHANNEL': `<input class="grid-input-data js-CHANNEL" placeholder="" maxlength="3">`,
