@@ -422,32 +422,33 @@ async function showUpdateData(previousTypedData, selectedRundown) {
         if (response.ok) {
             const responsedData = await response.json();
             console.log("Just Updated Data:", responsedData);
-
-            let column = Object.keys(responsedData[0])[0].toUpperCase();
-            console.log(responsedData[0].row_num, responsedData[0].modified, column)
-
-            if ((column === "SHOT") ||(column === "OK"))
+            if (responsedData.length>0)
             {
-                tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value = responsedData[0][column.toLowerCase()];
-                console.log(tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value, responsedData[0][column.toLowerCase()]);
+                let column = Object.keys(responsedData[0])[0].toUpperCase();
+                console.log(responsedData[0].row_num, responsedData[0].modified, column)
+
+                if ((column === "SHOT") ||(column === "OK"))
+                {
+                    tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value = responsedData[0][column.toLowerCase()];
+                    console.log(tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value, responsedData[0][column.toLowerCase()]);
+                }
+                else if(column === "MOD_BY")
+                {
+                    tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}]`).textContent = responsedData[0][column.toLowerCase()];
+                }
+                else
+                {
+                    tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] input`).value = responsedData[0][column.toLowerCase()];
+                    console.log(tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] input`).value, responsedData[0][column.toLowerCase()]);
+                }
+
+                const date = new Date(responsedData[0].modified);
+
+                const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
+
+                tableActual.rows[responsedData[0].row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+
             }
-            else if(column === "MOD_BY")
-            {
-                tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}]`).textContent = responsedData[0][column.toLowerCase()];
-            }
-            else
-            {
-                tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] input`).value = responsedData[0][column.toLowerCase()];
-                console.log(tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] input`).value, responsedData[0][column.toLowerCase()]);
-            }
-
-            const date = new Date(responsedData[0].modified);
-
-            const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
-
-            tableActual.rows[responsedData[0].row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
-
-
             //alert("Update just inserted data successfully!");
             
         } else {
@@ -495,14 +496,15 @@ async function insertRowScripts_t() {
 
             previousTypedData.row_number = data.row_num;
 
-            previousTypedData.column_name = "BLOCK";
-            showUpdateData(previousTypedData, selectedRundown)
+            const columnsToUpdate = ["BLOCK", "ITEM_NUM"];
 
-            previousTypedData.column_name = "ITEM_NUM";
-            showUpdateData(previousTypedData, selectedRundown)
+            columnsToUpdate.forEach(column => {
+                previousTypedData.column_name = column;
+                showUpdateData(previousTypedData, selectedRundown);
+            });
 
-            previousTypedData.row_number = null;
-            previousTypedData.column_name = null;
+            //previousTypedData.row_number = null;
+            //previousTypedData.column_name = null;
 
 
         } else {

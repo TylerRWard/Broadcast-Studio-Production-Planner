@@ -425,10 +425,10 @@ const dataInputObject = {
     'TOTAL': `<input class="grid-input-data js-TOTAL" placeholder="">`,
 
     'OK': `<select class="okDropdown">
-                        <option value="" disabled selected>status</option> <!-- Placeholder -->
-                        <option value="option-1" style="text-align: center;">🔴</option>
-                        <option value="option-2" style="text-align: center;">🟡</option>
-                        <option value="option-3" style="text-align: center;">🟢</option>
+                        <option value="" disabled selected style="text-align: center;">status</option> <!-- Placeholder -->
+                        <option value="option-1" style="text-align: left;">🔴 Approval denied</option>
+                        <option value="option-2" style="text-align: left;">🟡 In progress</option>
+                        <option value="option-3" style="text-align: left;">🟢 Approved</option>
                     </select>`,
 
     'CHANNEL': `<input class="grid-input-data js-CHANNEL" placeholder="" maxlength="3">`,
