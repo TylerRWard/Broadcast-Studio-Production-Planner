@@ -1,4 +1,76 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Form and button elements
+    const showAddUserBtn = document.getElementById("show-add-user");
+    const showResetPasswordBtn = document.getElementById("show-reset-password");
+    const showDeleteUserBtn = document.getElementById("show-delete-user");
+    const addUserSection = document.getElementById("add-user-section");
+    const deleteUserSection = document.getElementById("delete-user-section");
+    const changePasswordSection = document.getElementById("change-password-section");
+
+    // Function to toggle active button and form visibility
+    const setActiveForm = (activeBtn, activeSection) => {
+        // Remove active class from all buttons
+        [showAddUserBtn, showResetPasswordBtn, showDeleteUserBtn].forEach(btn => {
+            btn.classList.remove("active");
+        });
+        // Add active class to the selected button
+        activeBtn.classList.add("active");
+
+        // Hide all sections
+        [addUserSection, deleteUserSection, changePasswordSection].forEach(section => {
+            section.style.display = "none";
+        });
+        // Show the selected section
+        activeSection.style.display = "block";
+    };
+
+    // Set "Add User" as default active on page load
+    setActiveForm(showAddUserBtn, addUserSection);
+
+    // Button event listeners
+    showAddUserBtn.addEventListener("click", () => {
+        setActiveForm(showAddUserBtn, addUserSection);
+    });
+
+    showResetPasswordBtn.addEventListener("click", () => {
+        setActiveForm(showResetPasswordBtn, changePasswordSection);
+    });
+
+    showDeleteUserBtn.addEventListener("click", () => {
+        setActiveForm(showDeleteUserBtn, deleteUserSection);
+    });
+
+    // Fetch and display active users
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch("/get-users", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                const usersList = document.getElementById("users-list");
+                usersList.innerHTML = "";
+                data.users.forEach(user => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.admin_level}</td>
+                    `;
+                    usersList.appendChild(row);
+                });
+            } else {
+                console.error("Failed to fetch users:", data.message);
+            }
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
+
+    // Initial fetch of users
+    fetchUsers();
+
     // Add User Form
     const addForm = document.getElementById("add-user-form");
     if (addForm) {
@@ -19,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (response.ok) {
                     alert("User added successfully!");
                     addForm.reset();
+                    fetchUsers(); // Refresh user list
                 } else {
                     alert(data.message || "Failed to add user");
                 }
@@ -61,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     console.log(`User with email ${email} successfully removed from database`);
                     alert("User deleted successfully!");
                     deleteForm.reset();
+                    fetchUsers(); // Refresh user list
                 } else {
                     alert(data.message || "Failed to delete user");
                 }
@@ -98,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (response.ok) {
                     alert("Password changed successfully!");
                     changeForm.reset();
+                    fetchUsers(); // Refresh user list
                 } else {
                     alert(data.message || "Failed to change password");
                 }

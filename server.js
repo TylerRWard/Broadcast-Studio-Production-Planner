@@ -166,6 +166,21 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
     }
 });
 
+
+// Get all users
+app.get("/get-users", isAuthenticated, async (req, res) => {
+    try {
+        const query = "SELECT name, email, admin_level FROM users_t2 ORDER BY name";
+        const result = await pool.query(query);
+        res.status(200).json({ users: result.rows });
+    } catch (err) {
+        console.error("Error fetching users:", err.message);
+        res.status(500).json({ message: "Failed to fetch users" });
+    }
+});
+
+
+
 //serve landing page as root
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname,"public", "landingPage.html"));
