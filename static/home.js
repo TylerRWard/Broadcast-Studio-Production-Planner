@@ -48,7 +48,11 @@ document.getElementById("user-management-btn").addEventListener("click", () => {
     }
 });
 
-
+let detailsForScriptEditor = {
+  row_num:null,
+  block: null,
+  item_num: null
+};
 
 // calculating the script read time
 function calculateTime(textarea) {
@@ -58,6 +62,8 @@ function calculateTime(textarea) {
     const totalSeconds = Math.ceil((words / wpm) * 60);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
+
+    const readTime = `${minutes}:${seconds}`;
     // Get the container of the textarea
     const container = textarea.closest(".scriptBox-container");
     // Get the heading inside that container
@@ -67,19 +73,71 @@ function calculateTime(textarea) {
 
    // store the read time and script after hitting submit
     document.getElementById("scriptSubmit").onclick = function() {
-        // save the script to a string
-        const textarea = document.querySelector(".scriptBox");
-        const scriptText = textarea.value;
-        // clear the textarea
-        textarea.value = "";
-        heading.textContent = `Script Editing (Current length: 0 min 0 sec)`;
-        // log the script and the final time after submitting
-        console.log(`Script: \n${scriptText}`)
-        console.log(`Final time: ${totalSeconds} seconds`);
-        alert(`Time saved: ${Math.floor(totalSeconds / 60)} min ${totalSeconds % 60} sec`);
+        if(selectedRundown.show_name && detailsForScriptEditor.block && detailsForScriptEditor.item_num)
+        {
+            // save the script to a string
+          const textarea = document.querySelector(".scriptBox");
+          const scriptText = textarea.value;
+          // clear the textarea
+          //textarea.value = "";
+          heading.textContent = `Script Editing (Current length: 0 min 0 sec)`;
+          // log the script and the final time after submitting
+          console.log(`selectedScriptRow: ${detailsForScriptEditor.row_num} show name ${selectedRundown.show_name} Script: \n${scriptText}`)
+          console.log(`Final time: ${totalSeconds} seconds`);
+          alert(`Time saved: ${Math.floor(totalSeconds / 60)} min ${totalSeconds % 60} sec`);
+
+          //Once they click submit insert scriptText into database
+          insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime)
+
+        }
+        else
+        {
+          alert("You have not selected a row or don't have block or item_num")
+        }
+        
     };
 }
 
+
+async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime) {
+  const data = {
+    show_name: selectedRundown.show_name,
+    show_date: selectedRundown.show_date,
+    row_num: detailsForScriptEditor.row_num,
+    scriptText: scriptText,
+    readTime: readTime 
+  }
+
+    try {
+      const response = await fetch("http://localhost:3000/insert-script-text", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+          alert("Data inserted successfully!");
+          
+          //show just inserted script text or don't erase that if you want to update the last edited time, 
+          //you have to get inserted data back
+
+        //Empty the detailsForScriptEditor before next submit
+        detailsForScriptEditor.row_num = null;
+        detailsForScriptEditor.item_num = null;
+        detailsForScriptEditor.block = null;
+          
+      } else {
+          alert("Failed to insert data.", forMessage);
+      }
+  } catch (error) {
+      console.error("Error:", error);
+      alert("Error connecting to the server.");
+  }
+
+  
+}
 
 
 let active = true;

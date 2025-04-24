@@ -444,7 +444,7 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
    
     const { show_name, show_date } = req.params;
 
-    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, read, ok, channel, writer, editor, modified, sot, total from scripts_t5
+    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'MI:SS')as read, ok, channel, writer, editor, modified, sot, total from scripts_t5
                     where show_name = $1 and show_date = $2
                     order by row_num`;
     try {
@@ -795,7 +795,28 @@ app.post("/add-show", async (req, res) => {
   });
 
 
+//**************************Insert script text*****************************//
+app.post("/insert-script-text", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, row_num, scriptText, readTime } = req.body;
 
+    const update_query = `
+        UPDATE scripts_t5 
+        SET speaking_line = $4, read = $5
+        WHERE show_name = $1 AND show_date = $2 AND row_num = $3  
+    `;
+
+    try {
+        const result = await pool.query(update_query, [show_name, show_date, row_num, scriptText, readTime]);
+
+        res.status(200).send("Inserted script text successfully!");
+    } catch (err) {
+        console.error("Error inserting script text row:", err.message);
+        res.status(500).send("Failed to insert script text row.");
+    }
+
+});
+
+/**************************************************************************/
 
 //catch invalid routs
 app.use((req, res) => {
@@ -804,3 +825,5 @@ app.use((req, res) => {
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`)});
+
+

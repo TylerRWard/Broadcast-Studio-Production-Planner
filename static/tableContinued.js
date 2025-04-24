@@ -124,7 +124,7 @@ async function dragAndDropInDB(draggedIndx, targetIndx) {
 
 
 let selectedScriptRow = {
-    row_number: null,         //it starts from 1, sice this is declaration I give it null
+    row_number: null,         //it starts from 1, since this is declaration I give it null
     block: null,
     item_num: null,
     words: ''
@@ -174,6 +174,13 @@ tableActual.addEventListener('click', function(event) {
 
     const blockOfClicked = row.querySelector('[data-column="BLOCK"] input')?.value ?? null;
     const item_numOfClicked = row.querySelector('[data-column="ITEM_NUM"] input')?.value ?? null;
+
+    //Store details for script editor 
+    //detailsForScriptEditor.show_name = selectedRundown.show_name;
+    //detailsForScriptEditor.show_date = selectedRundown.show_date;
+    detailsForScriptEditor.row_num = rowIndex;
+    detailsForScriptEditor.block = blockOfClicked;
+    detailsForScriptEditor.item_num = item_numOfClicked;
     
 
     console.log(`${blockOfClicked}-${item_numOfClicked} Clicked column: ${columnName}, row: ${rowIndex}, rundown name: ${selectedRundown.show_name}, rundown date: ${selectedRundown.show_date}`);
@@ -546,8 +553,8 @@ function showScriptsData(data) {
 
             if(data[i].block === "A")
             {
-                tableActual.rows[1].innerHTML = '';
-                drawStart(tableActual.rows[1]);
+                tableActual.rows[(data[i].row_num)].innerHTML = '';
+                drawStart(tableActual.rows[(data[i].row_num)]);
 
             }
             else{
