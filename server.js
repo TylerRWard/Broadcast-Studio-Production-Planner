@@ -64,7 +64,7 @@ app.get("/user-management.html", isAuthenticated, (req, res) => {
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
-        const query = "SELECT * FROM users_t2 WHERE email = $1";
+        const query = "SELECT * FROM users_t5 WHERE email = $1";
         const result = await pool.query(query, [email]);
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "Invalid credentials" });
@@ -105,7 +105,7 @@ app.post("/register", isAuthenticated, async (req, res) => {
         }
         const passwordHash = await bcrypt.hash(password, saltRounds);
         const insertQuery = `
-            INSERT INTO users_t2 (name, password, email, admin_level)
+            INSERT INTO users_t5 (name, password, email, admin_level)
             VALUES ($1::varchar, $2::varchar, $3::varchar, $4::varchar)
             RETURNING name, email, admin_level
         `;
@@ -124,7 +124,7 @@ app.delete("/delete-user", isAuthenticated, async (req, res) => {
     const { email } = req.body;
     console.log("Delete request received for:", email);
     try {
-        const query = "DELETE FROM users_t2 WHERE email = $1 RETURNING email";
+        const query = "DELETE FROM users_t5 WHERE email = $1 RETURNING email";
         const result = await pool.query(query, [email]);
         if (result.rowCount === 0) {
             console.log("No user found with email:", email);
@@ -148,7 +148,7 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
         }
         const passwordHash = await bcrypt.hash(newPassword, saltRounds);
         const query = `
-            UPDATE users_t2
+            UPDATE users_t5
             SET password = $1 
             WHERE email = $2 
             RETURNING email, name
@@ -170,7 +170,7 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
 // Get all users
 app.get("/get-users", isAuthenticated, async (req, res) => {
     try {
-        const query = "SELECT name, email, admin_level FROM users_t2 ORDER BY name";
+        const query = "SELECT name, email, admin_level FROM users_t5 ORDER BY name";
         const result = await pool.query(query);
         res.status(200).json({ users: result.rows });
     } catch (err) {
