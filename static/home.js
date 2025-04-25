@@ -75,6 +75,7 @@ function calculateTime(textarea) {
     document.getElementById("scriptSubmit").onclick = function() {
         if(selectedRundown.show_name && detailsForScriptEditor.block && detailsForScriptEditor.item_num)
         {
+          
             // save the script to a string
           const textarea = document.querySelector(".scriptBox");
           const scriptText = textarea.value;
@@ -88,17 +89,19 @@ function calculateTime(textarea) {
 
           //Once they click submit insert scriptText into database
           insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime)
-
         }
         else
         {
           alert("You have not selected a row or don't have block or item_num")
         }
+
+        
+    
         
     };
 }
 
-
+//
 async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime) {
   const data = {
     show_name: selectedRundown.show_name,
@@ -229,6 +232,7 @@ function createShowList(shows, folder) {
     li.addEventListener("click", () => {
       console.log(`Show clicked: "${name}" ${folder}`);
       getDetailsRundown(name, folder, active, template_version);
+
     });
 
     ul.appendChild(li);
@@ -353,10 +357,32 @@ function setupAddFolderForm() {
 }
 
   
-  
-  
+/************************Export Functions**************************** */
 
+//This is just for testing export function
+//generateRundownPDF("Tonight News", "2025-04-20");
+//generateScriptPDF("Tonight News", "2025-04-20")
 
+async function generateRundownPDF(show_name, show_date) {
+  try {
+      window.location.href = `http://localhost:3000/generate-rundownpdf/${show_name}/${show_date}`;
+      alert(`${show_name} - ${show_date} is being downloaded!`);
+  } catch (error) {
+      console.error("Download error:", error);
+      alert(`No data found for ${show_name} - ${show_date}`);
+  }
+}
+
+async function generateScriptPDF(show_name, show_date) {
+  try {
+      window.location.href = `http://localhost:3000/generate-scriptpdf/${show_name}/${show_date}`;
+      alert(`${show_name} - ${show_date} is being downloaded!`);
+  } catch (error) {
+      console.error("Download error:", error);
+      alert(`No data found for ${show_name} - ${show_date}`);
+  }
+}
+/******************************************************************* */
 
 
 

@@ -921,3 +921,4 @@ const addBreakRowButton = document.getElementById('add-break-row');
         alert("Error inserting break row.");
     }
 }
+

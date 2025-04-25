@@ -5,6 +5,7 @@ const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
 const { isatty } = require("tty");
+const PDFDocument = require('pdfkit');
 
 const app = express();
 const port = 3000;
@@ -187,7 +188,201 @@ app.get("/", (req, res) => {
 });
 
 
+/***********************************Export Functions**************************************************************** */
 
+//generateRundownPDF
+app.get("/generate-rundownpdf/:show_name/:show_date", isAuthenticated, async (req, res) =>{
+    const {show_name, show_date} = req.params;
+
+    const show_info_query = `
+    SELECT show_name, show_date 
+    FROM rundown_t5 
+    WHERE active = true 
+    AND show_name = $1 
+    AND show_date = $2 
+    LIMIT 1
+`;
+
+    const scripts_query = `
+        SELECT 
+            cam, shot, tal, slug, format, 
+            read, sot, total, ok, channel, 
+            writer, editor, modified
+        FROM scripts_t5 
+        WHERE show_name = $1 
+        AND show_date = $2 
+        ORDER BY row_num ASC
+    `;
+
+    try {
+
+        const showInfo = await pool.query(show_info_query, [show_name, show_date]);
+
+        console.log("Querying with:", showInfo);
+        console.log("Query result:", showInfo.rows);
+        const showRow = showInfo.rows[0];
+
+        if (!showRow) throw new Error("No active rundown found.");
+
+
+        const scriptData = await pool.query(scripts_query, [show_name, show_date]);
+        const scripts = scriptData.rows;
+
+        console.log(scripts);
+
+        const safeShowName = show_name.replace(/[\\/:*?"<>|]/g, '_');
+        const doc = new PDFDocument({ margin: 40, size: 'A4', layout: 'landscape' });
+
+        res.setHeader('Content-Disposition', `attachment; filename=${safeShowName}_Rundown.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+
+        const formattedDate = new Date(show_date).toLocaleDateString();
+
+        // Header
+        doc.fontSize(10).text(`Show: ${show_name}`, 40, 30, { align: 'left' });
+        doc.fontSize(10).text(`Date: ${formattedDate}`, { align: 'right' });
+        doc.moveDown(1);
+
+        doc.fontSize(16).text('Rundown Table', { align: 'center' });
+        doc.moveDown();
+
+        // Define table headers and widths
+        const headers = ['CAM', 'SHOT', 'TAL', 'SLUG', 'FORMAT', 'READ', 'SOT', 'TOTAL', 'OK', 'CH', 'WR', 'ED', 'LAST MODIFIED'];
+        const columnWidths = [40, 60, 40, 90, 60, 40, 40, 40, 40, 40, 40, 40, 80];
+        const startX = 40;
+        let y = doc.y;
+
+        // Draw header row
+        headers.forEach((header, i) => {
+            doc.fontSize(8).font('Helvetica-Bold').text(header, startX + columnWidths.slice(0, i).reduce((a, b) => a + b, 0), y, {
+                width: columnWidths[i],
+                align: 'left'
+            });
+        });
+
+        y += 15;
+        doc.moveTo(startX, y).lineTo(startX + columnWidths.reduce((a, b) => a + b), y).stroke();
+
+        // Draw rows
+        scripts.forEach((row, index) => {
+            y += 12;
+            if (y > doc.page.height - 40) {
+                doc.addPage();
+                y = 40;
+            }
+
+            const values = [
+                row.cam ?? '',
+                row.shot ?? '',
+                row.tal ?? '',
+                row.slug ?? '',
+                row.format ?? '',
+                row.read ?? '00:00',
+                row.sot ?? '00:00',
+                row.total ?? '00:00',
+                row.ok ?? '',
+                row.channel ?? '',
+                row.writer ?? '',
+                row.editor ?? '',
+                row.modified ? new Date(row.modified).toLocaleString() : '',
+                
+            ];
+
+            values.forEach((val, i) => {
+                doc.fontSize(7).font('Helvetica').text(val, startX + columnWidths.slice(0, i).reduce((a, b) => a + b, 0), y, {
+                    width: columnWidths[i],
+                    align: 'left'
+                });
+            });
+        });
+
+        doc.end();
+        console.log("PDF rundown table generated!");
+    } catch (err) {
+        console.error("Error generating PDF:", err);
+    }
+
+});
+
+
+/****************************generateScriptPDF*********************************/
+
+app.get("/generate-scriptpdf/:show_name/:show_date", isAuthenticated, async (req, res) =>{
+    const {show_name, show_date} = req.params;
+
+    const show_info_query = `
+    SELECT show_name, show_date 
+    FROM rundown_t5 
+    WHERE active = true 
+    AND show_name = $1 
+    AND show_date = $2 
+    LIMIT 1
+`;
+
+        // Query to get scripts for the show ordered by row_num
+    const select_query = `
+    SELECT row_num, speaking_line 
+    FROM scripts_t5 
+    WHERE show_date = $1 
+    AND show_name = $2
+    ORDER BY row_num ASC
+`;
+
+    try {
+
+        const showInfo = await pool.query(show_info_query, [show_name, show_date]);
+        const showRow = showInfo.rows[0];
+
+        if (!showRow) {
+            throw new Error("No show info found in rundown_t5");
+        }
+
+        const result = await pool.query(select_query, [show_date, show_name]);
+        
+        const data = result.rows;
+        const showName = show_name;
+
+        const safeShowName = show_name.replace(/[\\/:*?"<>|]/g, '_');
+        const doc = new PDFDocument({ margin: 40, size: 'A4', layout: 'landscape' });
+
+        res.setHeader('Content-Disposition', `attachment; filename=${safeShowName}_Script.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleString();
+
+        // Header: Show name and date
+        doc.fontSize(10).text(`Show: ${showName}`, 50, 30, { align: 'left' });
+        doc.fontSize(10).text(formattedDate, { align: 'right' });
+
+        doc.moveDown(2);
+
+        doc.fontSize(20).text('Script File', { align: 'center' });
+        doc.moveDown(1);
+
+        // Script lines
+        data.forEach((row, index) => {
+            const scriptLine = row.speaking_line || '[Empty Line]';
+            doc.fontSize(12)
+               .text(`${index + 1}. ${scriptLine}`, {
+                   align: 'left',
+                   indent: 20
+               });
+            doc.moveDown(0.3);
+        });
+
+        doc.end();
+        console.log("PDF generated!");
+    } catch (err) {
+        console.error("Error generating PDF:", err);
+    }
+
+});
+
+
+/*************************************************************************************************** */
 
 // ************************************DIRECTORY************************************************************************ //
 
