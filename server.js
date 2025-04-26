@@ -388,27 +388,31 @@ app.get("/generate-scriptpdf/:show_name/:show_date", isAuthenticated, async (req
 
 app.get("/directory", async (req, res) => {
     const select_query = `
-        SELECT 
-            ft.folder AS folder_topic,
-            r.show_name
-        FROM 
-            folder_topics_t5 ft
-        LEFT JOIN 
-            rundown_t5 r ON ft.folder = r.folder
-        WHERE 
-            ft.folder IS NOT NULL AND ft.folder != ''
-        ORDER BY 
-            ft.folder, r.show_name;
+      SELECT 
+        ft.folder    AS folder_topic,
+        r.show_name,
+        r.template_version
+      FROM 
+        folder_topics_t5 ft
+      LEFT JOIN 
+        rundown_t5 r 
+          ON ft.folder = r.folder
+      WHERE 
+        ft.folder IS NOT NULL 
+        AND ft.folder != ''
+      ORDER BY 
+        ft.folder, r.show_name;
     `;
     try {
-        const result = await pool.query(select_query);
-        console.log("Server: Directory Data:", result.rows);
-        res.status(200).json(result.rows);
+      const { rows } = await pool.query(select_query);
+      console.log("Server: Directory Data:", rows);
+      res.json(rows);
     } catch (err) {
-        console.error("Error fetching data:", err.message);
-        res.status(500).send("Failed to fetch data.");
+      console.error("Error fetching data:", err.message);
+      res.status(500).send("Failed to fetch data.");
     }
-});
+  });
+  
 
 app.post("/add-folder", async (req, res) => {
     const { folder } = req.body;

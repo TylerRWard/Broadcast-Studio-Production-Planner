@@ -1,33 +1,4 @@
-/*function loadFiles() {
-    fetch("/directory")
-        .then(response => {
-            if (!response.ok) throw new Error("Failed to fetch directory");
-            return response.json();
-        })
-        .then(data => {
-            const fileList = document.querySelector(".file-list");
-            fileList.innerHTML = data.files
-                .map(file => `<li class="file-item" data-file="${file}">${file}</li>`)
-                .join("");
-            attachFileListeners();
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            document.querySelector(".file-list").innerHTML = "<li>Error loading files</li>";
-        });
-}
 
-function attachFileListeners() {
-    document.querySelectorAll(".file-item").forEach(item => {
-        item.addEventListener("click", () => {
-            const fileName = item.getAttribute("data-file");
-            alert(`Opening ${fileName}\n(Content not fetched yet - add backend endpoint!)`);
-            console.log(`Clicked ${fileName}`);
-        });
-    });
-}
-
-document.addEventListener("DOMContentLoaded", loadFiles); */
 
 const searchInput = document.querySelector(".search-input");
 searchInput.addEventListener("input", (e) => {
@@ -154,7 +125,7 @@ async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptT
 
 
 let active = true;
-const template_version = 'Default';
+let template_version = 'Default';
 
 
 // DIRECTORY
@@ -178,15 +149,20 @@ function renderDirectory(rows) {
   const container = document.getElementById("folderList");
   container.innerHTML = "";
 
-  const groups = rows.reduce((acc, { folder_topic, show_name }) => {
+  // group into { folder: [ { name, version }, … ] }
+  const groups = rows.reduce((acc, { folder_topic, show_name, template_version }) => {
     if (!acc[folder_topic]) acc[folder_topic] = [];
-    if (show_name) acc[folder_topic].push(show_name);
+    if (show_name) {
+      acc[folder_topic].push({ 
+        name: show_name, 
+        version: template_version 
+      });
+    }
     return acc;
   }, {});
 
   Object.entries(groups).forEach(([folder, shows]) => {
-    const folderElement = createFolderElement(folder, shows);
-    container.appendChild(folderElement);
+    container.appendChild(createFolderElement(folder, shows));
   });
 }
 
@@ -223,6 +199,7 @@ addIcon.addEventListener("click", (e) => {
   return details;
 }
 
+
 function createShowList(shows, folder) {
   if (shows.length === 0) {
     const p = document.createElement("p");
@@ -231,8 +208,9 @@ function createShowList(shows, folder) {
   }
 
   const ul = document.createElement("ul");
-  shows.forEach(name => {
+  shows.forEach(({ name, version }) => {
     const li = document.createElement("li");
+    li.textContent = name;
     li.textContent = name;
     li.style.cursor = "pointer";
     li.style.fontSize = "0.9rem";
@@ -240,10 +218,9 @@ function createShowList(shows, folder) {
     li.style.padding = "4px 0";
 
     li.addEventListener("click", () => {
-      console.log(`Show clicked: "${name}" ${folder}`);
-      document.querySelector(".scriptBox").value = ``;
-      getDetailsRundown(name, folder, active, template_version);
-
+      console.log(`Show clicked: "${name}" in "${folder}", version="${version}"`);
+      // now pass the real version, not the global:
+      getDetailsRundown(name, folder, active, version);
     });
 
     ul.appendChild(li);
@@ -257,6 +234,39 @@ function createAddShowForm(folder) {
   form.style.display = "none";
   form.classList.add("add-show-form");
 
+  // dropdown to select template version
+  const versionSelect = document.createElement("select");
+  versionSelect.name = "templateVersion";
+  versionSelect.required = true;
+
+  // placeholder option
+  const placeholder = new Option("Select a template…", "", true, true);
+  placeholder.disabled = true;
+  versionSelect.add(placeholder);
+
+  // fetch the available versions
+  fetch("/get-templates")
+    .then(res => {
+      if (!res.ok) throw new Error("Network error fetching templates");
+      return res.json();
+    })
+    .then(data => {
+      // if your server is returning { rows: [ { template_version } ] }
+      const rows = Array.isArray(data.rows) ? data.rows : data;
+      rows.forEach(({ template_version }) => {
+        const opt = new Option(template_version, template_version);
+        versionSelect.add(opt);
+      });
+    })
+    .catch(err => {
+      console.error("Could not load template versions:", err);
+      const errOpt = new Option("Error loading templates", "", true, true);
+      errOpt.disabled = true;
+      versionSelect.innerHTML = "";
+      versionSelect.add(errOpt);
+    });
+
+  // get the show name and date
   const nameInput = document.createElement("input");
   nameInput.type = "text";
   nameInput.placeholder = "Show name";
@@ -266,12 +276,15 @@ function createAddShowForm(folder) {
   dateInput.type = "date";
   dateInput.required = true;
 
+  // submit btn
   const submit = document.createElement("button");
   submit.type = "submit";
   submit.textContent = "Submit";
 
+  // assemble form
   form.appendChild(nameInput);
   form.appendChild(dateInput);
+  form.appendChild(versionSelect);
   form.appendChild(submit);
 
   form.addEventListener("submit", async (e) => {
@@ -279,25 +292,51 @@ function createAddShowForm(folder) {
 
     const showName = nameInput.value.trim();
     const showDate = dateInput.value;
+    const templateVersion = versionSelect.value;
 
-    if (!showName || !showDate) {
-      alert("Both Show Name and Date are required.");
+    if (!showName || !showDate || !templateVersion) {
+      alert("Show name, date, and template version are all required.");
       return;
     }
 
     console.log(`📦 Adding show to "${folder}"`);
     console.log(`Show Name: ${showName}`);
     console.log(`Show Date: ${showDate}`);
+    console.log(`Template Version: ${templateVersion}`);
 
+   // send to backend 
+    try {
+      const resp = await fetch("/add-show", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          folder,
+          show_name: showName,
+          show_date: showDate,
+          template_version: templateVersion
+        })
+      });
+      if (!resp.ok) throw new Error(await resp.text());
+
+      await getDirectory();//reload the directory after adding a new show so that you can see it 
+
+    } catch (err) {
+      console.error("Error adding show:", err);
+      alert("Failed to add show.");
+    }
+
+
+
+    // reset form
     nameInput.value = "";
     dateInput.value = "";
+    versionSelect.selectedIndex = 0;
     form.style.display = "none";
-
-    // NOTE: You can add the fetch call to POST this to your backend here
   });
 
   return form;
 }
+
 
 async function getDetailsRundown(name, folder, active, template_version) {
   const params = new URLSearchParams({
