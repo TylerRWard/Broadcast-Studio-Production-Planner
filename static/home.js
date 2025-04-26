@@ -122,6 +122,16 @@ async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptT
 
       if (response.ok) {
           alert("Data inserted successfully!");
+
+          const respondedData = await response.json();
+
+          const date = new Date(respondedData.modified);
+          const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
+          // console.log(centralTimeString);
+          tableActual.rows[data.row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+
+          tableActual.rows[data.row_num].querySelector(`[data-column="READ"] input`).value = respondedData.read;
+
           
           //show just inserted script text or don't erase that if you want to update the last edited time, 
           //you have to get inserted data back
@@ -231,6 +241,7 @@ function createShowList(shows, folder) {
 
     li.addEventListener("click", () => {
       console.log(`Show clicked: "${name}" ${folder}`);
+      document.querySelector(".scriptBox").value = ``;
       getDetailsRundown(name, folder, active, template_version);
 
     });

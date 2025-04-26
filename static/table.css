@@ -149,6 +149,17 @@ input[type="checkbox"] {
 
 }
 
+.selected-row {
+    background-color: transparent; /* remove default */
+    border-left: 3px solid #0ea5e9; /* cyan-ish left border */
+  }
+  
+  .selected-row td, .selected-row td input, .selected-row td select {
+    background-color: #0c4f7b; /* light cyan */
+    
+  }
+  
+
 .selectable{
     background-color: white;
     color: black;
