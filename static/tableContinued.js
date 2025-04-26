@@ -1,6 +1,6 @@
 // Places I changed focusedRow to null
 // Once drag & drop a row
-// Once delete a 
+// Once delete a row
 // Once insert a start row
 // Once insert a break row
 // Once select a new rundown
@@ -33,7 +33,7 @@ function drawActualTable(columnNames, scriptName, showDate){
                 const datarowHTML = `<td data-column=${column} class="table-data-css ${column}">${createARowInput(column)}</td>`
                 datarow += datarowHTML;
             })
-            dataHTML += `<tr draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)" >${datarow}</tr>`;
+            dataHTML += `<tr class="rundown-row" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)" >${datarow}</tr>`;
         }
 
     dataHTML = `<tbody id="data-table-tbody">${dataHTML}</tbody>`;
@@ -115,6 +115,7 @@ async function dragAndDropInDB(draggedIndx, targetIndx) {
 
         if (response.ok) {
             alert("Dragged and dropped successfully!");
+            focusedRow = null;
             
         } else {
             alert("Failed to drop data.", forMessage);
@@ -146,86 +147,109 @@ let previousTypedData = {
 
 const tableActual = document.getElementById('data-table');
 
+let prev_row = null;
+
 // Handle clicks on table (excluding selects)
 tableActual.addEventListener('click', function(event) {
-    // if there is no data in previousTypedData do not do this function (do not insert into database)
-    if(previousTypedData.block!= null && previousTypedData.item_num != null && previousTypedData.data != null)
-        {
-            console.log("Going to update", previousTypedData.data)
-            updateData(previousTypedData, selectedRundown);  
-        }
-    else if (previousTypedData.block!= null && previousTypedData.item_num !=null)
-        {
-            console.log("Going to insert new row into scripts_t5");
-            insertRowScripts_t();
-        }
+    if (event.target.tagName === 'SELECT') return;
 
+    const target = event.target.closest('td');
+    if (!target) return;
+
+    const row = target.closest('tr'); // 🔹 Define the clicked row  
+    
+    if (prev_row !== row)
+    {
+        prev_row = row;
+        // 🔹 Highlight the clicked row
+        document.querySelectorAll('.rundown-row').forEach(r => r.classList.remove('selected-row'));
+        row.classList.add('selected-row');
+
+        // Check if selected row is in database, if so get the speaking_line and show it in script editing section if not show nothing
+        const rowIndex = Array.from(tableActual.rows).indexOf(row);
+
+        console.log(rowIndex)
+
+        getSpeakingLines(selectedRundown.show_name, selectedRundown.show_date, rowIndex);
+    }
+    
+
+    // 🔹 Prevent insert/update if there's no previous data
+    if (previousTypedData.block != null && previousTypedData.item_num != null && previousTypedData.data != null) {
+        console.log("Going to update", previousTypedData.data);
+        updateData(previousTypedData, selectedRundown);
+    } else if (previousTypedData.block != null && previousTypedData.item_num != null) {
+        console.log("Going to insert new row into scripts_t5");
+        insertRowScripts_t();
+    }
+
+    // 🔹 Reset previousTypedData
     previousTypedData = {
         row_number: null,
         block: null,
         item_num: null,
         column_name: null,
         data: null
-    }
+    };
 
-    if (event.target.tagName === 'SELECT') return;
-
-    const target = event.target.closest('td');
-    if (!target) return;
-
+    // 🔹 Column and row index info
     const columnName = target.dataset.column;
-    const row = target.closest('tr');
     const rowIndex = Array.from(tableActual.rows).indexOf(row);
 
     const blockOfClicked = row.querySelector('[data-column="BLOCK"] input')?.value ?? null;
     const item_numOfClicked = row.querySelector('[data-column="ITEM_NUM"] input')?.value ?? null;
 
-    //Store details for script editor 
-    //detailsForScriptEditor.show_name = selectedRundown.show_name;
-    //detailsForScriptEditor.show_date = selectedRundown.show_date;
+    // 🔹 Store for script editor
     detailsForScriptEditor.row_num = rowIndex;
     detailsForScriptEditor.block = blockOfClicked;
     detailsForScriptEditor.item_num = item_numOfClicked;
-    
 
     console.log(`${blockOfClicked}-${item_numOfClicked} Clicked column: ${columnName}, row: ${rowIndex}, rundown name: ${selectedRundown.show_name}, rundown date: ${selectedRundown.show_date}`);
-    
-   
+ 
 });
+
 
 //if the user use tab once they go to next tab, save previous data 
 tableActual.addEventListener('keydown', function(event) {
     // if there is no data in previousTypedData do not do this function (do not insert into database)
-        if(event.key === 'Tab'){
-            if (event.target.tagName === 'SELECT') return;
+    if(event.key === 'Tab'){
+        if (event.target.tagName === 'SELECT') return;
 
-            const target = event.target.closest('td');
-            if (!target) return;
+        const target = event.target.closest('td');
+        if (!target) return;
 
-            
+        const row = target.closest('tr'); // 🔹 Define the clicked row
 
-            console.log(`tab clicked ${previousTypedData.block}-${previousTypedData.item_num} Clicked column: ${previousTypedData.column_name}, data: ${previousTypedData.data}, row: ${previousTypedData.row_number}, rundown name: ${selectedRundown.show_name}, rundown date: ${selectedRundown.show_date}`);
-
-            if(previousTypedData.block!= null && previousTypedData.item_num != null && previousTypedData.data != null)
+        if (prev_row !== row)
             {
-                console.log("Going to update", previousTypedData.data)
-                updateData(previousTypedData, selectedRundown);  
-            }
-            else if (previousTypedData.block!= null && previousTypedData.item_num !=null)
-            {
-                console.log("Going to insert new row into scripts_t5");
-                insertRowScripts_t();
+                prev_row = row;
+                // 🔹 Highlight the clicked row
+                document.querySelectorAll('.rundown-row').forEach(r => r.classList.remove('selected-row'));
+                row.classList.add('selected-row');
             }
 
+        console.log(`tab clicked ${previousTypedData.block}-${previousTypedData.item_num} Clicked column: ${previousTypedData.column_name}, data: ${previousTypedData.data}, row: ${previousTypedData.row_number}, rundown name: ${selectedRundown.show_name}, rundown date: ${selectedRundown.show_date}`);
 
-            previousTypedData = {
-                row_number: null,
-                block: null,
-                item_num: null,
-                column_name: null,
-                data: null
-            }
-       }
+        if(previousTypedData.block!= null && previousTypedData.item_num != null && previousTypedData.data != null)
+        {
+            console.log("Going to update", previousTypedData.data)
+            updateData(previousTypedData, selectedRundown);  
+        }
+        else if (previousTypedData.block!= null && previousTypedData.item_num !=null)
+        {
+            console.log("Going to insert new row into scripts_t5");
+            insertRowScripts_t();
+        }
+
+
+        previousTypedData = {
+            row_number: null,
+            block: null,
+            item_num: null,
+            column_name: null,
+            data: null
+        }
+   }
    
 });
 
@@ -375,6 +399,34 @@ tableActual.addEventListener('change', function(event) {
     //// have to update database here too.
 });
 
+async function getSpeakingLines(show_name, show_date, row_num) {
+    
+    try {
+        const response = await fetch(`http://localhost:3000/get-speaking-lines/${show_name}/${show_date}/${row_num}`);
+
+        if (response.ok) {
+            const result = await response.json();
+            const speaking_lines = result.speaking_line;
+            console.log("Speaking line:", result.speaking_line); // <- Here's your actual data
+
+            document.querySelector(".scriptBox").value = ``;
+            document.querySelector(".scriptBox").value = speaking_lines;
+
+            // You can use the speaking_line however you want now:
+            // e.g. update a div or textarea
+            // document.getElementById('someElement').textContent = result.speaking_line;
+
+        } else if (response.status === 404) {
+            console.log("No speaking line found for this row.");
+        } else {
+            alert("Failed to retrieve speaking line.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error connecting to the server.");
+    }
+}
+
 
 async function updateData(previousTypedData, selectedRundown) {
     const data = {
@@ -474,9 +526,6 @@ async function showUpdateData(previousTypedData, selectedRundown) {
 }
 
 
-
-
-
 //create a row in slots_t2 {item_num, block, show_date, show_name}
 async function insertRowScripts_t() {
     const data = {
@@ -500,6 +549,13 @@ async function insertRowScripts_t() {
 
         if (response.ok) {
             // Success: Do nothing or refresh UI if needed
+            const responsedData = await response.json();
+            
+            const date = new Date(responsedData.modified);
+            const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
+           // console.log(centralTimeString);
+            tableActual.rows[data.row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+
         } else if (response.status === 400) {
             const message = await response.text();
             alert(message); // Shows "Duplicate: this block and item_num already exist for this show."
@@ -527,6 +583,7 @@ async function insertRowScripts_t() {
         alert("Error connecting to the server.");
     }
 }
+
 
 
 ///get the all inserted data
@@ -814,8 +871,16 @@ async function insertStart(selectedRundown) {
         });
 
         if (!response.ok) throw new Error("Failed to insert START row.");
-        focusedRow= null;
+
+        const respondedData = await response.json();
+
+          const date = new Date(respondedData.modified);
+          const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
+          // console.log(centralTimeString);
+          tableActual.rows[1].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+
         console.log(`Start row inserted successfully!`);
+        focusedRow = null;
     } catch (error) {
         console.error("insert error:", error);
         alert("Error inserting start row.");
@@ -907,7 +972,7 @@ const addBreakRowButton = document.getElementById('add-break-row');
         breakBlock: breakBlock,
         row_num: row_num
     }
-    console.log(data.breakBlock)
+    console.log(data.row_num)
 
     try {
         const response = await fetch(`http://localhost:3000/insert-a-break-row`, {
@@ -919,9 +984,16 @@ const addBreakRowButton = document.getElementById('add-break-row');
         });
 
         if (!response.ok) throw new Error("Failed to insert break row.");
+
+        const respondedData = await response.json();
+
+        const date = new Date(respondedData.modified);
+        const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
+        // console.log(centralTimeString);
+        tableActual.rows[row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+
         focusedRow = null;
 
-        console.log(`Break row inserted successfully!`);
     } catch (error) {
         console.error("insert error:", error);
         alert("Error inserting break row.");

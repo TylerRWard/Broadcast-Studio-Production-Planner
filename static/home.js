@@ -72,7 +72,7 @@ function calculateTime(textarea) {
     };
 }
 
-//
+//insert a script and then get the modified time back (and mod_by in future)
 async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime) {
   const data = {
     show_name: selectedRundown.show_name,
@@ -96,11 +96,19 @@ async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptT
           
           //show just inserted script text or don't erase that if you want to update the last edited time, 
           //you have to get inserted data back
+          const respondedData = await response.json();
 
-        //Empty the detailsForScriptEditor before next submit
-        detailsForScriptEditor.row_num = null;
-        detailsForScriptEditor.item_num = null;
-        detailsForScriptEditor.block = null;
+          const date = new Date(respondedData.modified);
+          const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
+          // console.log(centralTimeString);
+          tableActual.rows[data.row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+
+          tableActual.rows[data.row_num].querySelector(`[data-column="READ"] input`).value = respondedData.read;
+
+          //Empty the detailsForScriptEditor before next submit
+          detailsForScriptEditor.row_num = null;
+          detailsForScriptEditor.item_num = null;
+          detailsForScriptEditor.block = null;
           
       } else {
           alert("Failed to insert data.", forMessage);
@@ -212,6 +220,9 @@ function createShowList(shows, folder) {
       // now pass the real version, not the global:
       focusedRow = null;
       getDetailsRundown(name, folder, active, version);
+      document.querySelector(".scriptBox").value = null;
+      //container.querySelector(".scriptBox-heading").textContent = `Script Editing (Current length: 0 min 0 sec)`;
+      focusedRow = null;
     });
 
     ul.appendChild(li);
