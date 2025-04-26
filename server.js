@@ -611,11 +611,6 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
 
         const existingRowCheck = await pool.query(checkExistingRowQuery, [show_name, show_date, row_num]);
 
-        const getInsertedData = `
-                select modified from scripts_t5
-                where show_name = $1 and show_date = $2 and row_num = $3
-            `;
-
         if (existingRowCheck.rowCount > 0) {
             // Row already exists → update it
             const updateQuery = `
@@ -624,10 +619,7 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
                 WHERE show_name = $3 AND show_date = $4 AND row_num = $5
             `;
             await pool.query(updateQuery, [block, item_num, show_name, show_date, row_num]);
-            
-            const result =await pool.query(getInsertedData, [show_name, show_date, row_num]);
-            return res.status(200).json(result.rows[0]);
-
+            return res.status(200).send("Data updated successfully.");
         } else {
             // Row doesn't exist → insert it
             const insertQuery = `
@@ -635,9 +627,7 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
                 VALUES ($1, $2, $3, $4, $5, now() AT TIME ZONE 'America/Chicago')
             `;
             await pool.query(insertQuery, [show_name, show_date, row_num, block, item_num]);
-
-            const result =await pool.query(getInsertedData, [show_name, show_date, row_num]);
-            return res.status(200).json(result.rows[0]);
+            return res.status(200).send("Data inserted successfully!");
         }
     } catch (err) {
         console.error("Error inserting/updating data:", err.message);
@@ -653,7 +643,7 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
    
     const { show_name, show_date } = req.params;
 
-    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, sot, total from scripts_t5
+    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'MI:SS')as read, ok, channel, writer, editor, modified, sot, total from scripts_t5
                     where show_name = $1 and show_date = $2
                     order by row_num`;
     try {
@@ -833,16 +823,7 @@ app.post("/insert-start-row", isAuthenticated, async (req, res) => {
         `, [show_name, show_date]);
 
         await client.query('COMMIT');
-
-        const select_query = `
-            select modified
-            from scripts_t5
-            WHERE show_name = $1 AND show_date = $2 AND block = 'A' AND item_num = 0
-        `;
-
-        const result2 = await pool.query(select_query, [show_name, show_date]);
-        res.status(200).json(result2.rows[0]);
-
+        res.status(200).send("Inserted Start Row successfully!");
     } catch (err) {
         await client.query('ROLLBACK');
         console.error("Error inserting start row:", err.message);
@@ -951,27 +932,31 @@ app.get("/find-next-block-break/:show_name/:show_date", isAuthenticated, async (
 });
 
 
+
+
 //insert-a-break-row
 app.post("/insert-a-break-row", isAuthenticated, async (req, res) => {
     const { show_name, show_date, breakBlock, row_num } = req.body;
 
-    const insert_query = `
+    const select_query = `
         INSERT INTO scripts_t5 (show_name, show_date, row_num, block, item_num, modified)
             VALUES ($1, $2, $4, $3, 0, now() AT TIME ZONE 'America/Chicago');
     `;
 
     try {
-        const result = await pool.query(insert_query, [show_name, show_date, breakBlock, row_num]);
 
-        const select_query = `
-            select modified
-            from scripts_t5
-            WHERE show_name = $1 AND show_date = $2 AND block = 'A' AND item_num = 0
-        `;
+        // Step 2: Shift existing row numbers down
+        await pool.query(`
+            UPDATE scripts_t5  
+            SET row_num = row_num + 1
+            WHERE show_name = $1 
+            AND show_date = $2
+            AND row_num >= $3;
+        `, [show_name, show_date, row_num]);
 
-        const result2 = await pool.query(select_query, [show_name, show_date]);
-        res.status(200).json(result2.rows[0]);
-        
+        const result = await pool.query(select_query, [show_name, show_date, breakBlock, row_num]);
+
+        res.status(200).send("Inserted Break Row successfully!");
     } catch (err) {
         console.error("Error inserting break row:", err.message);
         res.status(500).send("Failed to insert break row.");
@@ -1027,69 +1012,20 @@ app.post("/insert-script-text", isAuthenticated, async (req, res) => {
 
     const update_query = `
         UPDATE scripts_t5 
-        SET speaking_line = $4, read = $5, modified = now() AT TIME ZONE 'America/Chicago'
+        SET speaking_line = $4, read = $5
         WHERE show_name = $1 AND show_date = $2 AND row_num = $3  
     `;
 
     try {
         const result = await pool.query(update_query, [show_name, show_date, row_num, scriptText, readTime]);
 
-        const select_query = `
-            select TO_CHAR(read, 'SS:MI')as read, modified
-            from scripts_t5
-            WHERE show_name = $1 AND show_date = $2 AND row_num = $3 
-        `;
-
-        const result2 = await pool.query(select_query, [show_name, show_date, row_num]);
-
-
-        res.status(200).json(result2.rows[0]);
+        res.status(200).send("Inserted script text successfully!");
     } catch (err) {
         console.error("Error inserting script text row:", err.message);
         res.status(500).send("Failed to insert script text row.");
     }
 
 });
-
-
-app.get("/get-speaking-lines/:show_name/:show_date/:row_num", isAuthenticated, async (req, res) => {
-    const { show_name, show_date, row_num } = req.params;
-
-    const checkQuery = `
-        SELECT 1 
-        FROM scripts_t5 
-        WHERE show_name = $1 
-            AND show_date = $2 
-            AND row_num = $3 
-        LIMIT 1
-    `;
-
-    const select_query = `
-        SELECT speaking_line 
-        FROM scripts_t5
-        WHERE show_name = $1 
-        AND show_date = $2
-        AND row_num = $3
-    `;
-
-    try {
-        const result = await pool.query(checkQuery, [show_name, show_date, row_num]);
-
-        if (result.rowCount === 1) {
-            const result2 = await pool.query(select_query, [show_name, show_date, row_num]);
-            return res.status(200).json(result2.rows[0]);  // send speaking_line only
-        } else
-        {
-            return res.status(200).json({speaking_line: null});  // send speaking_line only 
-        }
-
-    } catch (err) {
-        console.error("Error retrieving speaking lines:", err.message);
-        res.status(500).send("Failed to get speaking lines.");
-    }
-});
-
-
 
 /**************************************************************************/
 
