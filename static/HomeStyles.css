@@ -474,5 +474,16 @@ details summary {
   
 
 
+  .clickable {
+    cursor: pointer;
+  }
+
+  #folderList ul li:hover {
+    cursor: pointer;
+  }
+
+
+
+
 
   
