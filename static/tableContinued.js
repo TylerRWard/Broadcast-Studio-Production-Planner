@@ -500,6 +500,11 @@ async function showUpdateData(previousTypedData, selectedRundown) {
                 {
                     tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}]`).textContent = responsedData[0][column.toLowerCase()];
                 }
+                else if(column === "READ" || column === "SOT")
+                    {
+                        tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}]`).textContent = responsedData[0][column.toLowerCase()];
+                        tableActual.rows[responsedData[0].row_num].querySelector(`[data-column="TOTAL"]`).textContent = responsedData[0].total;
+                    }
                 else
                 {
                     tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] input`).value = responsedData[0][column.toLowerCase()];
@@ -555,6 +560,14 @@ async function insertRowScripts_t() {
             const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
            // console.log(centralTimeString);
             tableActual.rows[data.row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+
+            const readcell = tableActual.rows[data.row_num].querySelector('[data-column="READ"] input');
+            const sotcell = tableActual.rows[data.row_num].querySelector('[data-column="SOT"] input');
+            const totalcell = tableActual.rows[data.row_num].querySelector('[data-column="TOTAL"] input');
+
+            if (readcell) { readcell.value = responsedData.read;}
+            if (sotcell) {sotcell.value = responsedData.sot;}
+            if (totalcell) {totalcell.value = responsedData.total;}
 
         } else if (response.status === 400) {
             const message = await response.text();

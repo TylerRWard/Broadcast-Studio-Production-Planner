@@ -612,7 +612,7 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
         const existingRowCheck = await pool.query(checkExistingRowQuery, [show_name, show_date, row_num]);
 
         const getInsertedData = `
-                select modified from scripts_t5
+                select modified, TO_CHAR(read, 'SS:MI')as read, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total from scripts_t5
                 where show_name = $1 and show_date = $2 and row_num = $3
             `;
 
@@ -631,8 +631,8 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
         } else {
             // Row doesn't exist → insert it
             const insertQuery = `
-                INSERT INTO scripts_t5 (show_name, show_date, row_num, block, item_num, modified)
-                VALUES ($1, $2, $3, $4, $5, now() AT TIME ZONE 'America/Chicago')
+                INSERT INTO scripts_t5 (show_name, show_date, row_num, block, item_num, read, sot, total, modified)
+                VALUES ($1, $2, $3, $4, $5, '00:00', '00:00', '00:00', now() AT TIME ZONE 'America/Chicago')
             `;
             await pool.query(insertQuery, [show_name, show_date, row_num, block, item_num]);
 
@@ -653,7 +653,7 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
    
     const { show_name, show_date } = req.params;
 
-    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, sot, total from scripts_t5
+    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total from scripts_t5
                     where show_name = $1 and show_date = $2
                     order by row_num`;
     try {
@@ -665,6 +665,9 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
         res.status(500).send("Failed to fetch data.");
     }
 });
+
+
+
 
 
 //update-data-in-rundown
@@ -691,12 +694,38 @@ app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
 app.post("/show-just-update-data", isAuthenticated, async (req, res) => {
     const { show_name, show_date, row_number, column_name } = req.body;
 
+
     const select_query = `
                 select ${column_name}, modified, row_num from scripts_t5
                 where show_name = $1 and show_date = $2 and row_num = $3 ;
     `;
+
+    const select_query2 = `
+                select TO_CHAR(${column_name}, 'SS:MI')as ${column_name}, TO_CHAR(total, 'SS:MI')as total, modified, row_num from scripts_t5
+                where show_name = $1 and show_date = $2 and row_num = $3 ;
+    `;
+
+    const update_query2 = `
+        UPDATE scripts_t5 
+        SET total = read + sot
+        WHERE show_name = $1 AND show_date = $2 AND row_num = $3  
+    `;
+
+    let result;
+
     try{
-        const result = await pool.query(select_query, [show_name, show_date, row_number]);
+
+        if(column_name === "read" || column_name === "sot" ) // || column_name === "total"
+        {
+            await pool.query(update_query2, [show_name, show_date, row_number]);
+
+            result = await pool.query(select_query2, [show_name, show_date, row_number]);
+        }
+        else
+        {
+            result = await pool.query(select_query, [show_name, show_date, row_number]);
+        }
+       
         //console.log(result);
         res.status(200).json(result.rows);
     } catch (err) {
@@ -1047,8 +1076,16 @@ app.post("/insert-script-text", isAuthenticated, async (req, res) => {
     try {
         const result = await pool.query(update_query, [show_name, show_date, row_num, scriptText, readTime]);
 
+        const update_query2 = `
+        UPDATE scripts_t5 
+        SET total = read + sot
+        WHERE show_name = $1 AND show_date = $2 AND row_num = $3  
+    `;
+
+    const update = await pool.query(update_query2, [show_name, show_date, row_num]);
+
         const select_query = `
-            select TO_CHAR(read, 'SS:MI')as read, modified
+            select TO_CHAR(read, 'SS:MI')as read, TO_CHAR(total, 'SS:MI')as total, modified
             from scripts_t5
             WHERE show_name = $1 AND show_date = $2 AND row_num = $3 
         `;

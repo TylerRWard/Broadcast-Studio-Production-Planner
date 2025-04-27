@@ -105,6 +105,8 @@ async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptT
 
           tableActual.rows[data.row_num].querySelector(`[data-column="READ"] input`).value = respondedData.read;
 
+          tableActual.rows[data.row_num].querySelector(`[data-column="TOTAL"] input`).value = respondedData.total;
+
           //Empty the detailsForScriptEditor before next submit
           detailsForScriptEditor.row_num = null;
           detailsForScriptEditor.item_num = null;
