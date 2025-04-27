@@ -128,20 +128,47 @@ let active = true;
 let template_version = 'Default';
 
 
-// DIRECTORY
+// DIRECTORY & ARCHIVE
 document.addEventListener("DOMContentLoaded", () => {
+  // Grab tabs & views
+  const dirTab   = document.getElementById("directory-tab");
+  const archTab  = document.getElementById("archive-tab");
+  const dirView  = document.getElementById("directory-view");
+  const archView = document.getElementById("archive-view");
+
+  // Wire Directory button
+  dirTab.addEventListener("click", () => {
+    dirView.style.display  = "block";
+    archView.style.display = "none";
+    dirTab.classList.add("active");
+    archTab.classList.remove("active");
+  });
+
+  // Wire Archive button
+  archTab.addEventListener("click", () => {
+    dirView.style.display  = "none";
+    archView.style.display = "block";
+    archTab.classList.add("active");
+    dirTab.classList.remove("active");
+  });
+
+  // go to the directory
+  dirTab.click();
+
+  // start up
   getDirectory();
   setupAddFolderForm();
 });
 
+
 async function getDirectory() {
   try {
-    const response = await fetch("http://localhost:3000/directory");
-    if (!response.ok) throw new Error(`HTTP error --- status: ${response.status}`);
-    const data = await response.json();
-    renderDirectory(data);
-  } catch (error) {
-    console.error("Fetch error:", error.message);
+    const resp = await fetch("http://localhost:3000/directory");
+    if (!resp.ok) throw new Error(resp.status);
+    const rows = await resp.json();
+    renderDirectory(rows);
+  } catch (e) {
+    console.error("Fetch error:", e);
   }
 }
 
@@ -149,13 +176,14 @@ function renderDirectory(rows) {
   const container = document.getElementById("folderList");
   container.innerHTML = "";
 
-  // group into { folder: [ { name, version }, … ] }
-  const groups = rows.reduce((acc, { folder_topic, show_name, template_version }) => {
+  // build { folder: [ { name, version, show_date }, … ] }
+  const groups = rows.reduce((acc, { folder_topic, show_name, show_date, template_version }) => {
     if (!acc[folder_topic]) acc[folder_topic] = [];
     if (show_name) {
-      acc[folder_topic].push({ 
-        name: show_name, 
-        version: template_version 
+      acc[folder_topic].push({
+        name:       show_name,
+        version:    template_version,
+        show_date:  show_date.slice(0, 10) // keep YYYY-MM-DD
       });
     }
     return acc;
@@ -208,25 +236,45 @@ function createShowList(shows, folder) {
   }
 
   const ul = document.createElement("ul");
-  shows.forEach(({ name, version }) => {
+
+  shows.forEach(({ name, version, show_date }) => {
     const li = document.createElement("li");
-    li.textContent = name;
+    li.classList.add("show-item");
     li.textContent = name;
     li.style.cursor = "pointer";
-    li.style.fontSize = "0.9rem";
-    li.style.fontFamily = "Arial, sans-serif";
-    li.style.padding = "4px 0";
-
+    // click to load details:
     li.addEventListener("click", () => {
-      console.log(`Show clicked: "${name}" in "${folder}", version="${version}"`);
-      // now pass the real version, not the global:
-      focusedRow = null;
       getDetailsRundown(name, folder, active, version);
-      document.querySelector(".scriptBox").value = null;
-      //container.querySelector(".scriptBox-heading").textContent = `Script Editing (Current length: 0 min 0 sec)`;
-      focusedRow = null;
     });
 
+    // --- delete button ---
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.classList.add("delete-btn");
+    delBtn.title = "Delete this show";
+
+    const icon = document.createElement("img");
+    icon.src = "/public/images/trash.svg";
+    icon.alt = "Delete";
+    icon.classList.add("trash-icon");
+    delBtn.appendChild(icon);
+
+    delBtn.addEventListener("click", async e => {
+      e.stopPropagation(); // don’t trigger the li click
+      if (!confirm(`Delete "${name}" on ${show_date}?`)) return;
+
+      try {
+        const params = new URLSearchParams({ show_name: name, show_date, folder });
+        const resp = await fetch(`/delete-show?${params}`, { method: "DELETE" });
+        if (!resp.ok) throw new Error(await resp.text());
+        await getDirectory();
+      } catch (err) {
+        console.error("Could not delete show:", err);
+        alert("Failed to delete show.");
+      }
+    });
+
+    li.appendChild(delBtn);
     ul.appendChild(li);
   });
 

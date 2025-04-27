@@ -486,5 +486,51 @@ details summary {
 
 
 
-
+  .show-item {
+    position: relative;
+    padding-right: 1.5em;  /* space for the trash icon */
+  }
+  
+  /* hide the button until hover */
+  .delete-btn {
+    position: absolute;
+    right: 0.4em;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  
+  .show-item:hover .delete-btn {
+    opacity: 1;
+  }
+  
+  .trash-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+  
+  .view-toggle {
+    display: flex;
+    gap: 0.5em;
+    margin-bottom: 1em;
+  }
+  .tab {
+    flex: 1;
+    padding: 0.5em;
+    background: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  .tab.active {
+    background: #B5A36A;
+    color: #000;
+  }
+   
   

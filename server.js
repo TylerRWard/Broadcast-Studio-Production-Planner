@@ -386,30 +386,33 @@ app.get("/generate-scriptpdf/:show_name/:show_date", isAuthenticated, async (req
 
 // ************************************DIRECTORY************************************************************************ //
 
-app.get("/directory", async (req, res) => {
+app.get("/directory", isAuthenticated, async (req, res) => {
     const select_query = `
-      SELECT 
-        ft.folder    AS folder_topic,
+      SELECT
+        ft.folder        AS folder_topic,
         r.show_name,
+        r.show_date,
         r.template_version
-      FROM 
+      FROM
         folder_topics_t5 ft
-      LEFT JOIN 
-        rundown_t5 r 
+      LEFT JOIN
+        rundown_t5 r
           ON ft.folder = r.folder
-      WHERE 
-        ft.folder IS NOT NULL 
+      WHERE
+        ft.folder IS NOT NULL
         AND ft.folder != ''
-      ORDER BY 
-        ft.folder, r.show_name;
+      ORDER BY
+        ft.folder,
+        r.show_date,
+        r.show_name;
     `;
     try {
       const { rows } = await pool.query(select_query);
       console.log("Server: Directory Data:", rows);
       res.json(rows);
     } catch (err) {
-      console.error("Error fetching data:", err.message);
-      res.status(500).send("Failed to fetch data.");
+      console.error("Error fetching directory:", err);
+      res.status(500).send("Failed to fetch directory.");
     }
   });
   
@@ -1137,6 +1140,55 @@ app.get("/get-speaking-lines/:show_name/:show_date/:row_num", isAuthenticated, a
         res.status(500).send("Failed to get speaking lines.");
     }
 });
+
+
+// server.js
+app.delete("/delete-show", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, folder } = req.query;
+    if (!show_name || !show_date || !folder) {
+      return res
+        .status(400)
+        .json({ error: "Missing show_name, show_date, or folder." });
+    }
+  
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+  
+      // 1) delete all script rows for this show
+      await client.query(
+        `DELETE FROM scripts_t5
+           WHERE show_name = $1
+             AND show_date  = $2`,
+        [show_name, show_date]
+      );
+  
+      // 2) delete the rundown row itself
+      const result = await client.query(
+        `DELETE FROM rundown_t5
+           WHERE show_name = $1
+             AND show_date  = $2
+             AND folder     = $3`,
+        [show_name, show_date, folder]
+      );
+      if (result.rowCount === 0) {
+        throw new Error("Show not found");
+      }
+  
+      await client.query("COMMIT");
+      console.log(
+        `🗑️ Deleted show "${show_name}" on ${show_date} in folder "${folder}"`
+      );
+      res.json({ message: "Show deleted." });
+    } catch (err) {
+      await client.query("ROLLBACK");
+      console.error("Delete failed:", err);
+      res.status(500).json({ error: err.message });
+    } finally {
+      client.release();
+    }
+  });
+  
 
 /**************************************************************************/
 

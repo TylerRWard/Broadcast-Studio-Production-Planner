@@ -155,17 +155,34 @@
     <div class="main-content-div">
 
 
-        <!-- /*Left most column (working directory)*/ --> 
+       <!-- Left‐most column (working directory + archive) -->
         <div class="div-1">
+            <!-- Tab buttons -->
+            <div class="view-toggle">
+            <button id="directory-tab" class="tab active">Directory</button>
+            <button id="archive-tab"   class="tab">Archive</button>
+            </div>
+        
+            <!-- Directory view (your existing markup) -->
+            <div id="directory-view">
             <h2 style="color: #B5A36A;">Directory</h2>
             <div id="folderList"></div>
-          
+        
             <button id="add-folder-btn" class="add-folder-btn">Add a folder</button>
             <form id="add-folder-form" class="add-folder-form" style="display: none;">
-              <input type="text" placeholder="Folder name" required />
-              <button type="submit">Submit</button>
+                <input type="text" placeholder="Folder name" required />
+                <button type="submit">Submit</button>
             </form>
-          </div>
+            </div>
+        
+            <!-- Archive view (blank initially) -->
+            <div id="archive-view" style="display: none;">
+            <h2 style="color: #B5A36A;">Archive</h2>
+            <div id="archiveList">
+                <!-- nothing here yet -->
+            </div>
+            </div>
+        </div>
     
     
         <div class="div-rundown-name js-create">View A Template</div>
