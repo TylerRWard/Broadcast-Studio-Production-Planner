@@ -260,24 +260,80 @@
 
 /////////////////////////////////////////// This will show the main list
 
-        let wholehtml = ``; // the html part for class="grid-data js-grid-data"
-        
-        function showData(){
-            
-            wholehtml = ``;
+        function showData() {
+            const container = document.querySelector('.js-grid-data');
+            container.innerHTML = '';
 
-            table_data.forEach(function(data){
-                
-                Object.entries(data).forEach(([key,value])=>{
-                    const html = `<div class="grid-data-inside">${value}</div>`;
-                    wholehtml += html;
+            table_data.forEach((data, index) => {
+                Object.entries(data).forEach(([key, value]) => {
+                    const dataDiv = document.createElement('div');
+                    dataDiv.className = 'grid-data-inside';
+                    dataDiv.textContent = value || '';
+
+                    //  Set important data-attributes for identifying the cell
+                    dataDiv.setAttribute('data-show-name', data['SHOW_NAME'] || '');
+                    dataDiv.setAttribute('data-show-date', data['SHOW_DATE'] || '');
+                    dataDiv.setAttribute('data-row-num', index); // index is row number
+                    dataDiv.setAttribute('data-block', data['BLOCK'] || '');
+                    dataDiv.setAttribute('data-item-num', data['ITEMNUM'] || '');
+                    dataDiv.setAttribute('data-column', key.toUpperCase());
+
+                    //  Only add blur listener if it is an editable column
+                    const editableColumns = ['SLUG', 'FORMAT', 'OK', 'CAM', 'TAL', 'SHOT', 'PAGE', 'WR', 'ED', 'READ', 'SOT', 'TOTAL', 'CH'];
+                    if (editableColumns.includes(key.toUpperCase())) {
+                        dataDiv.setAttribute('contenteditable', true);
+
+                        dataDiv.addEventListener('blur', async (e) => {
+                            const newValue = e.target.textContent.trim();
+                            const showName = e.target.getAttribute('data-show-name');
+                            const showDate = e.target.getAttribute('data-show-date');
+                            const rowNum = e.target.getAttribute('data-row-num');
+                            const block = e.target.getAttribute('data-block');
+                            const itemNum = e.target.getAttribute('data-item-num');
+                            const columnName = e.target.getAttribute('data-column');
+                            const parent = e.target.parentElement;
+                            const modByDiv = parent.querySelector('[data-column="MOD_BY"]');
+
+                            console.log('Blur event detected on', columnName); 
+                            await updateSingleField(showName, showDate, rowNum, block, itemNum, columnName, newValue, modByDiv);
+                        });
+                    }
+
+                    container.appendChild(dataDiv);
                 });
-
-                document.querySelector('.js-grid-data').innerHTML = wholehtml;
             });
         }
+//////////////////////////////////////////// Sends the field edit to server and updates MODBY cell
+        async function updateSingleField(showName, showDate, rowNum, block, itemNum, columnName, newValue, modByDiv) {
+            try {
+                const response = await fetch('/update-data-in-rundown', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        show_name: showName,
+                        show_date: showDate,
+                        row_number: rowNum,
+                        block: block,
+                        item_num: itemNum,
+                        column_name: columnName,
+                        data: newValue
+                    })
+                });
 
-        showData();
+                if (response.ok) {
+                    const userName = localStorage.getItem('name') || "Unknown User";
+                    if (modByDiv) {
+                        modByDiv.textContent = userName;
+                    }
+                } else {
+                    console.error('Failed to update field');
+                }
+            } catch (error) {
+                console.error('Error updating field:', error);
+            }
+        }
 /////////////////////////////// for the SHOT DROPDOWN
 
         let SHOT;

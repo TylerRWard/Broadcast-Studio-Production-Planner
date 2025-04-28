@@ -677,13 +677,21 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
 app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
     const { show_name, show_date, row_number, block, item_num, column_name, data } = req.body;
 
+    const userName = req.session.user.name; // Get the logged-in user's name
+
     const update_query = `
-                UPDATE scripts_t5
-                SET ${column_name} = $6, modified = now() AT TIME ZONE 'America/Chicago'
-                WHERE show_name = $1 and show_date = $2 and row_num=$3 and block=$4 and item_num=$5 ;
-    `;
+    UPDATE scripts_t5
+    SET ${column_name} = $6,
+        modified = now() AT TIME ZONE 'America/Chicago',
+        MOD_BY = $7
+    WHERE show_name = $1 
+      AND show_date = $2 
+      AND row_num = $3 
+      AND block = $4 
+      AND item_num = $5;
+`;
     try{
-        const result = await pool.query(update_query, [show_name, show_date, row_number, block, item_num, data]);
+        const result = await pool.query(update_query, [show_name, show_date, row_number, block, item_num, data, userName]);
         //console.log(result);
         res.status(200).send("Data inserted successfully!");
     } catch (err) {
