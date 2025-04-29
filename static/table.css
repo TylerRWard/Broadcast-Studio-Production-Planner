@@ -1,8 +1,8 @@
-#templatesButton, #addStartBreakButton, #regenerate_item_num {
+#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton {
     padding: 0.5rem 1rem;
   }
 
-  #templateBox, #startBreakBox {
+  #templateBox, #startBreakBox, #exportBox {
     position: absolute;
     display: none;
     background: #fff;
@@ -138,7 +138,7 @@ input[type="checkbox"] {
 
 
 
-#openModalBtn, #add-start-row, #add-break-row{
+#openModalBtn, #add-start-row, #add-break-row, #export-table-row, #export-scripts-row{
     background-color: white;
     color: black;
     overflow-x: auto;
@@ -148,8 +148,7 @@ input[type="checkbox"] {
     border: none;
 
 }
-
-.selected-row {
+selected-row {
     background-color: transparent; /* remove default */
     border-left: 3px solid #0ea5e9; /* cyan-ish left border */
   }
@@ -158,8 +157,6 @@ input[type="checkbox"] {
     background-color: #0c4f7b; /* light cyan */
     
   }
-  
-
 .selectable{
     background-color: white;
     color: black;

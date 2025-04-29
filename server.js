@@ -656,7 +656,7 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
    
     const { show_name, show_date } = req.params;
 
-    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total from scripts_t5
+    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total, speaking_line from scripts_t5
                     where show_name = $1 and show_date = $2
                     order by row_num`;
     try {

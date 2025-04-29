@@ -11,6 +11,9 @@
     <title>News Production Program - Home</title>
     <link rel="stylesheet" href="/static/HomeStyles.css">
     <link rel="stylesheet" href="static/table.css">
+
+    <script src="https://unpkg.com/pdfkit/js/pdfkit.standalone.js"></script>
+    <script src="/static/blob-stream.js"></script>
 </head>
 <body>
     <!--header and logo-->
@@ -36,6 +39,7 @@
             <button id="addStartBreakButton">Start/Break</button>
             <button id="regenerate_item_num">Reset Item #</button>
             <button id="templatesButton">View</button>  
+            <button id="exportButton">Export</button>
         </div>
         <div class="search-bar">
             <input type = "search" placeholder = "Search..." class="search-input">
@@ -69,6 +73,17 @@
             <li class="list-temp-css"><button id="add-start-row" onclick=" document.getElementById('startBreakBox').style.display='none';">Add Start </button></li>
             
             <li class="list-temp-css"><button id="add-break-row" onclick=" document.getElementById('startBreakBox').style.display='none';">Add Break</button></li>
+        </ul>
+        
+    </div>
+
+
+    <!--Add Export box-->
+    <div id="exportBox">
+        <ul>
+            <li class="list-temp-css"><button id="export-table-row" onclick=" document.getElementById('exportBox').style.display='none';">Table</button></li>
+            
+            <li class="list-temp-css"><button id="export-scripts-row" onclick=" document.getElementById('exportBox').style.display='none';">Scripts</button></li>
         </ul>
         
     </div>
@@ -155,34 +170,34 @@
     <div class="main-content-div">
 
 
-       <!-- Left‐most column (working directory + archive) -->
-        <div class="div-1">
-            <!-- Tab buttons -->
-            <div class="view-toggle">
-            <button id="directory-tab" class="tab active">Directory</button>
-            <button id="archive-tab"   class="tab">Archive</button>
-            </div>
-        
-            <!-- Directory view (your existing markup) -->
-            <div id="directory-view">
-            <h2 style="color: #B5A36A;">Directory</h2>
-            <div id="folderList"></div>
-        
-            <button id="add-folder-btn" class="add-folder-btn">Add a folder</button>
-            <form id="add-folder-form" class="add-folder-form" style="display: none;">
-                <input type="text" placeholder="Folder name" required />
-                <button type="submit">Submit</button>
-            </form>
-            </div>
-        
-            <!-- Archive view (blank initially) -->
-            <div id="archive-view" style="display: none;">
-            <h2 style="color: #B5A36A;">Archive</h2>
-            <div id="archiveList">
-                <!-- nothing here yet -->
-            </div>
-            </div>
+    <!-- Left‐most column (working directory + archive) -->
+    <div class="div-1">
+        <!-- Tab buttons -->
+        <div class="view-toggle">
+        <button id="directory-tab" class="tab active">Directory</button>
+        <button id="archive-tab"   class="tab">Archive</button>
         </div>
+    
+        <!-- Directory view (your existing markup) -->
+        <div id="directory-view">
+        <h2 style="color: #B5A36A;">Directory</h2>
+        <div id="folderList"></div>
+    
+        <button id="add-folder-btn" class="add-folder-btn">Add a folder</button>
+        <form id="add-folder-form" class="add-folder-form" style="display: none;">
+            <input type="text" placeholder="Folder name" required />
+            <button type="submit">Submit</button>
+        </form>
+        </div>
+    
+        <!-- Archive view (blank initially) -->
+        <div id="archive-view" style="display: none;">
+        <h2 style="color: #B5A36A;">Archive</h2>
+        <div id="archiveList">
+            <!-- nothing here yet -->
+        </div>
+        </div>
+    </div>
     
     
         <div class="div-rundown-name js-create">View A Template</div>
@@ -212,6 +227,8 @@
     <script src="/static/home.js"></script>
     <script src="/static/table.js"></script>
     <script src="/static/tableContinued.js"></script>
+    <script src="/static/exportFunction.js"></script>
+   
 </body>
 </html>
     
