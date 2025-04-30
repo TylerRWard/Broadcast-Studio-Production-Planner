@@ -106,11 +106,6 @@ async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptT
           tableActual.rows[data.row_num].querySelector(`[data-column="READ"] input`).value = respondedData.read;
 
           tableActual.rows[data.row_num].querySelector(`[data-column="TOTAL"] input`).value = respondedData.total;
-
-          //Empty the detailsForScriptEditor before next submit
-          detailsForScriptEditor.row_num = null;
-          detailsForScriptEditor.item_num = null;
-          detailsForScriptEditor.block = null;
           
       } else {
           alert("Failed to insert data.", forMessage);
@@ -244,6 +239,24 @@ function createShowList(shows, folder) {
     li.style.cursor = "pointer";
     // click to load details:
     li.addEventListener("click", () => {
+      prevSelectedRow = null;
+
+      focusedRow = null;
+
+      detailsForScriptEditor.block = null;
+      detailsForScriptEditor.item_num = null;
+      detailsForScriptEditor.row_num = null;
+
+      numOfBReakLines = 0;
+
+      previousTypedData = {
+        row_number: null,
+        block: null,
+        item_num: null,
+        column_name: null,
+        data: null
+    }
+
       getDetailsRundown(name, folder, active, version);
     });
 

@@ -439,9 +439,9 @@ app.post("/add-folder", async (req, res) => {
 
 // ******************************************************************************************************************** //
 
+// Retrieve show date and needed columns for a show name
 app.get("/get-details-rundown", isAuthenticated, async (req, res) => {
     const { show_name, folder, active, template_version } = req.query;
-    //console.log("Query values:", show_name, folder, active, template_version);
 
     const select_query = `
         SELECT rt.show_date, tt.needed_columns 
@@ -465,8 +465,7 @@ app.get("/get-details-rundown", isAuthenticated, async (req, res) => {
 
 
 
-////// Add Template
-
+// Add Template into templates_t5
 app.post("/add-template", isAuthenticated, async(req, res) => {
     const {templateName, columnNames} = req.body;
     const insert_query = "insert into template_t5 (template_version, needed_columns) values ($1, $2)";
@@ -481,7 +480,7 @@ app.post("/add-template", isAuthenticated, async(req, res) => {
 });
 
 
-//////// Get Templates
+// Retrieve templates versions
 app.get("/get-templates", isAuthenticated, async (req, res) => {
     const select_query = "select template_version from template_t5";
     try {
@@ -495,7 +494,7 @@ app.get("/get-templates", isAuthenticated, async (req, res) => {
 });
 
 
-/////////Get Column Names
+// Retrieve columns names for selected template version
 app.get("/get-column-names/:version", isAuthenticated, async (req, res) => {
     const { version } = req.params;  // Extract version from the request URL
     const select_query = "SELECT needed_columns FROM template_t5 WHERE template_version = $1";
@@ -508,7 +507,7 @@ app.get("/get-column-names/:version", isAuthenticated, async (req, res) => {
     }
 });
 
-////////////Delete a template version.
+// Delete a template version.
 app.delete("/delete-template", isAuthenticated, async (req, res) => {
     const { template_version } = req.body;
 
@@ -527,7 +526,7 @@ app.delete("/delete-template", isAuthenticated, async (req, res) => {
 });
 
 
-//////Add rundown
+// Add rundown into folder_topics_t5 table
 app.post("/add-rundown", isAuthenticated, async(req, res) => {
     const { show_name, show_date, folder, active, template_version } = req.body;
 
@@ -554,7 +553,7 @@ app.post("/add-rundown", isAuthenticated, async(req, res) => {
 });
 
 
-//////Get the relevant columns for specific show name and show date
+// Retrieve relevant columns for specific show name and show date
 app.get("/get-column-names/:show_name/:show_date", isAuthenticated, async (req, res) => {
     const { show_name, show_date } = req.params;
 
@@ -574,7 +573,7 @@ app.get("/get-column-names/:show_name/:show_date", isAuthenticated, async (req, 
 });
 
 
-//////Get rundown list 
+// Get rundown list 
 app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
     const select_query = `
                     select show_name, show_date from rundown_t5
@@ -588,56 +587,64 @@ app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
     }
 });
 
+let userEmail; // Get the logged-in user's name
 
+// Insert a row into scripts_t5
 app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
     const { item_num, block, show_date, show_name, row_num } = req.body;
 
-    // Check 1: Prevent duplicate block + item_num within same show
-    const checkDuplicateQuery = `
-        SELECT 1 FROM scripts_t5
-        WHERE show_name = $1 AND show_date = $2 AND block = $3 AND item_num = $4
-        LIMIT 1
-    `;
+    //Prevent having two start rows
+    if (block === "A" && item_num === "0") {
+        // Check if start row already exists
+        const checkStartRow = await pool.query(`
+            SELECT 1 FROM scripts_t5
+            WHERE show_name = $1 AND show_date = $2 AND block = 'A' AND item_num = 0
+            LIMIT 1
+        `, [show_name, show_date]);
+    
+        if (checkStartRow.rowCount > 0) {
+            return res.status(400).send("Start row already exists. No insert performed.");
+        }
+    }
 
-    // Check 2: Does a row already exist at this row_num?
+    // Does a row already exist at this row_num?
     const checkExistingRowQuery = `
         SELECT 1 FROM scripts_t5
         WHERE show_name = $1 AND show_date = $2 AND row_num = $3
         LIMIT 1
     `;
 
+    // Row already exists → update it
+    const updateQuery = `
+    UPDATE scripts_t5
+    SET block = $1, item_num = $2, modified = now() AT TIME ZONE 'America/Chicago'
+    WHERE show_name = $3 AND show_date = $4 AND row_num = $5
+`;
+
+    // Row doesn't exist → insert it
+    const insertQuery = `
+    INSERT INTO scripts_t5 (show_name, show_date, row_num, block, item_num, read, sot, total, modified)
+    VALUES ($1, $2, $3, $4, $5, '00:00', '00:00', '00:00', now() AT TIME ZONE 'America/Chicago')
+`;
+    
+    // Get Just inserted data
+    const getInsertedData = `
+    select modified, TO_CHAR(read, 'SS:MI')as read, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total from scripts_t5
+    where show_name = $1 and show_date = $2 and row_num = $3
+`;
+
     try {
-        const duplicateCheck = await pool.query(checkDuplicateQuery, [show_name, show_date, block, item_num]);
-
-        if (duplicateCheck.rowCount > 0) {
-            return res.status(400).send("Duplicate: this block and item_num already exist for this show.");
-        }
-
         const existingRowCheck = await pool.query(checkExistingRowQuery, [show_name, show_date, row_num]);
 
-        const getInsertedData = `
-                select modified, TO_CHAR(read, 'SS:MI')as read, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total from scripts_t5
-                where show_name = $1 and show_date = $2 and row_num = $3
-            `;
-
         if (existingRowCheck.rowCount > 0) {
-            // Row already exists → update it
-            const updateQuery = `
-                UPDATE scripts_t5
-                SET block = $1, item_num = $2, modified = now() AT TIME ZONE 'America/Chicago'
-                WHERE show_name = $3 AND show_date = $4 AND row_num = $5
-            `;
+            
             await pool.query(updateQuery, [block, item_num, show_name, show_date, row_num]);
             
             const result =await pool.query(getInsertedData, [show_name, show_date, row_num]);
             return res.status(200).json(result.rows[0]);
 
         } else {
-            // Row doesn't exist → insert it
-            const insertQuery = `
-                INSERT INTO scripts_t5 (show_name, show_date, row_num, block, item_num, read, sot, total, modified)
-                VALUES ($1, $2, $3, $4, $5, '00:00', '00:00', '00:00', now() AT TIME ZONE 'America/Chicago')
-            `;
+            
             await pool.query(insertQuery, [show_name, show_date, row_num, block, item_num]);
 
             const result =await pool.query(getInsertedData, [show_name, show_date, row_num]);
@@ -650,14 +657,12 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
 });
 
 
-
-
-//////Get the data of relevant rundown from scripts_t4
+// Get the data of relevant rundown from scripts_t4
 app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, res) => {
    
     const { show_name, show_date } = req.params;
 
-    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total, speaking_line from scripts_t5
+    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total, mod_by from scripts_t5
                     where show_name = $1 and show_date = $2
                     order by row_num`;
     try {
@@ -670,13 +675,25 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
     }
 });
 
-let userEmail; // Get the logged-in user's name
-
-
 
 //update-data-in-rundown
 app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
     const { show_name, show_date, row_number, block, item_num, column_name, data } = req.body;
+
+    //Prevent having two start rows
+    if (block === 'A' && item_num === 0) {
+        // Check if start row already exists
+        const checkStartRow = await pool.query(`
+            SELECT 1 FROM scripts_t5
+            WHERE show_name = $1 AND show_date = $2 AND block = 'A' AND item_num = 0
+            LIMIT 1
+        `, [show_name, show_date]);
+    
+        if (checkStartRow.rowCount > 0) {
+            return res.status(400).send("Start row already exists. No insert performed.");
+        }
+    }
+    
 
     const update_query = `
     UPDATE scripts_t5
@@ -703,8 +720,7 @@ app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
 //show-just-update-data
 app.post("/show-just-update-data", isAuthenticated, async (req, res) => {
     const { show_name, show_date, row_number, column_name } = req.body;
-
-
+    
     const select_query = `
                 select ${column_name}, modified, row_num from scripts_t5
                 where show_name = $1 and show_date = $2 and row_num = $3 ;
@@ -844,18 +860,6 @@ app.post("/insert-start-row", isAuthenticated, async (req, res) => {
 
     try {
         await client.query('BEGIN');
-
-        // Step 1: Check if start row already exists
-        const checkStartRow = await client.query(`
-            SELECT 1 FROM scripts_t5
-            WHERE show_name = $1 AND show_date = $2 AND block = 'A' AND item_num = 0
-            LIMIT 1;
-        `, [show_name, show_date]);
-
-        if (checkStartRow.rowCount > 0) {
-            await client.query('ROLLBACK');
-            return res.status(400).send("Start row already exists. No insert performed.");
-        }
 
         // Step 2: Shift existing row numbers down
         await client.query(`
