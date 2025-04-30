@@ -660,17 +660,23 @@ tableActual.addEventListener('keydown', function(event) {
         const targetCell = targetRow.cells[colIndex];
         const targetInput = targetCell.querySelector('input, select');
     
-        // ✅ Save previous data before switching
-        if (previousTypedData.block && previousTypedData.item_num && previousTypedData.data) {
+        // If a row has updated data, do updateDat(), if not, do inserRowScript_t()
+        if (previousTypedData.block != null && previousTypedData.item_num != null && previousTypedData.data != null) {
+            //console.log("Going to update", previousTypedData.data);
             updateData(previousTypedData, selectedRundown);
-            previousTypedData = {
-                row_number: null,
-                block: null,
-                item_num: null,
-                column_name: null,
-                data: null
-            };
+        } else if (previousTypedData.block != null && previousTypedData.item_num != null) {
+            //console.log("Going to insert new row into scripts_t5");
+            insertRowScripts_t();
         }
+
+        // Reset previousTypedData
+        previousTypedData = {
+            row_number: null,
+            block: null,
+            item_num: null,
+            column_name: null,
+            data: null
+        };
     
         // ✅ Move focus to the same column in the next/prev row
         if (targetInput) {
@@ -726,10 +732,23 @@ document.addEventListener('click', (e) => {
     ) {
       console.log('You cicked outside of the table')
 
-      if(previousTypedData.block!= "" && previousTypedData.item_num !="" && previousTypedData.data != null)
-        {
-            updateData(previousTypedData, selectedRundown);  
-        }
+      // If a row has updated data, do updateDat(), if not, do inserRowScript_t()
+      if (previousTypedData.block != null && previousTypedData.item_num != null && previousTypedData.data != null) {
+        //console.log("Going to update", previousTypedData.data);
+        updateData(previousTypedData, selectedRundown);
+    } else if (previousTypedData.block != null && previousTypedData.item_num != null) {
+        //console.log("Going to insert new row into scripts_t5");
+        insertRowScripts_t();
+    }
+
+    // Reset previousTypedData
+    previousTypedData = {
+        row_number: null,
+        block: null,
+        item_num: null,
+        column_name: null,
+        data: null
+    };
         
     }
   });

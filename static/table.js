@@ -193,121 +193,66 @@ async function getTemplates() {  // get all the template versions' names from th
 
 }
 
-function showTemplates(){
+let selectedItem = null;
+let isListFocused = false;
+
+function showTemplates() {
     let showHTML = ``;
 
     template_versions.forEach((key) => {
-        //console.log(key);
-        const html = `<li class="list-temp-css">${key}</li>`;
+        const html = `<li class="list-temp-css" tabindex="0">${key}</li>`;
         showHTML += html;
     });
-    
-    document.querySelector(".js-all-template-versions").innerHTML = showHTML;
 
     const myList = document.querySelector('.js-all-template-versions');
-    let isListFocused = false; //this is for delete function
-    let selectedItem = null;
+    myList.innerHTML = showHTML;
 
-// Click on list item
-myList.addEventListener('click', (e) => {
-  if (e.target && e.target.tagName === 'LI') {
-    selectedItem = e.target;
-    selectedTemplate = "";
-    selectedTemplate = selectedItem.innerHTML
-    isListFocused = true;
-    console.log('You clicked:', selectedTemplate);
-    selectedRundown.show_name = "";
-    selectedRundown.show_date = "";
-    selectedRundown.needed_columns = []
-    getColumnNames(selectedTemplate)
-  }
-});
+    myList.addEventListener('click', (e) => {
+        if (e.target && e.target.tagName === 'LI') {
+            selectedItem = e.target;
+            selectedTemplate = selectedItem.innerHTML;
+            isListFocused = true;
+            console.log('You clicked:', selectedTemplate);
 
-// Click outside the list
-document.addEventListener('click', (e) => {
-  if (!myList.contains(e.target)) {
-    isListFocused = false;
-    selectedItem = null;
-  }
-});
+            selectedRundown.show_name = "";
+            selectedRundown.show_date = "";
+            selectedRundown.needed_columns = [];
+            getColumnNames(selectedTemplate);
+        }
+    });
 
-}
-//Do not delete this, I'm working on deleting an item once they press down the delete button
-/*
-// Keydown for delete/backspace
-document.addEventListener('keydown', (e) => {
-  if (isListFocused && selectedItem && (e.key === 'Delete' || e.key === 'Backspace')) {
-    console.log('Delete key used on:', selectedItem.innerHTML);
-   // deleteTemplate(selectedItem.innerHTML)
-    selectedItem = null;
-    isListFocused = false;
-  }
-});
-
+    // Click outside the list
+    document.addEventListener('click', (e) => {
+        if (!myList.contains(e.target)) {
+            isListFocused = false;
+            selectedItem = null;
+        }
+    });
 }
 
-    let clickTimer = null;
-    let isClicked = false;
+// Add this ONCE globally, not inside showTemplates
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Delete' && isListFocused && selectedItem) {
+        const templateName = selectedItem.innerHTML.trim();
+        console.log(`Deleting template name: ${templateName}`);
 
-    ///////////////////// This needs to be changed
-    document.querySelector(".js-all-template-versions").querySelectorAll('.selectable').forEach(row => {
-        row.addEventListener('click', function(event) {
-        // If a double-click is detected, ignore the single click
-        if (clickTimer !== null) {
-            clearTimeout(clickTimer);
-            clickTimer = null;
+        if (templateName === "Default") {
+            alert("Request denied !!!");
         } else {
-            // Wait for a short time to check if it's a double-click
-            clickTimer = setTimeout(function() {
-                selectRow(row); 
-                console.log(row.innerHTML);
-                isClicked = true; // Set flag to true after clicking
+            event.stopPropagation();
+            if (!confirm(`Delete "${templateName}"?`)) return;
 
-                // Listen for Enter key after clicking
-                document.addEventListener('keydown', function(event) {
-                    if (isClicked && event.key === 'Delete') {
-                        alert('You pressed Delete after clicking!');
-                        deleteTemplate(row.innerHTML);
-                        console.log('Delete key pressed after click!');
-                        
-                        isClicked = false; // Reset flag to avoid repeated alerts
-                    }
-                }, { once: true });
-
-                //alert('Single Click Action!');
-                clickTimer = null;
-            }, 300);  // 300ms delay to differentiate
+            deleteTemplate(templateName);
+            selectedItem.remove();
+            template_versions = template_versions.filter(item => item !== templateName);
         }
-    });
-        row.addEventListener('dblclick', function(event) {
-        // Clear single click timer if double click is detected
-        if (clickTimer !== null) {
-            clearTimeout(clickTimer);
-            clickTimer = null;
-        }
-        selectedTemplate = row.innerHTML;
-        getColumnNames(selectedTemplate);
-        selectRow(row); 
-        console.log(row.innerHTML);
-        document.getElementById('templateBox').style.display='none';
-        
-        //alert('Double Click Action!');
-    });
-        
-    });
-}
 
-function selectRow(row) {
-    // Remove the 'selected' class from all rows
-    let rows = document.querySelectorAll('.selectable');
-    rows.forEach(r => r.classList.remove('selected'));
+        isListFocused = false;
+        selectedItem = null;
+    }
+});
 
-    // Add the 'selected' class to the clicked row
-    row.classList.add('selected');
-}*/
-
-
-
+// Delete a template in the database
 async function deleteTemplate(temp_name) {
     try {
         const response = await fetch(`http://localhost:3000/delete-template`, {
@@ -458,5 +403,16 @@ table.addEventListener('click', function(event) {
         {alert("This is just a view of a template. Please give a name and a date, and then select the rundown you want from the file directory.")}
     }
 })
+
+// Add a rundown into template
+const btnForrundwn2temp = document.getElementById('addRundown2Template');
+
+btnForrundwn2temp.addEventListener('click', () => {
+    alert("nothing here yet!")
+});
+
+
+
+
 
 

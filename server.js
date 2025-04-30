@@ -511,8 +511,15 @@ app.get("/get-column-names/:version", isAuthenticated, async (req, res) => {
 app.delete("/delete-template", isAuthenticated, async (req, res) => {
     const { template_version } = req.body;
 
-    const delete_query = "DELETE FROM template_t4 WHERE template_version = $1";
+    const delete_query = "DELETE FROM template_t5 WHERE template_version = $1";
     try {
+
+        await pool.query(`
+            UPDATE rundown_t5 
+            SET template_version = 'Default'
+            WHERE template_version = $1;
+        `, [template_version]);  
+
         const result = await pool.query(delete_query, [template_version]);
         if (result.rowCount > 0) {
             res.status(200).send("Template deleted successfully!");
