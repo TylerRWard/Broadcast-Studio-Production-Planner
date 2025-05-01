@@ -184,12 +184,12 @@ selected-row {
 }
 
 
-#data-table {
+#data-table, #data-table-temp {
     width: 100%;
     border-collapse: collapse;
 }
 
-#data-table thead {
+#data-table thead, #data-table-temp thead{
     position: sticky;
     top: 0;
     background-color: #fff;
@@ -197,7 +197,7 @@ selected-row {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow for visual separation */
 }
 
-#data-table td {
+#data-table td, #data-table-temp td {
     border: 0.1px solid #ddd;
     padding: 0px;
 }

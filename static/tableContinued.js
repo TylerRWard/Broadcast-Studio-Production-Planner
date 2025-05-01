@@ -17,6 +17,13 @@ selectedRundown = {
 // Draw an empty rundown with 100 rows
 function drawActualTable(columnNames, scriptName, showDate){
 
+    const table = document.getElementById('data-table-temp');
+    const actualTable = document.getElementById('data-table');
+
+    // Optional: hide the temp table and show the main one
+    table.style.display = 'none';
+    actualTable.style.display = 'table'; // or 'block' if styled differently
+
     document.querySelector('.js-create').innerHTML = `${scriptName} Rundown - ${showDate}`;
     let headHTML=``;
     let dataHTML=``;
@@ -369,9 +376,6 @@ async function getSpeakingLines(show_name, show_date, row_num) {
             // You can use the speaking_line however you want now:
             // e.g. update a div or textarea
             // document.getElementById('someElement').textContent = result.speaking_line;
-
-        } else if (response.status === 404) {
-            console.log("No speaking line found for this row.");
         } else {
             alert("Failed to retrieve speaking line.");
         }

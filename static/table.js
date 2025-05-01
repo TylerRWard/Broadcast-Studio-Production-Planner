@@ -223,6 +223,13 @@ function showTemplates() {
             selectedRundown.show_date = "";
             selectedRundown.needed_columns = [];
             getColumnNames(selectedTemplate);
+
+            const table = document.getElementById('data-table-temp');
+            const actualTable = document.getElementById('data-table');
+
+    // Optional: hide the temp table and show the main one
+    table.style.display = 'table';
+    actualTable.style.display = 'none'; // or 'block' if styled differently
         }
     });
 
@@ -298,6 +305,8 @@ async function getColumnNames(selectedTemplate) {
                 selectedRundown.show_name = data.show_name;
                 selectedRundown.show_date = data.show_date;
                 selectedRundown.needed_columns = data.columnNames;
+                //drawTable(selectedTemplate);
+                //getScriptsData(selectedRundown.show_name, selectedRundown.show_date);
                 drawActualTable(columnNames, data.show_name, data.show_date)
 
                 document.querySelector('.js-create').innerHTML = `View of ${selectedTemplate} Template`;
@@ -309,7 +318,7 @@ async function getColumnNames(selectedTemplate) {
             else
             {
                 alert(`You do not have the original rundown to populate ${selectedTemplate} template. This template will be removed soon !`)
-                drawTable(selectedTemplate);
+                //drawTable(selectedTemplate);
                 //Delete the selectedTemplate
                 deleteTemplate(selectedTemplate)
             }
@@ -423,7 +432,7 @@ function createARowInput(temp_name){
 }
 
 let fileName = '';
-const table = document.getElementById('data-table');
+const table = document.getElementById('data-table-temp');
 
 
 table.addEventListener('click', function(event) {
