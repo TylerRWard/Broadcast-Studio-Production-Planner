@@ -304,6 +304,23 @@ function createShowList(shows, folder) {
     nameSpan.style.flex   = "1";
     nameSpan.style.cursor = "pointer";
     nameSpan.addEventListener("click", () => {
+      prevSelectedRow = null;
+
+      focusedRow = null;
+
+      detailsForScriptEditor.block = null;
+      detailsForScriptEditor.item_num = null;
+      detailsForScriptEditor.row_num = null;
+
+      numOfBReakLines = 0;
+
+      previousTypedData = {
+        row_number: null,
+        block: null,
+        item_num: null,
+        column_name: null,
+        data: null
+    }
       getDetailsRundown(name, folder, active, version);
     });
     li.appendChild(nameSpan);
