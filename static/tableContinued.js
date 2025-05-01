@@ -10,7 +10,8 @@
 selectedRundown = {
     show_name: '',
     show_date: '',
-    needed_columns: []
+    needed_columns: [],
+    template_version: ''
 }
 
 // Draw an empty rundown with 100 rows
@@ -563,6 +564,7 @@ async function insertRowScripts_t() {
 
 ///get all data in Scripts_t5 table
 async function getScriptsData(show_name, show_date) {
+    console.log(show_name, show_date)
     try {
         const response = await fetch(`http://localhost:3000/get-scripts-data/${show_name}/${show_date}`);
         if (!response.ok) 

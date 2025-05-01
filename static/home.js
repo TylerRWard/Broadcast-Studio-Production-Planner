@@ -474,13 +474,16 @@ function createAddShowForm(folder) {
           template_version: templateVersion
         })
       });
-      if (!resp.ok) throw new Error(await resp.text());
+      if (!resp.ok) {
+        const errorData = await resp.json();
+        throw new Error(errorData.error || "Unknown error");
+      }
 
       await getDirectory();//reload the directory after adding a new show so that you can see it 
 
     } catch (err) {
       console.error("Error adding show:", err);
-      alert("Failed to add show.");
+      alert("❌ " + err.message);
     }
 
 
@@ -518,6 +521,7 @@ async function getDetailsRundown(name, folder, active, template_version) {
     selectedRundown.show_name = name;
     selectedRundown.show_date = resData[0].show_date.slice(0, 10);
     selectedRundown.needed_columns = resData[0].needed_columns.replace(/[{}"]/g, '').split(',');
+    selectedRundown.template_version = template_version;
 
     drawActualTable(selectedRundown.needed_columns, selectedRundown.show_name, selectedRundown.show_date);
   } catch (error) {

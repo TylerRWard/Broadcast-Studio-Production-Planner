@@ -45,27 +45,32 @@ document.addEventListener('click', (e) => {
   });
 
 
-// Get modal and buttons
-const modal = document.getElementById('simpleModal');
+// Get modal, overlay, and buttons
+const modal2 = document.getElementById('simpleModal');
+const overlay2 = document.getElementById('rundwntotemp-overlay');
 const openModalBtn = document.getElementById('openModalBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
 
 // Open modal when button is clicked
 openModalBtn.addEventListener('click', function() {
-    modal.style.display = 'block';  // Show the modal
+    modal2.style.display = 'block';  // Show the modal
+    overlay2.style.display = 'block'; // Show the overlay
 });
 
 // Close modal when the close button is clicked
 closeModalBtn.addEventListener('click', function() {
-    modal.style.display = 'none';  // Hide the modal
+    modal2.style.display = 'none';  // Hide the modal
+    overlay2.style.display = 'none'; // Hide the overlay
 });
 
 // Close modal if clicked outside of the modal content
 document.addEventListener('click', function(event) {
-    if (!modal.contains(event.target) && event.target !== openModalBtn) {
-      modal.style.display = 'none';
+    if (!modal2.contains(event.target) && event.target !== openModalBtn) {
+        modal2.style.display = 'none';
+        overlay2.style.display = 'none';
     }
-  });
+});
+
 
  //  creating a template as desired before inserting data into it.
 //let template = ['BLOCK', 'ITEM_NUM'];
@@ -284,10 +289,36 @@ async function getColumnNames(selectedTemplate) {
         if (!response.ok) throw new Error("Failed to fetch data.");
         
         const data = await response.json();
-        //console.log("Column Names:", data);
-        columnNames = data.rows[0].needed_columns.replace(/[{}"]/g, '').split(',');
-        console.log(columnNames);
-        drawTable(selectedTemplate);
+        columnNames = data.columnNames;
+        console.log(data.show_name);
+        if(data.show_name && data.show_date)
+        {
+            if(data.isShowInTable)
+            {
+                selectedRundown.show_name = data.show_name;
+                selectedRundown.show_date = data.show_date;
+                selectedRundown.needed_columns = data.columnNames;
+                drawActualTable(columnNames, data.show_name, data.show_date)
+
+                document.querySelector('.js-create').innerHTML = `View of ${selectedTemplate} Template`;
+                //selectedRundown.show_name = "";
+                //selectedRundown.show_date = "";
+                //selectedRundown.needed_columns = [];
+                
+            }
+            else
+            {
+                alert(`You do not have the original rundown to populate ${selectedTemplate} template. This template will be removed soon !`)
+                drawTable(selectedTemplate);
+                //Delete the selectedTemplate
+                deleteTemplate(selectedTemplate)
+            }
+        }
+        else
+        {
+            drawTable(selectedTemplate);
+        }
+        
     } catch (error) {
         console.error("Fetch error:", error);
         alert("Error fetching data.");
@@ -314,7 +345,7 @@ function drawTable(temp_name){
     })
 
     
-    for (let i = 0; i <35; i++)
+    for (let i = 0; i <100; i++)
         {
             
             let tablerow= ``;
@@ -404,15 +435,123 @@ table.addEventListener('click', function(event) {
     }
 })
 
-// Add a rundown into template
-const btnForrundwn2temp = document.getElementById('addRundown2Template');
 
-btnForrundwn2temp.addEventListener('click', () => {
-    alert("nothing here yet!")
+// Reset item #
+document.getElementById('regenerate_item_num').addEventListener('click', () =>{
+    console.log(selectedRundown.show_name && selectedRundown.show_date)
+    if((selectedRundown.show_name!== "") && (selectedTemplate.show_date!==""))
+    {
+       // regenerateItemNum(selectedRundown);
+    }
+    else
+    {
+        alert("You have not selected a rundown.")
+    }
+    
+});
+
+async function regenerateItemNum(selectedRundown) {
+    const data={
+        show_name: selectedRundown.show_name,
+        show_date: selectedRundown.show_date
+    }
+    try {
+        const response = await fetch(`http://localhost:3000/regenerate-item-number`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            console.log("successed!")
+        } else if (response.status === 400) {
+           console.log("unsuccessed!")
+        } else {
+            alert("Failed to regenerate item number.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error connecting to the server.");
+    }
+};
+
+
+// Add a rundown into template
+const btn3 = document.getElementById('addRundown2Template');
+const modal = document.getElementById('rundowntotemp-modal');
+const overlay = document.getElementById('rundowntotemp-overlay');
+const cancelBtn = document.getElementById('cancelModal');
+const saveBtn = document.getElementById('saveTemplate');
+const input = document.getElementById('templateNameInput');
+
+btn3.addEventListener('click', () => {
+  overlay.style.display = 'block';
+  modal.style.display = 'block';
+  if(selectedRundown.show_name)
+  {
+    document.querySelector(".title-of-modal1").innerHTML = `Save "${selectedRundown.show_name}" As A Template`;
+  }
+  
+  input.value = ''; // clear input
+  input.focus();
+});
+
+cancelBtn.addEventListener('click', () => {
+  overlay.style.display = 'none';
+  modal.style.display = 'none';
+});
+
+saveBtn.addEventListener('click', () => {
+  const name = input.value.trim();
+  if(selectedRundown.show_name)
+    {
+        if (name) {
+            saveRunsownAsTemplate(name, selectedRundown);
+            alert(`Saving template as: ${name}`);
+        } else {
+            saveRunsownAsTemplate(selectedRundown.show_name, selectedRundown);
+            alert(`Saving with rundown name "${selectedRundown.show_name}"`);
+        }
+    }
+    else
+    {
+        alert("You do not have a selected rundown to save as a template !")
+    }
+
+  overlay.style.display = 'none';
+  modal.style.display = 'none';
 });
 
 
+async function saveRunsownAsTemplate(name, selectedRundown) {
+    const data = {
+        temp_name:name,
+        originalData:`{${selectedRundown.show_date}, ${selectedRundown.show_name}, ${selectedRundown.template_version}}`,
+    }
 
+    try {
+        const response = await fetch(`http://localhost:3000/save-rundown-as-template`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
 
+        if (response.ok) {
+            getTemplates();
+        } else if (response.status === 400) {
+            alert(`${data.temp_name} already exists. Give it another name!`)
+        } else {
+            alert("Failed to insert template.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error connecting to the server.");
+    }
+    
+}
 
 

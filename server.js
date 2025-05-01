@@ -527,7 +527,49 @@ app.get("/get-column-names/:version", isAuthenticated, async (req, res) => {
     const select_query = "SELECT needed_columns FROM template_t5 WHERE template_version = $1";
     try {
         const result = await pool.query(select_query, [version]);
-        res.status(200).json(result);
+
+        const checkDate = str => !isNaN(new Date(str).getTime());
+        const isDate = checkDate(result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',')[0]);
+
+        let show_name = null;
+        let show_date = null;
+        let columnNames;
+        let isShowInTable = false;
+
+        if(isDate)
+        {
+            show_date = result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',')[0];
+            show_name = result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',')[1];
+            const temp_name = result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',')[2];
+
+            const check_show = `SELECT 1 FROM rundown_t5 WHERE show_name = $1 AND show_date = $2
+                                    LIMIT 1 `
+
+            const check_show_result = await pool.query(check_show, [show_name.trim(), show_date.trim()]);
+            if (check_show_result.rowCount > 0)
+            {
+                isShowInTable = true;
+            }
+
+            const check_query = `SELECT needed_columns FROM template_t5 WHERE template_version = $1`
+            const check_result = await pool.query(check_query, [temp_name]);
+            if(check_result.rowCount > 0 )
+            {
+                columnNames = check_result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',');
+            }
+            else
+            {
+                const defaultColumnNames = await pool.query(`SELECT needed_columns FROM template_t5 WHERE template_version = 'Default'`);
+                columnNames = defaultColumnNames.rows[0].needed_columns.replace(/[{}"]/g, '').split(',');
+            }
+        }
+        else
+        {
+            columnNames = result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',');
+        } 
+
+        console.log("column names; ",isDate );
+        res.status(200).json({columnNames, show_name, show_date, isShowInTable});
     } catch (err) {
         console.error("Error fetching data:", err.message);
         res.status(500).send("Failed to fetch data.");
@@ -700,7 +742,7 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
                     where show_name = $1 and show_date = $2
                     order by row_num`;
     try {
-        const result = await pool.query(select_query, [show_name, show_date]);
+        const result = await pool.query(select_query, [show_name.trim(), show_date.trim()]);
         //console.log(result);
         res.status(200).json(result.rows);
     } catch (err) {
@@ -1087,19 +1129,70 @@ app.post("/add-show", async (req, res) => {
       if (checkTemplate.rows.length === 0) {
         return res.status(400).json({ error: `Template version "${template_version}" does not exist.` });
       }
-  
-      // Insert the show into rundown_t5
-      const insert_query = `
-        INSERT INTO rundown_t5 (show_name, show_date, folder, active, template_version)
-        VALUES ($1, $2, $3, true, $4)
-      `;
-  
-      await pool.query(insert_query, [
-        show_name.trim(),
-        show_date,
-        folder.trim(),
-        template_version.trim()
-      ]);
+
+            // Insert the show into rundown_t5
+            const insert_query = `
+            INSERT INTO rundown_t5 (show_name, show_date, folder, active, template_version)
+            VALUES ($1, $2, $3, true, $4)
+          `;
+
+          const copy_rows = `
+            INSERT INTO scripts_t5 (show_name, show_date, block, item_num, row_num, cam, shot, tal, slug, format, read, ok, channel, writer, editor, modified, speaking_line, sot, total, mod_by )
+                SELECT 
+                $1 AS show_name,
+                $2 AS show_date,
+                block, item_num, row_num, cam, shot, tal, slug, format, read, ok, channel, writer, editor, modified, speaking_line, sot, total, mod_by 
+                FROM scripts_t5
+            WHERE show_name = $3 AND show_date = $4
+          `;
+    
+
+      // Check if the template has date in it. IF so it is a rundown template
+      const select_query = "SELECT needed_columns FROM template_t5 WHERE template_version = $1";
+      const result = await pool.query(select_query, [template_version]);
+
+      const checkDate = str => !isNaN(new Date(str).getTime());
+      const isDate = checkDate(result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',')[0]);
+
+      let template_show_name;
+      let template_show_date;
+      let template_template_version;
+
+      if(isDate)
+      {
+            template_show_date = result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',')[0];
+            template_show_name = result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',')[1];
+            template_template_version = result.rows[0].needed_columns.replace(/[{}"]/g, '').split(',')[2];
+
+            const check_show = `SELECT 1 FROM rundown_t5 WHERE show_name = $1 AND show_date = $2
+                                    LIMIT 1 `
+
+            const check_show_result = await pool.query(check_show, [template_show_name.trim(), template_show_date.trim()]);
+            if (check_show_result.rowCount === 0)
+            {
+                return res.status(400).json({ error: `Original version-"${template_show_name}" of this template-"${template_version}" does not exist.` });
+            }
+
+            await pool.query(insert_query, [
+                show_name.trim(),
+                show_date,
+                folder.trim(),
+                template_template_version.trim()
+              ]);
+
+              await pool.query(copy_rows, [show_name.trim(), show_date.trim(), template_show_name.trim(), template_show_date.trim()]);
+              
+              
+      }
+      else
+      {
+        await pool.query(insert_query, [
+            show_name.trim(),
+            show_date,
+            folder.trim(),
+            template_version.trim()
+          ]);
+      }
   
       console.log(`✅ Server: Added show "${show_name}" with template "${template_version}"`);
       res.status(201).json({ message: "Show added successfully." });
@@ -1110,6 +1203,42 @@ app.post("/add-show", async (req, res) => {
     }
   });
 
+  app.get("/get-speaking-lines/:show_name/:show_date/:row_num", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, row_num } = req.params;
+
+    const checkQuery = `
+        SELECT 1 
+        FROM scripts_t5 
+        WHERE show_name = $1 
+            AND show_date = $2 
+            AND row_num = $3 
+        LIMIT 1
+    `;
+
+    const select_query = `
+        SELECT speaking_line 
+        FROM scripts_t5
+        WHERE show_name = $1 
+        AND show_date = $2
+        AND row_num = $3
+    `;
+
+    try {
+        const result = await pool.query(checkQuery, [show_name, show_date, row_num]);
+
+        if (result.rowCount === 1) {
+            const result2 = await pool.query(select_query, [show_name, show_date, row_num]);
+            return res.status(200).json(result2.rows[0]);  // send speaking_line only
+        } else
+        {
+            return res.status(200).json({speaking_line: null});  // send speaking_line only 
+        }
+
+    } catch (err) {
+        console.error("Error retrieving speaking lines:", err.message);
+        res.status(500).send("Failed to get speaking lines.");
+    }
+});
 
 //**************************Insert script text*****************************//
 app.post("/insert-script-text", isAuthenticated, async (req, res) => {
@@ -1149,42 +1278,7 @@ app.post("/insert-script-text", isAuthenticated, async (req, res) => {
 
 });
 
-app.get("/get-speaking-lines/:show_name/:show_date/:row_num", isAuthenticated, async (req, res) => {
-    const { show_name, show_date, row_num } = req.params;
 
-    const checkQuery = `
-        SELECT 1 
-        FROM scripts_t5 
-        WHERE show_name = $1 
-            AND show_date = $2 
-            AND row_num = $3 
-        LIMIT 1
-    `;
-
-    const select_query = `
-        SELECT speaking_line 
-        FROM scripts_t5
-        WHERE show_name = $1 
-        AND show_date = $2
-        AND row_num = $3
-    `;
-
-    try {
-        const result = await pool.query(checkQuery, [show_name, show_date, row_num]);
-
-        if (result.rowCount === 1) {
-            const result2 = await pool.query(select_query, [show_name, show_date, row_num]);
-            return res.status(200).json(result2.rows[0]);  // send speaking_line only
-        } else
-        {
-            return res.status(200).json({speaking_line: null});  // send speaking_line only 
-        }
-
-    } catch (err) {
-        console.error("Error retrieving speaking lines:", err.message);
-        res.status(500).send("Failed to get speaking lines.");
-    }
-});
 
 
 // server.js
@@ -1329,6 +1423,59 @@ app.delete("/delete-show", isAuthenticated, async (req, res) => {
       client.release();
     }
   });
+
+
+  // Save a rundown as a template
+  app.post("/save-rundown-as-template", isAuthenticated, async (req, res) => {
+    const { temp_name, originalData } = req.body;
+
+    const check_query = `
+        SELECT 1 
+        FROM  template_t5
+        WHERE template_version = $1
+        LIMIT 1
+    `;
+
+    try {
+        const result = await pool.query(check_query, [temp_name]);
+
+        if(result.rowCount > 0)
+        {
+            return res.status(400).json({ error: `Template version "${temp_name}" already exist.` });
+        }
+
+        const insert_query = `
+            INSERT INTO template_t5 (template_version, needed_columns)
+            VALUES ($1, $2) 
+    `;
+
+    const insert = await pool.query(insert_query, [temp_name, originalData]);
+
+        res.status(200).json({ message: "Template is successfully added." });
+    } catch (err) {
+        console.error("Error inserting template:", err.message);
+        res.status(500).send("Failed to insert template.");
+    }
+
+});
+
+// Regenerate item numbers
+app.post("/regenerate-item-number", isAuthenticated, async (req, res) => {
+    const { show_name, show_date } = req.body;
+
+  if (!show_name || !show_date) {
+    return res.status(400).json({ error: "show_name and show_date are required." });
+  }
+
+  try {
+    await pool.query("CALL reset_blocks($1, $2)", [show_name, show_date]);
+    res.status(200).json({ message: "Blocks and item numbers reset successfully." });
+  } catch (err) {
+    console.error("❌ Error calling reset_blocks:", err.message);
+    res.status(500).json({ error: "Failed to reset blocks." });
+  }
+
+});
 
   
 

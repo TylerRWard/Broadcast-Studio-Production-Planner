@@ -1,4 +1,4 @@
-#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton {
+#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton, #addRundown2Template {
     padding: 0.5rem 1rem;
   }
 
@@ -15,10 +15,20 @@
     text-align: left;
   }
 
-
+  /* Overlay Style */
+.overlay {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed at the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    z-index: 999; /* Behind the modal */
+}
 
 /* Modal Style */
-.modal {
+.modalfortemp {
     display: none; /* Hidden by default */
     position: fixed; /* Fixed at the top */
     top: 50%; /* Center vertically */
@@ -28,7 +38,7 @@
     height: 500px; /* Set height of the modal */
     background-color: white; /* White background */
     border: 1px solid #888; /* Border */
-    z-index: 1000; /* Make sure the modal appears on top */
+    z-index: 1000; /* Modal on top */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow for a better effect */
     padding: 5px;
 }
@@ -295,3 +305,60 @@ select {
     font-size: 10px;
     
 }
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    height: 250px;
+    z-index: 1001;
+    text-align: center;
+  }
+  
+  .modal input {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 1rem 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .modal-buttons button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #cancelModal {
+    background: #ccc;
+  }
+  
+  #saveTemplate {
+    background: #4CAF50;
+    color: white;
+  }
+  

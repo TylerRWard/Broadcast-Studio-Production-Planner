@@ -39,9 +39,10 @@
         <div>
             <button id="addStartBreakButton">Start/Break</button>
             <button id="regenerate_item_num">Reset Item #</button>
-            <button id="templatesButton">View</button>  
+            <button id="templatesButton">Templates</button> 
+            <button id="addRundown2Template">Add rundown to templates</button> 
             <button id="exportButton">Export</button>
-            <button id="addRundown2Template">Add rundown to template</button>
+            
         </div>
         <div class="search-bar">
             <input type = "search" placeholder = "Search..." class="search-input">
@@ -91,8 +92,25 @@
     </div>
 
     
+
+    <!-- Add rundown to templates -->
+    <div class="modal-overlay" id="rundowntotemp-overlay"></div>
+        <div class="modal" id="rundowntotemp-modal">
+        <h3 class="title-of-modal1">Save A Rundown As A Template</h3>
+        <p>Do you want to give this template a name or save with the rundown name?</p>
+        <input type="text" id="templateNameInput" placeholder="Enter custom name (optional)" />
+        <div class="modal-buttons">
+            <button id="cancelModal">Cancel</button>
+            <button id="saveTemplate">Save</button>
+        </div>
+    </div>
+    
+
+<!-- Overlay -->
+<div id="rundwntotemp-overlay" class="overlay"></div>
+
 <!-- Modal Window -->
-<div id="simpleModal" class="modal">
+<div id="simpleModal" class="modalfortemp">
     <div class="modal-content">
         <span id="closeModalBtn" class="close-btn">&times;</span>
         <h2>Select desired columns</h2>
@@ -100,67 +118,18 @@
         <div class="checkbox-temp"> <input type="checkbox" id="exceptID" checked onclick="return false;"> <label>ITEM_NUM </label> </div>
         <div class="checkbox-temp"> <input type="checkbox" id="exceptID" checked onclick="return false;"> <label>MODIFIED </label> </div>
         <div class="checkbox-temp"> <input type="checkbox" id="exceptID" checked onclick="return false;"> <label>MOD_BY </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-cam" onclick="
-            if(checkedStatus('.js-check-cam')) 
-                {addColumn('CAM');}
-            else
-                {deleteColumn('CAM');}"> <label>CAM </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-shot" onclick="
-            if(checkedStatus('.js-check-shot')) 
-                {addColumn('SHOT');}
-            else
-                {deleteColumn('SHOT');}
-            "> <label>SHOT </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-tal" onclick="
-            if(checkedStatus('.js-check-tal')) 
-                {addColumn('TAL');}
-            else
-                {deleteColumn('TAL');}"> <label>TAL </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-slug" onclick="
-            if(checkedStatus('.js-check-slug')) 
-                {addColumn('SLUG');}
-            else
-                {deleteColumn('SLUG');}"> <label>SLUG </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-format" onclick="
-            if(checkedStatus('.js-check-format')) 
-                {addColumn('FORMAT');}
-            else
-                {deleteColumn('FORMAT');}"> <label>FORMAT </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-read" onclick="
-            if(checkedStatus('.js-check-read')) 
-                {addColumn('READ');}
-            else
-                {deleteColumn('READ');}"> <label>READ </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-sot" onclick="
-            if(checkedStatus('.js-check-sot')) 
-                {addColumn('SOT');}
-            else
-                {deleteColumn('SOT');}"> <label>SOT </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-total" onclick="
-            if(checkedStatus('.js-check-total')) 
-                {addColumn('TOTAL');}
-            else
-                {deleteColumn('TOTAL');}"> <label>TOTAL </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-ok" onclick="
-            if(checkedStatus('.js-check-ok')) 
-                {addColumn('OK');}
-            else
-                {deleteColumn('OK');}"> <label>OK </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-channel" onclick="
-            if(checkedStatus('.js-check-channel')) 
-                {addColumn('CHANNEL');}
-            else
-                {deleteColumn('CHANNEL');}"> <label>CHANNEL </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-writer" onclick="
-            if(checkedStatus('.js-check-writer')) 
-                {addColumn('WRITER');}
-            else
-                {deleteColumn('WRITER');}"> <label>WRITER </label> </div>
-        <div class="checkbox-temp"> <input type="checkbox" class="js-check-editor" onclick="
-            if(checkedStatus('.js-check-editor')) 
-                {addColumn('EDITOR');}
-            else
-                {deleteColumn('EDITOR');}"> <label>EDITOR </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-cam" onclick="if(checkedStatus('.js-check-cam')) {addColumn('CAM');} else {deleteColumn('CAM');}"> <label>CAM </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-shot" onclick="if(checkedStatus('.js-check-shot')) {addColumn('SHOT');} else {deleteColumn('SHOT');}"> <label>SHOT </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-tal" onclick="if(checkedStatus('.js-check-tal')) {addColumn('TAL');} else {deleteColumn('TAL');}"> <label>TAL </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-slug" onclick="if(checkedStatus('.js-check-slug')) {addColumn('SLUG');} else {deleteColumn('SLUG');}"> <label>SLUG </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-format" onclick="if(checkedStatus('.js-check-format')) {addColumn('FORMAT');} else {deleteColumn('FORMAT');}"> <label>FORMAT </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-read" onclick="if(checkedStatus('.js-check-read')) {addColumn('READ');} else {deleteColumn('READ');}"> <label>READ </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-sot" onclick="if(checkedStatus('.js-check-sot')) {addColumn('SOT');} else {deleteColumn('SOT');}"> <label>SOT </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-total" onclick="if(checkedStatus('.js-check-total')) {addColumn('TOTAL');} else {deleteColumn('TOTAL');}"> <label>TOTAL </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-ok" onclick="if(checkedStatus('.js-check-ok')) {addColumn('OK');} else {deleteColumn('OK');}"> <label>OK </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-channel" onclick="if(checkedStatus('.js-check-channel')) {addColumn('CHANNEL');} else {deleteColumn('CHANNEL');}"> <label>CHANNEL </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-writer" onclick="if(checkedStatus('.js-check-writer')) {addColumn('WRITER');} else {deleteColumn('WRITER');}"> <label>WRITER </label> </div>
+        <div class="checkbox-temp"> <input type="checkbox" class="js-check-editor" onclick="if(checkedStatus('.js-check-editor')) {addColumn('EDITOR');} else {deleteColumn('EDITOR');}"> <label>EDITOR </label> </div>
 
         <div> <input class="js-input-temp-name input-temp-name-css" placeholder="template name" type="text" onkeydown="enter(event.key);">
             <button class="add-button-css" onclick="createTemplate()">Add</button>
@@ -169,6 +138,7 @@
 </div>
 
 
+  
     <div class="main-content-div">
 
 
