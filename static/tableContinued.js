@@ -406,6 +406,10 @@ async function updateData(previousTypedData, selectedRundown) {
         if (response.ok) {
             //alert("Data inserted successfully!");
             showUpdateData(previousTypedData, selectedRundown);
+
+            detailsForScriptEditor.row_num = data.row_num;
+            detailsForScriptEditor.block = data.block;
+            detailsForScriptEditor.item_num = data.item_num;
             
         } else {
             alert("Failed to insert data.", forMessage);
@@ -522,6 +526,10 @@ async function insertRowScripts_t() {
             if (readcell) { readcell.value = responsedData.read;}
             if (sotcell) {sotcell.value = responsedData.sot;}
             if (totalcell) {totalcell.value = responsedData.total;}
+
+            detailsForScriptEditor.row_num = data.row_num;
+            detailsForScriptEditor.block = data.block;
+            detailsForScriptEditor.item_num = data.item_num;
 
         } else if (response.status === 400) {
             const message = await response.text();
@@ -698,8 +706,8 @@ tableActual.addEventListener('focusin', function(event) {
         const columnName = event.target.closest('td')?.dataset.column;
         const rowIndex = Array.from(tableActual.rows).indexOf(row);
         const blockOfClicked = row.querySelector('[data-column="BLOCK"] input')?.value ?? null;
-        const item_numOfClicked = row.querySelector('[data-column="ITEM_NUM"] input')?.value ?? null;                   
-
+        const item_numOfClicked = row.querySelector('[data-column="ITEM_NUM"] input')?.value ?? null;     
+        
         if (prevSelectedRow !== row)
             {
                 console.log("New row selected.")
@@ -717,7 +725,7 @@ tableActual.addEventListener('focusin', function(event) {
         
                     
             }
-
+            console.log("Detailed for script editor: ", detailsForScriptEditor.block, " ", detailsForScriptEditor.item_num)
             console.log(`${blockOfClicked}-${item_numOfClicked} Clicked column: ${columnName}, row: ${rowIndex}, rundown name: ${selectedRundown.show_name}, rundown date: ${selectedRundown.show_date}`);
 
         // Get row index (relative to the table, excluding the header)
