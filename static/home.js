@@ -155,6 +155,7 @@ function renderDirectory(rows) {
   }, {});
 
   Object.entries(groups).forEach(([folder, shows]) => {
+    if (shows.length === 0) return;
     container.appendChild(createFolderElement(folder, shows));
   });
 }
@@ -200,7 +201,8 @@ function renderArchive(rows) {
     content.appendChild(createShowList(shows, folder)); 
     details.appendChild(content);
 
-    container.appendChild(details);
+    container.appendChild(createFolderElement(folder, shows));
+    //container.appendChild(details); // this is for removing the add show button
   });
   
 }
