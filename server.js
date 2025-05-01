@@ -1279,6 +1279,57 @@ app.delete("/delete-show", isAuthenticated, async (req, res) => {
       client.release();
     }
   });
+
+  app.delete("/delete-folder/:folder", isAuthenticated, async (req, res) => {
+    const { folder } = req.params;
+    if (!folder) {
+      return res.status(400).json({ error: "Folder parameter is required." });
+    }
+  
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+  
+      // 1) delete all scripts for shows in this folder
+      await client.query(
+        `DELETE FROM scripts_t5
+           WHERE (show_name, show_date) IN (
+             SELECT show_name, show_date
+               FROM rundown_t5
+              WHERE folder = $1
+           )`,
+        [folder]
+      );
+  
+      // 2) delete all rundown rows in the folder
+      await client.query(
+        `DELETE FROM rundown_t5
+           WHERE folder = $1`,
+        [folder]
+      );
+  
+      // 3) delete the folder_topics row
+      const result = await client.query(
+        `DELETE FROM folder_topics_t5
+           WHERE folder = $1`,
+        [folder]
+      );
+      if (result.rowCount === 0) {
+        throw new Error(`Folder "${folder}" not found.`);
+      }
+  
+      await client.query("COMMIT");
+      console.log(`🗑️ Deleted folder "${folder}" and all its content.`);
+      res.status(200).json({ message: "Folder and its shows deleted." });
+    } catch (err) {
+      await client.query("ROLLBACK");
+      console.error("Error deleting folder:", err);
+      res.status(500).json({ error: err.message });
+    } finally {
+      client.release();
+    }
+  });
+
   
 
 /**************************************************************************/
