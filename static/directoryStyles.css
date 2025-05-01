@@ -1,0 +1,256 @@
+.directory{     /*Left most column (working directory)*/
+    position: absolute;
+    height: 99.7%;
+    width: 14.75%;
+    background-color: rgb(27, 30, 48);
+    top: 0.125%;
+    left: 0.125%;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    
+}
+
+details summary {
+    list-style: none;
+    cursor: pointer;
+    font-weight: bold;
+    padding-left: 1.6em;        
+    position: relative;
+    margin: 0.5em 0;
+    text-align: left;
+  }
+  
+
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+  details summary::-moz-list-bullet {
+    font-size: 0;
+  }
+  
+
+  details summary::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-block;
+    width: 1.2em;               /* adjust to match your SVG aspect ratio */
+    height: 1.2em;
+    background-image: url("../public/images/Folder-Outline-Icon.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  /* Center the content (UL or P) */
+  details > ul,
+  details > p {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    margin: 0.5em 0 1em 0;
+    font-weight: 300;          
+    font-size: 0.87em;
+    letter-spacing: 0.02em;
+  
+    font-style: normal;
+  }
+
+  /* Tidy up list bullets */
+  details > ul {
+    list-style: none;
+    padding: 0;
+  }
+  details > ul > li {
+    margin: 0.3em 0;
+  }
+
+  /* ensure summary is positioned relative so its button can be absolute */
+details summary {
+    position: relative;
+    padding-right: 2em;      /* room for the add icon */
+  }
+  
+  details summary .add-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.5em;
+    transform: translateY(-50%);
+    width: 1em;
+    height: 1em;
+    border: none;
+    background: url("../public/images/addIconDirectory.svg") no-repeat center;
+    background-size: contain;
+    background-color: transparent;
+    cursor: pointer;
+  
+    /* add this */
+    transition: transform 0.2s ease;
+    transform-origin: center center;
+  }
+  
+  /* grow on hover */
+  details summary .add-btn:hover {
+    transform: translateY(-50%) scale(1.2);
+  }
+
+
+  /* Add a folder to the directory */
+  .add-folder-btn {
+    margin-top: 1rem;
+    padding: 8px 12px;
+    background-color: #f5f5f5;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    align-self: center;
+  }
+  .add-folder-btn:hover {
+    transform: scale(1.05);
+    background-color: #e2e2e2;
+  }
+
+  .add-folder-form {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%; 
+  }
+  
+  .add-folder-form input {
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%; 
+    max-width: 50%;
+  }
+  
+  .add-folder-form button {
+    padding: 6px 10px;
+    border: none;
+    background-color: hsl(0, 0%, 73%);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .add-folder-form button:hover {
+    background-color: hsl(0, 0%, 80%);
+  }
+
+
+  .add-show-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .add-show-form input,
+  .add-show-form button {
+    width: 80%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .add-show-form button {
+    padding: 4px 8px;        
+    font-size: 13px;         
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .add-show-form button:hover {
+    background-color: #45a049;
+  }
+  
+
+
+  .clickable {
+    cursor: pointer;
+  }
+
+  #folderList ul li:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.93rem;
+  }
+
+  .show-item {
+    position: relative;
+    font-size: 0.87rem;
+    font-weight: normal;
+    padding-right: 1.5em;  
+  }
+
+  .delete-btn {
+    position: absolute;
+    right: 0.4em;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  
+  .show-item:hover .delete-btn {
+    opacity: 1;
+  }
+  
+  .trash-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+  
+  .view-toggle {
+    display: flex;
+    gap: 0.5em;
+    margin-bottom: 1em;
+  }
+  .tab {
+    flex: 1;
+    padding: 0.5em;
+    background: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  .tab.active {
+    background: #B5A36A;
+    color: #000;
+  }
+
+  .arrow-btn {
+    width: 12px;
+    height: 12px;
+    margin-left: 0.5em;
+    border: none;                  
+    padding: 0;                                     
+    line-height: 0 ;                
+    cursor: pointer;
+    appearance: none;                          /* drop native look on WebKit */
+    -webkit-appearance: none;                  /* drop native on Safari/Chrome */
+    -moz-appearance: none;                     /* drop native on Firefox */
+  }

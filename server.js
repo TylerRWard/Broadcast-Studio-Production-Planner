@@ -387,7 +387,10 @@ app.get("/generate-scriptpdf/:show_name/:show_date", isAuthenticated, async (req
 
 // ************************************DIRECTORY************************************************************************ //
 
-app.get("/directory", isAuthenticated, async (req, res) => {
+app.get("/rundowns", isAuthenticated, async (req, res) => {
+    // parse active=true|false (default to true)
+    const active = req.query.active === "false" ? false : true;
+  
     const select_query = `
       SELECT
         ft.folder        AS folder_topic,
@@ -399,6 +402,7 @@ app.get("/directory", isAuthenticated, async (req, res) => {
       LEFT JOIN
         rundown_t5 r
           ON ft.folder = r.folder
+         AND r.active = $1
       WHERE
         ft.folder IS NOT NULL
         AND ft.folder != ''
@@ -407,13 +411,36 @@ app.get("/directory", isAuthenticated, async (req, res) => {
         r.show_date,
         r.show_name;
     `;
+  
     try {
-      const { rows } = await pool.query(select_query);
-      console.log("Server: Directory Data:", rows);
+      const { rows } = await pool.query(select_query, [active]);
       res.json(rows);
     } catch (err) {
-      console.error("Error fetching directory:", err);
-      res.status(500).send("Failed to fetch directory.");
+      console.error("Error fetching rundowns:", err);
+      res.status(500).send("Failed to fetch rundowns.");
+    }
+  });
+
+  app.patch("/update-show-active", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, folder, active } = req.body;
+    if (typeof active !== "boolean" ||
+        !show_name || !show_date || !folder) {
+      return res.status(400).json({ error: "Missing or invalid parameters." });
+    }
+  
+    try {
+      await pool.query(
+        `UPDATE rundown_t5
+            SET active = $4
+          WHERE show_name = $1
+            AND show_date  = $2
+            AND folder     = $3`,
+        [show_name, show_date, folder, active]
+      );
+      res.sendStatus(204);
+    } catch (err) {
+      console.error("Error updating show active:", err);
+      res.status(500).json({ error: "Failed to update show." });
     }
   });
   
@@ -1162,6 +1189,52 @@ app.get("/get-speaking-lines/:show_name/:show_date/:row_num", isAuthenticated, a
 
 // server.js
 app.delete("/delete-show", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, folder } = req.query;
+    if (!show_name || !show_date || !folder) {
+      return res
+        .status(400)
+        .json({ error: "Missing show_name, show_date, or folder." });
+    }
+  
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+  
+      // 1) delete all script rows for this show
+      await client.query(
+        `DELETE FROM scripts_t5
+           WHERE show_name = $1
+             AND show_date  = $2`,
+        [show_name, show_date]
+      );
+  
+      // 2) delete the rundown row itself
+      const result = await client.query(
+        `DELETE FROM rundown_t5
+           WHERE show_name = $1
+             AND show_date  = $2
+             AND folder     = $3`,
+        [show_name, show_date, folder]
+      );
+      if (result.rowCount === 0) {
+        throw new Error("Show not found");
+      }
+  
+      await client.query("COMMIT");
+      console.log(
+        `🗑️ Deleted show "${show_name}" on ${show_date} in folder "${folder}"`
+      );
+      res.json({ message: "Show deleted." });
+    } catch (err) {
+      await client.query("ROLLBACK");
+      console.error("Delete failed:", err);
+      res.status(500).json({ error: err.message });
+    } finally {
+      client.release();
+    }
+  });
+
+  app.delete("/delete-show", isAuthenticated, async (req, res) => {
     const { show_name, show_date, folder } = req.query;
     if (!show_name || !show_date || !folder) {
       return res
