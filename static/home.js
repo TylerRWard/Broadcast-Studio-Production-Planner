@@ -296,7 +296,7 @@ function createShowList(shows, folder) {
       : "Restore to Directory";
 
     const arrowIcon = document.createElement("img");
-    arrowIcon.src   = "/public/images/curved-arrow.svg";
+    arrowIcon.src   = "/public/images/archive-arrow.png";
     arrowIcon.alt   = "";
     arrowIcon.classList.add("arrow-icon");
     arrowBtn.appendChild(arrowIcon);
