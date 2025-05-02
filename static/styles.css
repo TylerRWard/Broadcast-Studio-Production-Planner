@@ -247,7 +247,7 @@ input {
 .action-button {
     width: 100%;
     padding: 10px;
-    background: #b5a36a;
+    background: #e0c080;
     color: black;
     border: none;
     border-radius: 4px;
@@ -260,7 +260,7 @@ input {
 }
 
 .delete-button {
-    background: #b5a36a;
+    background: #e0c080;
 }
 
     .delete-button:hover {
@@ -295,12 +295,12 @@ input {
     gap: 10px;
 }
 
-.action-buttons .action-button {
-    width: auto;
-    padding: 10px 20px;
-    background: #b5a36a;
-    font-size: 16px;
-}
+    .action-buttons .action-button {
+        width: auto;
+        padding: 10px 20px;
+        background: #e0c080;
+        font-size: 16px;
+    }
 
 .action-buttons .action-button:hover {
     background: hsl(46,34%,45%);

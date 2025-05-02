@@ -36,13 +36,17 @@ h1 {
     margin: 0;
 }
 
+.header-content h1 {
+    color: rgb(27,30,48);
+}
+
 .header-buttons {
     display: flex;
     gap: 10px; /* Space between buttons */
 }
 
 .header-button {
-    background-color: #b5a36a; /* gold */
+    background-color: #e0c080; /* gold */
     color: black;
     border: none;
     padding: 8px 16px;
@@ -52,9 +56,9 @@ h1 {
     transition: background-color 0.3s;
 }
 
-.header-button#logout-btn {
-    background-color: #b5a36a; /* gold */
-}
+    .header-button#logout-btn {
+        background-color: #e0c080; /* gold */
+    }
 
 .header-button:hover {
     background-color: hsl(46,34%,45%); /* Darker gold on hover for User Management */

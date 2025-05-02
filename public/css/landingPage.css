@@ -8,10 +8,10 @@ body, html {
     font-size: 3rem;
   }
 
-  h2 {
+h2 {
     font-size: 2.5rem;
-    color: #B5A36A;
-  }
+    color: #e0c080;
+}
 
   header {
     display: flex;
@@ -60,16 +60,16 @@ body, html {
     transform: translateX(-50%); 
     z-index: 1;
   }
-  
-  .main-button {
-    padding: 20px 40px;  
-    font-size: 3rem;   
-    background-color: #B5A36A;
+
+.main-button {
+    padding: 20px 40px;
+    font-size: 3rem;
+    background-color: #e0c080;
     color: white;
     border: none;
     border-radius: 25px;
     cursor: pointer;
-  }
+}
   
   .main-button:hover {
     background-color: hsl(46, 34%, 45%);

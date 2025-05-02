@@ -99,17 +99,17 @@ details summary {
 
 
   /* Add a folder to the directory */
-  .add-folder-btn {
+.add-folder-btn {
     margin-top: 1rem;
     padding: 8px 12px;
-    background-color: #B5A36A;
+    background-color: #d6ba77;
     border: none;
     border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.2s ease;
     align-self: center;
-  }
+}
   .add-folder-btn:hover {
     transform: scale(1.05);
     background-color: hsl(46, 34%, 45%);
@@ -238,10 +238,10 @@ details summary {
     border: none;
     cursor: pointer;
   }
-  .tab.active {
-    background: #B5A36A;
-    color: #000;
-  }
+    .tab.active {
+        background: #d6ba77;
+        color: #000;
+    }
 
   .arrow-btn {
     width: 12px;

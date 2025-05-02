@@ -901,7 +901,7 @@ function drawStart(startRow){
     const mergedCell = startRow.insertCell();
     mergedCell.colSpan = numOfColumns - 4; // This cell will span across 2 columns
     mergedCell.textContent = 'START';
-    mergedCell.style.backgroundColor = '#b5a36a';
+    mergedCell.style.backgroundColor = '#e0c080';
     mergedCell.style.textAlign = 'center';
     mergedCell.style.fontWeight = 'bold';
 
@@ -1000,7 +1000,7 @@ let numOfBReakLines = 0;
     const mergedCell = breakRow.insertCell();
     mergedCell.colSpan = numOfColumns - 4; // This cell will span across 2 columns
     mergedCell.textContent = 'BREAK';
-    mergedCell.style.backgroundColor = '#f44336';
+        mergedCell.style.backgroundColor = '#ff6b6b';
     mergedCell.style.textAlign = 'center';
     mergedCell.style.fontWeight = 'bold';
 
