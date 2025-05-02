@@ -401,7 +401,36 @@ const dataInputObject = {
 
     'SLUG': `<input class="grid-input-data js-SLUG" placeholder="" maxlength="30">`,
 
-    'FORMAT': `<input class="grid-input-data js-FORMAT" placeholder="" maxlength="12">`,
+    //'FORMAT': `<input class="grid-input-data js-FORMAT" placeholder="" maxlength="12">`,
+    'FORMAT':`<label for="formatInput"></label>
+                            <input
+                            id="formatInput"
+                            name="format"
+                            list="formatOptions"
+                            placeholder="Type or select a format…"
+                            style="text-align: center;"
+                            />
+
+                            <datalist id="formatOptions">
+                            <option value="ONCAM">
+                            <option value="RDR">
+                            <option value="FS">
+                            <option value="OTS">
+                            <option value="PKG">
+                            <option value="VO">
+                            <option value="SOT/VO">
+                            <option value="SOT">
+                            <option value="NAT/VO">
+                            <option value="OTS/FS">
+                            <option value="DOUBLE-BOX">
+                            <option value="LIVE">
+                            <option value="PLASMA-VO">
+                            <option value="CHROMA-VO">
+                            <option value="WIPE VO">
+                            <option value="WIPE FS">
+                            <option value="MON VO">
+                            <option value="MON FS">
+                            </datalist>`, 
 
     'READ': `<input class="grid-input-data js-READ" placeholder="">`,
 
@@ -411,7 +440,7 @@ const dataInputObject = {
 
     'OK': `<select class="okDropdown">
                         <option value="" disabled selected style="text-align: center;">status</option> <!-- Placeholder -->
-                        <option value="option-1" style="text-align: left;">🔴 Approval denied</option>
+                        <option value="option-1" style="text-align: left;">🔴 Needs Revision</option>
                         <option value="option-2" style="text-align: left;">🟡 In progress</option>
                         <option value="option-3" style="text-align: left;">🟢 Approved</option>
                     </select>`,

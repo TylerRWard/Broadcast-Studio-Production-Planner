@@ -769,6 +769,15 @@ app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
             return res.status(400).send("Start row already exists. No insert performed.");
         }
     }
+
+    if (column_name === 'format') {
+        await pool.query(
+          `INSERT INTO format_t5 (format)
+             VALUES ($1)
+           ON CONFLICT (format) DO NOTHING;`,
+          [data]
+        );
+      }
     
 
     const update_query = `

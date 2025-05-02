@@ -216,6 +216,7 @@ details summary {
   
   .show-item:hover .delete-btn {
     opacity: 1;
+    transition: opacity 0.2s ease;
   }
   
   .trash-icon {
@@ -243,14 +244,33 @@ details summary {
   }
 
   .arrow-btn {
-    width: 12px;
-    height: 12px;
-    margin-left: 0.5em;
-    border: none;                  
-    padding: 0;                                     
-    line-height: 0 ;                
+    all: unset;               
+    display: inline-flex;     
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    appearance: none;                          /* drop native look on WebKit */
-    -webkit-appearance: none;                  /* drop native on Safari/Chrome */
-    -moz-appearance: none;                     /* drop native on Firefox */
+    padding: 4px;
   }
+  
+  .arrow-btn:hover {
+    opacity: 0.8;
+  }
+  
+  .arrow-icon {
+    display: block;
+    width: 16px;    
+    height: 16px;
+  }
+
+  /* hide the arrow by default */
+.show-item .arrow-btn {
+  opacity: 0;
+  pointer-events: none;       /* so it won’t catch clicks when hidden */
+  transition: opacity 0.2s ease;
+}
+
+/* when hovering the show-item, fade it in */
+.show-item:hover .arrow-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
