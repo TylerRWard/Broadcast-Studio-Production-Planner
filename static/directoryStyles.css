@@ -2,11 +2,11 @@
     position: absolute;
     height: 99.7%;
     width: 14.75%;
-    background-color: rgb(27, 30, 48);
+    background-color: #ccc;
     top: 0.125%;
     left: 0.125%;
     border-radius: 5px;
-    color: white;
+    color: rgb(27,30,48);
     text-align: center;
     font-size: 16px;
     font-weight: bold;
@@ -41,7 +41,7 @@ details summary {
     display: inline-block;
     width: 1.2em;               /* adjust to match your SVG aspect ratio */
     height: 1.2em;
-    background-image: url("../public/images/Folder-Outline-Icon.svg");
+    background-image: url("../public/images/folder-icon.png");
     background-size: contain;
     background-repeat: no-repeat;
   }
@@ -82,7 +82,7 @@ details summary {
     width: 1em;
     height: 1em;
     border: none;
-    background: url("../public/images/addIconDirectory.svg") no-repeat center;
+    background: url("../public/images/add-icon.png") no-repeat center;
     background-size: contain;
     background-color: transparent;
     cursor: pointer;
@@ -102,7 +102,7 @@ details summary {
   .add-folder-btn {
     margin-top: 1rem;
     padding: 8px 12px;
-    background-color: #f5f5f5;
+    background-color: #B5A36A;
     border: none;
     border-radius: 6px;
     font-weight: bold;
@@ -112,7 +112,7 @@ details summary {
   }
   .add-folder-btn:hover {
     transform: scale(1.05);
-    background-color: #e2e2e2;
+    background-color: hsl(46, 34%, 45%);
   }
 
   .add-folder-form {
@@ -233,8 +233,8 @@ details summary {
   .tab {
     flex: 1;
     padding: 0.5em;
-    background: #333;
-    color: #fff;
+    background: #ccc;
+    color: rgb(27,30,48);
     border: none;
     cursor: pointer;
   }
@@ -244,10 +244,13 @@ details summary {
   }
 
   .arrow-btn {
-    all: unset;               
-    display: inline-flex;     
-    align-items: center;
-    justify-content: center;
+    width: 12px;
+    height: 12px;
+    display: block;
+    margin-left: 0.5em;
+    border: none;                  
+    padding: 0;                                     
+    line-height: 0 ;                
     cursor: pointer;
     padding: 4px;
   }
@@ -265,7 +268,7 @@ details summary {
   /* hide the arrow by default */
 .show-item .arrow-btn {
   opacity: 0;
-  pointer-events: none;       /* so it won’t catch clicks when hidden */
+  pointer-events: none;       /* so it won�t catch clicks when hidden */
   transition: opacity 0.2s ease;
 }
 

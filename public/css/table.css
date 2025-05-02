@@ -18,7 +18,7 @@
   #startBreakBox{
     position: absolute;
     display: none;
-    background: #fff;
+    background: #000;
     border: 1px solid #aaa;
     padding: 1rem;
     border-radius: 8px;
@@ -227,22 +227,22 @@ td {
     background-color: rgb(59, 67, 88);
     color: white;
     font-weight: bold;
-    font-size: 18;
+    font-size: 18px;
     height: 24px;
 }
 
 .table-data-css{
-    background-color: black;
-    color: white;
-    font-size: 16;
+    background-color: white;
+    color: black;
+    font-size: 16px;
     height: 25px;
 }
 
 
 select {
     border: none;
-    color: white;             /* text color */
-    background-color: black;  /* background color */
+    color: black;             /* text color */
+    background-color: white;  /* background color */
         
   }
 

@@ -361,7 +361,7 @@ function createShowList(shows, folder) {
     delBtn.title = "Delete this show";
 
     const delIcon = document.createElement("img");
-    delIcon.src   = "/public/images/trash.svg";
+    delIcon.src   = "/public/images/trash-icon.png";
     delIcon.alt   = "Delete";
     delIcon.classList.add("trash-icon");
     delBtn.appendChild(delIcon);

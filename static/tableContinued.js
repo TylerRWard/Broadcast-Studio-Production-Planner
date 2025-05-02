@@ -893,21 +893,21 @@ function drawStart(startRow){
     console.log(selectedTemplate, numOfColumns);
 
     let innerStart = `
-    <td data-column="BLOCK" class="table-data-css BLOCK" style="color:white; background-color: black;">${createARowInput("BLOCK")}</td>
-    <td data-column="ITEM_NUM" class="table-data-css ITEM_NUM" style="color:white; background-color: black;">${createARowInput("ITEM_NUM")}</td>
+    <td data-column="BLOCK" class="table-data-css BLOCK" style="color:#f8f8f8; background-color: #f8f8f8;">${createARowInput("BLOCK")}</td>
+    <td data-column="ITEM_NUM" class="table-data-css ITEM_NUM" style="color:#f8f8f8; background-color: #f8f8f8;">${createARowInput("ITEM_NUM")}</td>
 `
     document.querySelector('.start-row').innerHTML +=  innerStart;
 
     const mergedCell = startRow.insertCell();
     mergedCell.colSpan = numOfColumns - 4; // This cell will span across 2 columns
     mergedCell.textContent = 'START';
-    mergedCell.style.backgroundColor = '#f9f9f9';
+    mergedCell.style.backgroundColor = '#b5a36a';
     mergedCell.style.textAlign = 'center';
     mergedCell.style.fontWeight = 'bold';
 
     innerStart = `
-    <td data-column="MODIFIED" class="table-data-css MODIFIED" style="color:white; background-color: black;">${createARowInput("MODIFIED")}</td>
-    <td data-column="MOD_BY" class="table-data-css MOD_BY" style="color:white; background-color: black;">${createARowInput("MOD_BY")}</td>
+    <td data-column="MODIFIED" class="table-data-css MODIFIED" style="color:#f8f8f8; background-color: #f8f8f8;">${createARowInput("MODIFIED")}</td>
+    <td data-column="MOD_BY" class="table-data-css MOD_BY" style="color:#f8f8f8; background-color: #f8f8f8;">${createARowInput("MOD_BY")}</td>
     `;
     document.querySelector('.start-row').innerHTML += innerStart;
     
@@ -992,21 +992,21 @@ let numOfBReakLines = 0;
     console.log(selectedTemplate, numOfColumns)
 
     let innerBreak = `
-    <td data-column="BLOCK" class="table-data-css BLOCK" style="color:white; background-color: black;">${createARowInput("BLOCK")}</td>
-    <td data-column="ITEM_NUM" class="table-data-css ITEM_NUM" style="color:white; background-color: black;">${createARowInput("ITEM_NUM")}</td>
+    <td data-column="BLOCK" class="table-data-css BLOCK" style="color:#f8f8f8; background-color: #f8f8f8;">${createARowInput("BLOCK")}</td>
+    <td data-column="ITEM_NUM" class="table-data-css ITEM_NUM" style="color:#f8f8f8; background-color: #f8f8f8;">${createARowInput("ITEM_NUM")}</td>
     `;
     document.querySelector(`.break-row${numOfBReakLines}`).innerHTML +=  innerBreak;
 
     const mergedCell = breakRow.insertCell();
     mergedCell.colSpan = numOfColumns - 4; // This cell will span across 2 columns
     mergedCell.textContent = 'BREAK';
-    mergedCell.style.backgroundColor = '#f9f9f9';
+    mergedCell.style.backgroundColor = '#f44336';
     mergedCell.style.textAlign = 'center';
     mergedCell.style.fontWeight = 'bold';
 
     innerBreak = `
-    <td data-column="MODIFIED" class="table-data-css MODIFIED" style="color:white; background-color: black;">${createARowInput("MODIFIED")}</td>
-    <td data-column="MOD_BY" class="table-data-css MOD_BY" style="color:white; background-color: black;">${createARowInput("MOD_BY")}</td>
+    <td data-column="MODIFIED" class="table-data-css MODIFIED" style="color:#f8f8f8; background-color: #f8f8f8;">${createARowInput("MODIFIED")}</td>
+    <td data-column="MOD_BY" class="table-data-css MOD_BY" style="color:#f8f8f8; background-color: #f8f8f8;">${createARowInput("MOD_BY")}</td>
 
     `;
 

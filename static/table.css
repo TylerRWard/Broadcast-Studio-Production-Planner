@@ -1,7 +1,7 @@
 #templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton, #addRundown2Template {
     padding: 0.5rem 1rem;
   }
-
+/*dropdown for the buttons in header*/
   #templateBox, #startBreakBox, #exportBox {
     position: absolute;
     display: none;
@@ -164,7 +164,7 @@ selected-row {
   }
   
   .selected-row td, .selected-row td input, .selected-row td select {
-    background-color: #0c4f7b; /* light cyan */
+    background-color: #ccc; /* light gray */
     
   }
 .selectable{
@@ -207,7 +207,7 @@ selected-row {
     width: 100%;
     overflow-x: auto;
 }
-
+/*box widths*/
 .BLOCK { width: 3.5%; }
 .ITEM_NUM { width: 5%; }
 .CAM { width: 3%; }
@@ -232,8 +232,8 @@ selected-row {
     font-size: 15px;
     border: none;
     text-align: center;
-    background-color: black;
-    color: #fff;
+    background-color: #f8f8f8;
+    color: #000;
 }
 
 .js-ID{
@@ -255,37 +255,38 @@ td {
     text-align: center;
 
 }
-
+/* table header*/
 .table-head-css{
     background-color: rgb(59, 67, 88);
     color: white;
     font-weight: bold;
-    font-size: 18;
+    font-size: 18px;
     height: 24px;
     
 }
-
+/*inside table*/
 .table-data-css{
-    background-color: black;
-    color: white;
-    font-size: 16;
+    background-color: #f8f8f8;
+    color: black;
+    font-size: 16px;
     height: 25px;
     white-space: nowrap;       /* Keeps text in one line */
     overflow: hidden;          /* Hides overflow text */
     text-overflow: ellipsis;
 }
 
-
+/*inside table*/
 select {
     border: none;
-    color: white;             /* text color */
-    background-color: black;  /* background color */
+    color: black;             /* text color */
+    background-color: #f8f8f8;  /* background color */
         
   }
 
+/*select dropdown on table*/
   select option {
-    color: white;
-    background-color: black;
+    color: black;
+    background-color: #f8f8f8;
   }
 
 .temp-view-table {

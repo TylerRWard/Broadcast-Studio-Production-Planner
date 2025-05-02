@@ -6,7 +6,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
+    padding:0;
     text-align: center;
     background-color: #f4f4f4;
 }
@@ -14,7 +14,7 @@ body {
 header {
     background-color: #f8f8f8; /* Adjust as needed */
     padding: 10px 20px;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid black;
 }
 
 .header-content {
@@ -27,7 +27,7 @@ header {
 
 .logo {
     height: 40px;
-    margin-right: 10px;
+    margin-right: 190px;
 }
 
 h1 {
@@ -42,8 +42,8 @@ h1 {
 }
 
 .header-button {
-    background-color: #007bff; /* Blue for User Management, adjust as needed */
-    color: white;
+    background-color: #b5a36a; /* gold */
+    color: black;
     border: none;
     padding: 8px 16px;
     border-radius: 5px;
@@ -53,15 +53,15 @@ h1 {
 }
 
 .header-button#logout-btn {
-    background-color: #dc3545; /* Red for Logout */
+    background-color: #b5a36a; /* gold */
 }
 
 .header-button:hover {
-    background-color: #0056b3; /* Darker blue on hover for User Management */
+    background-color: hsl(46,34%,45%); /* Darker gold on hover for User Management */
 }
 
 .header-button#logout-btn:hover {
-    background-color: #c82333; /* Darker red on hover for Logout */
+    background-color: hsl(46,34%,45%); /* Darker gold on hover for Logout */
 }
 
 .container {
@@ -69,19 +69,19 @@ h1 {
     padding: 20px;
     max-width: 600px;
     background: #ccc;
-    border: 2px solid #000;
+    border: 2px solid #fff;
     border-radius: 0;
     box-shadow: none;
 }
 
 .nav-bar {
-    background-color: rgb(27, 30, 48);
-    height: 50px;
+    background-color: rgb(27,30,48);
+    height: 45px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
-    border-bottom: 2px solid #000;
+    padding: 0 2px;
+    border-bottom: 2px solid rgb(27, 30, 48);
     gap: 20px; /* Space between hamburger and search */
 }
 
@@ -102,7 +102,7 @@ h1 {
     border: 1px solid #000;
     border-radius: 5px;
     width: 200px;
-    background-color: #fff;
+    background-color: #f8f8f8;
     outline: none;
 }
 
@@ -182,7 +182,7 @@ h1 {
     width: 100%;
     top: 110px;
     left: 0%;
-    background-color: white;
+    background-color: rgb(27,30,48);
 }
 
 .div-1{     /*Left most column (working directory)*/
@@ -206,9 +206,9 @@ h1 {
     width: 84.875%;
     top: 0.125%;
     left: 15%;
-    background-color:rgb(27, 30, 48);
+    background-color:#ccc;
     border-radius: 5px;
-    color: white;
+    color: rgb(27,30,48);
     font-size: 15px;
     padding-top: 2px;
     padding-left: 4px;
@@ -222,7 +222,7 @@ h1 {
     width: 84.875%;
     top: 3.25%;
     left: 15%;
-    background-color: rgb(59, 67, 88);
+    background-color: #ccc;
     
     overflow-y: auto; /* Allow vertical scrolling */
    
@@ -254,9 +254,9 @@ h1 {
     width: 84.875%;
     bottom: 0.125%;
     left: 15%;
-    background-color: rgb(27, 30, 48);
+    background-color: #ccc;
     border-radius: 5px;
-    color: white;
+    color: rgb(27,30,48);
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -271,14 +271,14 @@ h1 {
 }
 
 .scriptBox {
-    background-color: white;
+    background-color: #f8f8f8;
     border-radius: 5px;
     color: black;
     font-size: 16px;
     font-weight: bold;
     padding: 10px;
     resize: none; 
-    border: 2px solid rgb(99, 104, 141);
+    border: 2px solid rgb(59, 67, 88);
     outline: none;
     flex-grow: 1; 
 }

@@ -32,19 +32,7 @@ body, html {
   }
   
 
-  .bg-image {
-    background-image: url("/public/images/DesignV4.png");
-    filter: blur(2px);
-    -webkit-filter: blur(2px);
-    height: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: fixed;
-    width: 100%;
-    z-index: -1;
-  }
-
+  
   .logo {
     width: 150px;  
     height: auto;

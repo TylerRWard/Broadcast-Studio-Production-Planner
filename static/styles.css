@@ -1,18 +1,19 @@
-/*css for styling login page*/
+/*css for styling login page and User management*/
 
-body {
+/*user management body*/
+body { 
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     text-align: center;
     background-color: #f4f4f4;
 }
-
+/*User management header*/
 header {
-    background: #333;
-    color: white;
+    background: #f8f8f8;
+    color: rgb(27,30,48);
     padding: 10px 0;
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid black;
 }
 
 .header-content {
@@ -21,12 +22,12 @@ header {
     justify-content: center;
     gap: 10px;
 }
-
+/*program logo*/
 .logo {
     width: 50px;
     height: auto;
 }
-
+/*body inner box*/
 .container {
     margin: 20px auto;
     padding: 20px;
@@ -130,7 +131,7 @@ header {
     margin: 0 0 20px 0;
     font-size: 24px;
 }
-
+/*name email pass boxes*/
 input {
     display: block;
     margin: 10px auto;
@@ -217,7 +218,7 @@ input {
 .back-to-login:hover {
     text-decoration: underline;
 }
-
+/*add new user container*/
 .management-container {
     background: #fff;
     padding: 20px;
@@ -230,7 +231,7 @@ input {
 
 .management-container h2 {
     margin-bottom: 20px;
-    color: #333;
+    color: rgb(27,30,48);
 }
 
 .management-container input,
@@ -246,8 +247,8 @@ input {
 .action-button {
     width: 100%;
     padding: 10px;
-    background: #4CAF50;
-    color: white;
+    background: #b5a36a;
+    color: black;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -255,16 +256,16 @@ input {
 }
 
 .action-button:hover {
-    background: #45a049;
+    background: hsl(46,34%,45%);
 }
 
 .delete-button {
-    background: #f44336;
+    background: #b5a36a;
 }
 
-.delete-button:hover {
-    background: #da190b;
-}
+    .delete-button:hover {
+        background: hsl(46,34%,45%);
+    }
 
 .navigation {
     text-align: center;
@@ -272,12 +273,12 @@ input {
 }
 
 .back-to-login {
-    color: #666;
+    color: #444;
     text-decoration: none;
 }
 
 .back-to-login:hover {
-    color: #333;
+    color: #111;
     text-decoration: underline;
 }
 
@@ -297,12 +298,12 @@ input {
 .action-buttons .action-button {
     width: auto;
     padding: 10px 20px;
-    background: #007bff;
+    background: #b5a36a;
     font-size: 16px;
 }
 
 .action-buttons .action-button:hover {
-    background: #0056b3;
+    background: hsl(46,34%,45%);
 }
 
 .content-wrapper {
