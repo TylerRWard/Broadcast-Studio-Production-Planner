@@ -272,6 +272,23 @@ h1 {
     margin-bottom: 8px; 
     margin-top: 3px;
     text-align: center;
+    width: 100%;
+}
+
+.scriptBox-heading-container {
+  display: flex;
+}
+
+.scriptBox-tags-select {
+  background-color: white;
+  border-radius: 5px;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  resize: none; 
+  border: 2px solid rgb(99, 104, 141);
+  outline: none;
+  flex-grow: 1; 
 }
 
 .scriptBox {

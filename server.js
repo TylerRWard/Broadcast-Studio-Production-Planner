@@ -75,7 +75,6 @@ app.post("/login", async (req, res) => {
         if (match) {
             req.session.isAuthenticated = true;
             req.session.user = { name: user.name, email: user.email, adminLevel: user.admin_level };
-            userEmail = req.session.user.email;
             res.status(200).json({
                 message: "Login successful",
                 user: req.session.user
@@ -663,10 +662,9 @@ app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
     }
 });
 
-let userEmail; // Get the logged-in user's name
-
 // Insert a row into scripts_t5
 app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
+    const userEmail = req.session.user.email;
     const { item_num, block, show_date, show_name, row_num } = req.body;
 
     //Prevent having two start rows
@@ -693,19 +691,19 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
     // Row already exists → update it
     const updateQuery = `
     UPDATE scripts_t5
-    SET block = $1, item_num = $2, modified = now() AT TIME ZONE 'America/Chicago'
+    SET block = $1, item_num = $2, modified = now() AT TIME ZONE 'America/Chicago', mod_by = $6
     WHERE show_name = $3 AND show_date = $4 AND row_num = $5
 `;
 
     // Row doesn't exist → insert it
     const insertQuery = `
-    INSERT INTO scripts_t5 (show_name, show_date, row_num, block, item_num, read, sot, total, modified)
-    VALUES ($1, $2, $3, $4, $5, '00:00', '00:00', '00:00', now() AT TIME ZONE 'America/Chicago')
+    INSERT INTO scripts_t5 (show_name, show_date, row_num, block, item_num, read, sot, total, modified, mod_by)
+    VALUES ($1, $2, $3, $4, $5, '00:00', '00:00', '00:00', now() AT TIME ZONE 'America/Chicago', $6)
 `;
     
     // Get Just inserted data
     const getInsertedData = `
-    select modified, TO_CHAR(read, 'SS:MI')as read, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total from scripts_t5
+    select modified, mod_by, TO_CHAR(read, 'SS:MI')as read, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total from scripts_t5
     where show_name = $1 and show_date = $2 and row_num = $3
 `;
 
@@ -714,14 +712,14 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
 
         if (existingRowCheck.rowCount > 0) {
             
-            await pool.query(updateQuery, [block, item_num, show_name, show_date, row_num]);
+            await pool.query(updateQuery, [block, item_num, show_name, show_date, row_num, userEmail]);
             
             const result =await pool.query(getInsertedData, [show_name, show_date, row_num]);
             return res.status(200).json(result.rows[0]);
 
         } else {
             
-            await pool.query(insertQuery, [show_name, show_date, row_num, block, item_num]);
+            await pool.query(insertQuery, [show_name, show_date, row_num, block, item_num, userEmail]);
 
             const result =await pool.query(getInsertedData, [show_name, show_date, row_num]);
             return res.status(200).json(result.rows[0]);
@@ -735,7 +733,7 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
 
 // Get the data of relevant rundown from scripts_t4
 app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, res) => {
-   
+    
     const { show_name, show_date } = req.params;
 
     const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total, mod_by from scripts_t5
@@ -754,6 +752,7 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
 
 //update-data-in-rundown
 app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
+    const userEmail = req.session.user.email;
     const { show_name, show_date, row_number, block, item_num, column_name, data } = req.body;
 
     //Prevent having two start rows
@@ -779,12 +778,13 @@ app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
         );
       }
     
+    // Prevent mod_by from changing if the OK column is being changed
+    const mod_by_query = column_name === "ok" ? "" : ", mod_by = $7";
 
     const update_query = `
     UPDATE scripts_t5
     SET ${column_name} = $6,
-        modified = now() AT TIME ZONE 'America/Chicago',
-        mod_by = $7
+        modified = now() AT TIME ZONE 'America/Chicago'${mod_by_query}
     WHERE show_name = $1 
       AND show_date = $2 
       AND row_num = $3 
@@ -792,7 +792,9 @@ app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
       AND item_num = $5;
 `;
     try{
-        const result = await pool.query(update_query, [show_name, show_date, row_number, block, item_num, data, userEmail]);
+        const values = [show_name, show_date, row_number, block, item_num, data]
+        if (column_name !== "ok") values.push(userEmail)
+        await pool.query(update_query, values);
         //console.log(result);
         res.status(200).send("Data inserted successfully!");
     } catch (err) {
@@ -807,12 +809,12 @@ app.post("/show-just-update-data", isAuthenticated, async (req, res) => {
     const { show_name, show_date, row_number, column_name } = req.body;
     
     const select_query = `
-                select ${column_name}, modified, row_num from scripts_t5
+                select ${column_name}, modified, mod_by, row_num from scripts_t5
                 where show_name = $1 and show_date = $2 and row_num = $3 ;
     `;
 
     const select_query2 = `
-                select TO_CHAR(${column_name}, 'SS:MI')as ${column_name}, TO_CHAR(total, 'SS:MI')as total, modified, row_num from scripts_t5
+                select TO_CHAR(${column_name}, 'SS:MI')as ${column_name}, TO_CHAR(total, 'SS:MI')as total, modified, mod_by, row_num from scripts_t5
                 where show_name = $1 and show_date = $2 and row_num = $3 ;
     `;
 
@@ -1285,6 +1287,20 @@ app.post("/insert-script-text", isAuthenticated, async (req, res) => {
         res.status(500).send("Failed to insert script text row.");
     }
 
+});
+
+app.get("/get-tags", isAuthenticated, async (req, res) => {
+    const select_query = `
+        SELECT tag_option 
+        FROM tags_t5
+    `;
+    try {
+        const result = await pool.query(select_query)
+        return res.status(200).json(result.rows);
+    } catch (err) {
+        console.error("Error retrieving tags:", err.message);
+        res.status(500).send("Failed to get tags.");
+    }
 });
 
 

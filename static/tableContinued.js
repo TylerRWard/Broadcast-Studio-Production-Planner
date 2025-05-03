@@ -370,8 +370,9 @@ async function getSpeakingLines(show_name, show_date, row_num) {
             const speaking_lines = result.speaking_line;
             console.log("Speaking line:", result.speaking_line); // <- Here's your actual data
 
-            document.querySelector(".scriptBox").value = ``;
-            document.querySelector(".scriptBox").value = speaking_lines;
+            const scriptBox = document.querySelector(".scriptBox")
+            scriptBox.value = speaking_lines;
+            calculateTime(scriptBox)
 
             // You can use the speaking_line however you want now:
             // e.g. update a div or textarea
@@ -459,10 +460,6 @@ async function showUpdateData(previousTypedData, selectedRundown) {
                     tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value = responsedData[0][column.toLowerCase()];
                     console.log(tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value, responsedData[0][column.toLowerCase()]);
                 }
-                else if((column === "MOD_BY"))
-                {
-                    tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}]`).textContent = responsedData[0][column.toLowerCase()];
-                }
                 else if(column === "READ" || column === "SOT")
                     {
                         tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}]`).textContent = responsedData[0][column.toLowerCase()];
@@ -479,6 +476,7 @@ async function showUpdateData(previousTypedData, selectedRundown) {
                 const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
 
                 tableActual.rows[responsedData[0].row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+                tableActual.rows[responsedData[0].row_num].querySelector(`[data-column="MOD_BY"]`).textContent = responsedData[0].mod_by;
 
             }
             //alert("Update just inserted data successfully!");
@@ -518,11 +516,12 @@ async function insertRowScripts_t() {
         if (response.ok) {
             // Success: Do nothing or refresh UI if needed
             const responsedData = await response.json();
-            
+
             const date = new Date(responsedData.modified);
             const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
            // console.log(centralTimeString);
             tableActual.rows[data.row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
+            tableActual.rows[data.row_num].querySelector(`[data-column="MOD_BY"]`).textContent = responsedData.mod_by;
 
             const readcell = tableActual.rows[data.row_num].querySelector('[data-column="READ"] input');
             const sotcell = tableActual.rows[data.row_num].querySelector('[data-column="SOT"] input');
@@ -585,7 +584,7 @@ async function getScriptsData(show_name, show_date) {
 
 ///show all data into frontend table
 function showScriptsData(data) {
-    
+
     let numOfRows = data.length;
     for(let i=0; i<numOfRows;i++)
     {
