@@ -4,73 +4,102 @@ body, html {
     font-family: Arial, sans-serif;
   }
 
-  h1 {
-    font-size: 3rem;
-  }
+ 
 
-h2 {
-    font-size: 2.5rem;
-    color: #e0c080;
+/*transparent landing page background image*/
+.bg-image {
+    background-image: url("/public/images/LandingPageBG.png"); /* <-- update path if needed */
+    background-size: cover;
+    background-position: 20% center; /*moved to the right*/
+    filter: blur(2px) brightness(0.6);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
 }
-
-  header {
+/*Broadcast studio production planner header title 
+    logo.png is in landingpage.html
+*/
+header {
     display: flex;
     justify-content: center; /* Center contents horizontally */
     align-items: center;
-    padding: 20px;
-    position: fixed;  
+    padding: 8px 20px;
+    position: fixed;
+    font-size: 1.5rem; /* Try 2.8rem or 3rem if you want bigger */
+    font-weight: 700;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 10; 
-    background-color: hsl(0, 0%, 0%, .5);
-    color: white;
-  }
+    z-index: 10;
+    background-color: rgba(248, 248, 248, 0.9);
+    color: rgb(27,30,48);
+}
   
   * {
     box-sizing: border-box;
   }
-  
 
-  
+
+  /*logo structure*/
   .logo {
     width: 150px;  
     height: auto;
     padding-right: 30px;
   }
 
-  .content-container {
+ 
+  
+ 
+  
+ 
+ 
+  /*box for tagline and subtext*/
+.main-content {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    justify-content: flex-start;
-    height: 100%;
-    padding-left: 5%;
-  }
-  
-  .text-box {
-    max-width: 600px;
-    color: white;
-    margin-top: -150px;
-  }
-  
-  .button-container {
-    position: absolute;
-    top: calc(100% - 300px); 
-    left: 50%;
-    transform: translateX(-50%); 
-    z-index: 1;
-  }
+    text-align: center;
+    height: 100vh;
+    padding-top: 30px;/*move up and down*/
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #f8f8f8;
+    z-index: 2;
+}
+/* Efficient, User-friendly, secure*/
+.tagline {
+    font-size: 4.2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+}
+/*Modern way text*/
+.subtext {
+    font-size: 3rem;
+    color: #d6ba77;
+    margin-bottom: 40px;
+    max-width: 1000px;
+    line-height: 1;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+}
 
 .main-button {
-    padding: 20px 40px;
-    font-size: 3rem;
-    background-color: #e0c080;
+    padding: 16px 36px;
+    font-size: 1.4rem;
+    background-color: #d6ba77;
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 12px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
 }
-  
-  .main-button:hover {
-    background-color: hsl(46, 34%, 45%);
-  }
+
+    .main-button:hover {
+        background-color: #cba95f;
+        transform: scale(1.05);
+    }
