@@ -277,3 +277,45 @@ details summary {
   opacity: 1;
   pointer-events: auto;
 }
+
+.arrow-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  display: none;
+  padding: 0.5em;
+  z-index: 10;
+}
+
+.arrow-menu > button {
+  display: block;       
+  margin-bottom: 0.5em;      
+  width: 100%;
+}
+
+.arrow-menu > select {
+  display: block;         
+  margin-top: 0.5em;        
+  width: 100%;
+}
+
+.arrow-btn {
+  background: transparent;
+  border: none;
+  padding: 0.25em;
+  cursor: pointer;
+}
+
+.arrow-icon {
+  display: block;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* on hover, scale up a bit and fade */
+.arrow-btn:hover .arrow-icon {
+  transform: scale(1.2);
+  opacity: 0.8;
+}

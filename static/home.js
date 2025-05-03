@@ -65,10 +65,6 @@ function calculateTime(textarea) {
         {
             alert("You have not selected a row or don't have block or item_num")
         }
-
-
-
-
     };
 }
 
@@ -157,6 +153,8 @@ let template_version = 'Default';
 
 
 /**GET AND RENDER DIRECTORY*/
+
+// get the rundowns that are active and show them on the "directory" side
 async function getDirectory() {
   try {
     const resp = await fetch("http://localhost:3000/rundowns?active=true");
@@ -172,7 +170,7 @@ function renderDirectory(rows) {
   const container = document.getElementById("folderList");
   container.innerHTML = "";
 
-  // build { folder: [ { name, version, show_date }, … ] }
+// Group by the folder topic 
   const groups = rows.reduce((acc, { folder_topic, show_name, show_date, template_version }) => {
     if (!acc[folder_topic]) acc[folder_topic] = [];
     if (show_name) {
@@ -185,6 +183,7 @@ function renderDirectory(rows) {
     return acc;
   }, {});
 
+  // Create and append a folder element for each non-empty group
   Object.entries(groups).forEach(([folder, shows]) => {
     if (shows.length === 0) return;
     container.appendChild(createFolderElement(folder, shows));
@@ -193,7 +192,9 @@ function renderDirectory(rows) {
 
 /**GET AND RENDER ARCHIVE*/
 
+/** Fetch and render archived (inactive) rundowns */
 async function getArchive() {
+  // get the inactive rundowns
   try {
     const resp = await fetch("http://localhost:3000/rundowns?active=false");
     if (!resp.ok) throw new Error(resp.status);
@@ -204,6 +205,7 @@ async function getArchive() {
   }
 }
 
+// Render the archived rundowns and group them by folder
 function renderArchive(rows) {
   const container = document.getElementById("archiveList");
   container.innerHTML = "";
@@ -231,37 +233,40 @@ function renderArchive(rows) {
     content.classList.add("folder-content");
     content.appendChild(createShowList(shows, folder)); 
     details.appendChild(content);
-
-    container.appendChild(createFolderElement(folder, shows));
+    container.appendChild(createFolderElement(folder, shows)); // add a show button 
     //container.appendChild(details); // this is for removing the add show button
   });
   
 }
 
 function createFolderElement(folder, shows) {
+    // <details> will allow expand/collapse of the folder
   const details = document.createElement("details");
   const summary = document.createElement("summary");
 
+    // Folder title span
   const title = document.createElement("span");
   title.textContent = folder;
   summary.appendChild(title);
 
+
+  // Right-click (contextmenu) on the folder title to delete the entire folder
   summary.addEventListener("contextmenu", async e => {
-    e.preventDefault(); 
+    e.preventDefault(); // Prevent the browser context menu
 
-
+   // Only allow deletion for users with adminLevel === "professor"
     const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.adminLevel === "professor") {
       if (!confirm(`Delete entire folder "${folder}" and all its shows?`)) {
         return;
       }
   
-      try {
+      try {  // Send DELETE request to backend endpoint
         const resp = await fetch(`/delete-folder/${encodeURIComponent(folder)}`, {
           method: "DELETE"
         });
         if (!resp.ok) throw new Error(await resp.text());
-        // refresh your directory (and archive, if needed)
+       // Refresh both active and archived lists
         await getDirectory();
         await getArchive();
       } catch (err) {
@@ -273,9 +278,11 @@ function createFolderElement(folder, shows) {
     }
   });
 
+    // Container for shows and “add show” form
   const folderContent = document.createElement("div");
   folderContent.classList.add("folder-content");
 
+    // Create and append the list of existing shows
   const showList = createShowList(shows, folder);
   folderContent.appendChild(showList);
 
@@ -287,19 +294,22 @@ addIcon.title = "Add a show";
 
 addIcon.addEventListener("click", (e) => {
   e.stopPropagation(); // Prevent collapsing the <details>
+    // Toggle form visibility
   addShowForm.style.display = addShowForm.style.display === "none" ? "flex" : "none";
 });
-
+  // Assemble the summary and content
   summary.appendChild(addIcon);
   details.appendChild(summary);
   folderContent.appendChild(addShowForm)
   details.appendChild(folderContent);
 
+    // Return the fully built folder element
   return details;
 }
 
 function createShowList(shows, folder) {
   if (shows.length === 0) {
+    // If no shows, display a placeholder paragraph
     const p = document.createElement("p");
     p.style.fontWeight = "normal";
     p.style.fontSize = "0.87rem";
@@ -307,63 +317,124 @@ function createShowList(shows, folder) {
     p.textContent = "No shows available";
     return p;
   }
-
+  // Otherwise, build a <ul> container for show items
   const ul = document.createElement("ul");
   ul.classList.add("show-list");
 
   shows.forEach(({ name, version, show_date }) => {
+     // Each show is an <li> with flex layout and relative positioning
     const li = document.createElement("li");
     li.classList.add("show-item");
+    li.style.position = "relative";
     li.style.display        = "flex";
     li.style.alignItems     = "center";
     li.style.justifyContent = "space-between";
 
-    // 1) arrow button on the left: toggles active
+    //  arrow button on the left: toggles active
     const arrowBtn = document.createElement("button");
     arrowBtn.type  = "button";
     arrowBtn.classList.add("arrow-btn");
-    arrowBtn.title = active 
-      ? "Move to Archive" 
-      : "Restore to Directory";
+    arrowBtn.title = active
+      ? "Move to Archive or Change Folder"
+      : "Restore to Directory or Change Folder";
 
     const arrowIcon = document.createElement("img");
     arrowIcon.src   = "/public/images/archive-arrow.png";
     arrowIcon.alt   = "";
     arrowIcon.classList.add("arrow-icon");
     arrowBtn.appendChild(arrowIcon);
+    li.appendChild(arrowBtn);
 
-    arrowBtn.addEventListener("click", async e => {
+    //the dropdown menu container
+    const menu = document.createElement("div");
+    menu.classList.add("arrow-menu");
+    li.appendChild(menu);
+
+    menu.addEventListener("click", e => e.stopPropagation()); // stop from collapsing
+
+    // toggle menu on arrow click
+    arrowBtn.addEventListener("click", e => {
+      e.stopPropagation(); // don’t collapse the menu
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    });
+
+    // 5) hide menu on outside click
+    document.addEventListener("click", () => {
+      menu.style.display = "none";
+    });
+
+
+     // --- Build menu contents ---
+
+    //  archive/restore button
+    const archiveBtn = document.createElement("button");
+    archiveBtn.textContent = active ? "Move to Archive" : "Restore";
+    archiveBtn.addEventListener("click", async e => {
       e.stopPropagation();
+      menu.style.display = "none";
       const newActive = !active;
       try {
-        const resp = await fetch("/update-show-active", {
+        await fetch("/update-show-active", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            show_name: name,
-            show_date,
-            folder,
-            active: newActive
-          })
+          body: JSON.stringify({ show_name: name, show_date, folder, active: newActive })
         });
-        if (!resp.ok) throw new Error(await resp.text());
-        // refresh both views
+        // Refresh both lists
         await getDirectory();
         await getArchive();
       } catch (err) {
-        console.error("Could not move show:", err);
-        alert("Failed to move show.");
+        console.error(err);
+        alert("Failed to update status.");
       }
     });
+    menu.appendChild(archiveBtn);
 
-    li.appendChild(arrowBtn);
+    //  folder selector 
+    const folderSelect = document.createElement("select");
+    // Placeholder option
+    const placeholder = new Option("Move to folder…", "", true, true);
+    placeholder.disabled = true;
+    folderSelect.add(placeholder);
 
-    // 2) show name (click loads details)
+    // fetch the list of folders once
+    fetch("/rundowns?active=true")
+      .then(r => r.json())
+      .then(rows => {
+        // extract unique folder_topic values
+        const folders = [...new Set(rows.map(r => r.folder_topic))];
+        folders.forEach(f => {
+          const opt = new Option(f, f);
+          folderSelect.add(opt);
+        });
+      })
+      .catch(console.error);
+
+    folderSelect.addEventListener("change", async () => {
+      const newFolder = folderSelect.value;
+      menu.style.display = "none";
+         // Send PATCH to move the show to a new folder
+      try {
+        await fetch("/update-show-folder", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ show_name: name, show_date, old_folder: folder, new_folder: newFolder })
+        });
+        await getDirectory();
+        await getArchive();
+      } catch (err) {
+        console.error(err);
+        alert("Failed to move folder.");
+      }
+    });
+    menu.appendChild(folderSelect);
+
+    //  show name (click loads details)
     const nameSpan = document.createElement("span");
     nameSpan.textContent = name;
     nameSpan.style.flex   = "1";
     nameSpan.style.cursor = "pointer";
     nameSpan.addEventListener("click", () => {
+      // Reset any previous script-editor state
       prevSelectedRow = null;
 
       focusedRow = null;
@@ -381,11 +452,12 @@ function createShowList(shows, folder) {
         column_name: null,
         data: null
     }
+    // Fetch and show the rundown details
       getDetailsRundown(name, folder, active, version);
     });
     li.appendChild(nameSpan);
 
-    // 3) delete button on the right
+    //  delete button on the right
     const delBtn = document.createElement("button");
     delBtn.type  = "button";
     delBtn.classList.add("delete-btn");
@@ -422,9 +494,12 @@ function createShowList(shows, folder) {
 
 
 function createAddShowForm(folder) {
+    // Create the form element, hidden by default
   const form = document.createElement("form");
   form.style.display = "none";
   form.classList.add("add-show-form");
+
+  // --- Template version dropdown ---
 
   // dropdown to select template version
   const versionSelect = document.createElement("select");
@@ -457,6 +532,8 @@ function createAddShowForm(folder) {
       versionSelect.add(errOpt);
     });
 
+      // --- Show name and date inputs ---
+
   // get the show name and date
   const nameInput = document.createElement("input");
   nameInput.type = "text";
@@ -467,16 +544,20 @@ function createAddShowForm(folder) {
   dateInput.type = "date";
   dateInput.required = true;
 
-  // submit btn
+    // --- Submit button ---
+
   const submit = document.createElement("button");
   submit.type = "submit";
   submit.textContent = "Submit";
 
-  // assemble form
+  // put together the form elements in order
   form.appendChild(nameInput);
   form.appendChild(dateInput);
   form.appendChild(versionSelect);
   form.appendChild(submit);
+
+
+  // --- Form submission handler ---
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -485,6 +566,7 @@ function createAddShowForm(folder) {
     const showDate = dateInput.value;
     const templateVersion = versionSelect.value;
 
+        // make sure that all fields are filled
     if (!showName || !showDate || !templateVersion) {
       alert("Show name, date, and template version are all required.");
       return;
@@ -564,11 +646,16 @@ async function getDetailsRundown(name, folder, active, template_version) {
 }
 
 function setupAddFolderForm() {
+  // Get the form and its input
+  // toggle button
   const form = document.getElementById("add-folder-form");
   const input = form.querySelector("input");
   const button = document.getElementById("add-folder-btn");
 
+    // Toggle form visibility when clicking the “Add Folder” button
   button.addEventListener("click", () => {
+    // flex to show 
+    // none to hide
     form.style.display = form.style.display === "none" ? "flex" : "none";
   });
 
@@ -576,7 +663,7 @@ function setupAddFolderForm() {
     e.preventDefault();
     const folder = input.value.trim();
     if (!folder) return;
-
+// Send POST request to create folder on the backend
     try {
       const response = await fetch("/add-folder", {
         method: "POST",
@@ -595,7 +682,7 @@ function setupAddFolderForm() {
     } catch (err) {
       console.error("Request failed:", err);
     }
-
+    // Reset form for next use
     input.value = "";
     form.style.display = "none";
   });
@@ -615,6 +702,7 @@ document.addEventListener("DOMContentLoaded", () => {
     archView.style.display = "none";
     dirTab.classList.add("active");
     archTab.classList.remove("active");
+    getDirectory();
   });
 
   // Wire Archive button

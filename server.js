@@ -627,6 +627,41 @@ app.post("/add-rundown", isAuthenticated, async(req, res) => {
     }
 });
 
+// Move a show into a different folder
+app.patch("/update-show-folder", isAuthenticated, async (req, res) => {
+    const { show_name, show_date, old_folder, new_folder } = req.body;
+  
+    // Basic validation
+    if (!show_name || !show_date || !old_folder || !new_folder) {
+      return res
+        .status(400)
+        .json({ error: "show_name, show_date, old_folder and new_folder are required." });
+    }
+  
+    try {
+      const result = await pool.query(
+        `UPDATE rundown_t5
+           SET folder = $1
+         WHERE show_name = $2
+           AND show_date = $3
+           AND folder    = $4`,
+        [new_folder.trim(), show_name.trim(), show_date, old_folder.trim()]
+      );
+  
+      if (result.rowCount === 0) {
+        return res
+          .status(404)
+          .json({ error: "No matching show found in the specified folder." });
+      }
+  
+      console.log(`➡️ Server: Moved "${show_name}" on ${show_date} from "${old_folder}" to "${new_folder}"`);
+      res.json({ message: "Show folder updated." });
+    } catch (err) {
+      console.error("Error updating show folder:", err);
+      res.status(500).json({ error: "Failed to update show folder." });
+    }
+  });
+
 
 // Retrieve relevant columns for specific show name and show date
 app.get("/get-column-names/:show_name/:show_date", isAuthenticated, async (req, res) => {
