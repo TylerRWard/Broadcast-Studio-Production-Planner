@@ -757,6 +757,15 @@ async function loadShots() {
 
 // === SHOTS MODAL ===
 function setupManageShotsModal() {
+
+  // students cannot use this functionality
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && user.adminLevel !== "professor") {
+      return;
+  }
+  
+      
+
   const manageShotsBtn = document.getElementById("manageShots"); // Trigger button
   const modal = document.getElementById("manageShots-modal"); // Modal box
   const overlay = document.getElementById("manageShots-overlay"); // Background overlay
@@ -822,6 +831,13 @@ function setupManageShotsModal() {
 // === FORMATS MODAL ===
 // Set up the modal for managing "FORMAT" options
 function setupManageFormatsModal() {
+
+  // students cannot use this functionality
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && user.adminLevel !== "professor") {
+      return;
+  }
+
   const manageFormatsBtn = document.getElementById("manageFormats");
   const modal = document.getElementById("manageFormats-modal");
   const overlay = document.getElementById("manageFormats-overlay");
@@ -884,6 +900,16 @@ function setupManageFormatsModal() {
 
 // === DOM READY INITIALIZATION ===
 document.addEventListener("DOMContentLoaded", () => {
+
+  // dont show buttons to students 
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && user.adminLevel !== "professor") {
+    document.getElementById("manageShots").style.display = "none";
+    document.getElementById("manageFormats").style.display = "none";
+  }
+
+  
+
   // Handle Directory/Archive tab toggling
   const dirTab   = document.getElementById("directory-tab");
   const archTab  = document.getElementById("archive-tab");
