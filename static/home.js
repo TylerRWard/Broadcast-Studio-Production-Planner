@@ -688,43 +688,6 @@ function setupAddFolderForm() {
   });
 }
 
-
-/*
-async function loadFormats() {
-  let rows = [];
-  try {
-    const res = await fetch("/formats");
-    if (!res.ok) throw new Error(res.statusText);
-    rows = await res.json();  // expects [{ format: "ONCAM" }, …]
-  } catch (err) {
-    console.error("Couldn’t load formats:", err);
-    return;
-  }
-
-  // 1) Populate the modal <select>
-  const modalSelect = document.getElementById("formatSelect");
-  if (modalSelect) {
-    modalSelect.innerHTML = `<option value="" disabled selected>Select format…</option>`;
-    rows.forEach(({ format }) => {
-      const opt = document.createElement("option");
-      opt.value = format;
-      opt.textContent = format;
-      modalSelect.appendChild(opt);
-    });
-  }
-
-  // 2) Populate every table <select class="formatDropdown">
-  document.querySelectorAll(".formatDropdown").forEach(select => {
-    select.innerHTML = `<option value="" disabled selected>Format…</option>`;
-    rows.forEach(({ format }) => {
-      const opt = document.createElement("option");
-      opt.value = format;
-      opt.textContent = format;
-      select.appendChild(opt);
-    });
-  });
-}*/
-
 async function loadFormats() {
   let rows = [];
   try {
@@ -793,41 +756,9 @@ async function loadShots() {
 
 
 
-document.getElementById("addShotBtn").addEventListener("click", async () => {
-  const val = document.getElementById("newShotInput").value.trim();
-  if (!val) return alert("Enter a shot to add.");
-  try {
-    const res = await fetch("/shots", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shot: val })
-    });
-    if (!res.ok) throw new Error(await res.text());
-    document.getElementById("newShotInput").value = "";
-    await loadShots();
-  } catch (err) {
-    console.error("Add failed:", err);
-    alert("Could not add shot.");
-  }
-});
-
-document.getElementById("deleteShotBtn").addEventListener("click", async () => {
-  const shot = document.getElementById("shotSelect").value;
-  if (!shot) return alert("Please pick a shot to delete.");
-  if (!confirm(`Delete shot "${shot}"?`)) return;
-  try {
-    const res = await fetch(`/shots/${encodeURIComponent(shot)}`, {
-      method: "DELETE"
-    });
-    if (!res.ok) throw new Error(await res.text());
-    await loadShots();
-  } catch (err) {
-    console.error("Delete failed:", err);
-    alert("Could not delete shot.");
-  }
-});
 
 
+/*
 document.addEventListener("DOMContentLoaded", () => {
   // Grab tabs & views
   const dirTab   = document.getElementById("directory-tab");
@@ -1001,18 +932,190 @@ deleteFormatBtn.addEventListener("click", async () => {
 
 
 
-  setupManageShotsModal();
+dirTab.click(); // default tab
 
-  // start up
+// Modular setup calls
+setupManageShotsModal();
+setupManageFormatsModal();
+
+// Load data and initialize
+getDirectory();
+setupAddFolderForm();
+loadFormats();
+loadShots();
+getScriptTags();
+resetScriptBox();
+});
+
+  */
+
+
+
+// === SHOTS MODAL ===
+function setupManageShotsModal() {
+  const manageShotsBtn = document.getElementById("manageShots");
+  const modal = document.getElementById("manageShots-modal");
+  const overlay = document.getElementById("manageShots-overlay");
+  const cancelBtn = document.getElementById("cancelShotsModal");
+  const addShotBtn = document.getElementById("addShotBtn");
+  const deleteShotBtn = document.getElementById("deleteShotBtn");
+
+  manageShotsBtn.addEventListener("click", () => {
+    modal.style.display = "block";
+    overlay.style.display = "block";
+    loadShots();
+  });
+
+  overlay.addEventListener("click", close);
+  cancelBtn.addEventListener("click", close);
+
+  function close() {
+    modal.style.display = "none";
+    overlay.style.display = "none";
+  }
+
+  addShotBtn.addEventListener("click", async () => {
+    const val = document.getElementById("newShotInput").value.trim();
+    if (!val) return alert("Enter a shot to add.");
+    try {
+      const res = await fetch("/shots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shot: val })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      document.getElementById("newShotInput").value = "";
+      await loadShots();
+    } catch (err) {
+      console.error("Add shot failed:", err);
+      alert("Could not add shot.");
+    }
+  });
+
+  deleteShotBtn.addEventListener("click", async () => {
+    const val = document.getElementById("shotSelect").value;
+    if (!val) return alert("Pick a shot to delete.");
+    if (!confirm(`Delete "${val}"?`)) return;
+
+    try {
+      const res = await fetch(`/shots/${encodeURIComponent(val)}`, {
+        method: "DELETE"
+      });
+      if (!res.ok) throw new Error(await res.text());
+      await loadShots();
+    } catch (err) {
+      console.error("Delete shot failed:", err);
+      alert("Could not delete shot.");
+    }
+  });
+}
+
+
+// === FORMATS MODAL ===
+function setupManageFormatsModal() {
+  const manageFormatsBtn = document.getElementById("manageFormats");
+  const modal = document.getElementById("manageFormats-modal");
+  const overlay = document.getElementById("manageFormats-overlay");
+  const cancelBtn = document.getElementById("cancelFormatsModal");
+  const addFormatBtn = document.getElementById("addFormatBtn");
+  const deleteFormatBtn = document.getElementById("deleteFormatBtn");
+
+  manageFormatsBtn.addEventListener("click", () => {
+    modal.style.display = "block";
+    overlay.style.display = "block";
+    loadFormats();
+  });
+
+  overlay.addEventListener("click", close);
+  cancelBtn.addEventListener("click", close);
+
+  function close() {
+    modal.style.display = "none";
+    overlay.style.display = "none";
+  }
+
+  addFormatBtn.addEventListener("click", async () => {
+    const val = document.getElementById("newFormatInput").value.trim();
+    if (!val) return alert("Enter a format to add.");
+    try {
+      const res = await fetch("/formats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format: val })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      document.getElementById("newFormatInput").value = "";
+      await loadFormats();
+    } catch (err) {
+      console.error("Add format failed:", err);
+      alert("Could not add format.");
+    }
+  });
+
+  deleteFormatBtn.addEventListener("click", async () => {
+    const val = document.getElementById("formatSelect").value;
+    if (!val) return alert("Pick a format to delete.");
+    if (!confirm(`Delete "${val}"?`)) return;
+    try {
+      const res = await fetch(`/formats/${encodeURIComponent(val)}`, {
+        method: "DELETE"
+      });
+      if (!res.ok) throw new Error(await res.text());
+      await loadFormats();
+    } catch (err) {
+      console.error("Delete format failed:", err);
+      alert("Could not delete format.");
+    }
+  });
+}
+
+
+// === DOM READY INITIALIZATION ===
+document.addEventListener("DOMContentLoaded", () => {
+  // Tabs
+  const dirTab   = document.getElementById("directory-tab");
+  const archTab  = document.getElementById("archive-tab");
+  const dirView  = document.getElementById("directory-view");
+  const archView = document.getElementById("archive-view");
+
+  dirTab.addEventListener("click", () => {
+    active = true;
+    dirView.style.display = "block";
+    archView.style.display = "none";
+    dirTab.classList.add("active");
+    archTab.classList.remove("active");
+    getDirectory();
+  });
+
+  archTab.addEventListener("click", () => {
+    active = false;
+    dirView.style.display = "none";
+    archView.style.display = "block";
+    archTab.classList.add("active");
+    dirTab.classList.remove("active");
+    getArchive();
+  });
+
+  dirTab.click(); // Default tab
+
+  // Modal setups
+  setupManageShotsModal();
+  setupManageFormatsModal();
+
+  // Initial data load
   getDirectory();
   setupAddFolderForm();
-
   loadFormats();
   loadShots();
-
-  getScriptTags()
-  resetScriptBox()
+  getScriptTags();
+  resetScriptBox();
 });
+
+
+
+
+
+
 
   
 /************************Export Functions**************************** */

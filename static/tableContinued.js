@@ -47,8 +47,12 @@ function drawActualTable(columnNames, scriptName, showDate){
     let headRowHTML = `<thead><tr class="head-row-css">${headHTML}</tr></thead>`;
     document.querySelector('#data-table').innerHTML = headRowHTML + dataHTML;
 
+
+
     loadFormats();
     loadShots();
+
+
 
 
     // Retrieve data from database for selected rundown 
