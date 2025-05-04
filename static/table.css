@@ -182,8 +182,9 @@ selected-row {
 
 
 #data-table, #data-table-temp {
-    width: 100%;
+    width: max-content;
     border-collapse: collapse;
+    margin: 0 auto;          
 }
 
 #data-table thead, #data-table-temp thead{
@@ -196,13 +197,19 @@ selected-row {
 
 #data-table td, #data-table-temp td {
     border: 0.1px solid #ddd;
-    padding: 0px;
+    padding: 2px 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 1px;
 }
 
 
 .table-css {
-    width: 100%;
-    overflow-x: auto;
+  display: block;         
+  width: 100%;            
+  overflow-x: auto;      
+  white-space: nowrap;    
 }
 /*box widths*/
 /* .BLOCK { width: 0.2%; }
@@ -225,28 +232,41 @@ selected-row {
 .BLOCK     { width: 2px; }      /* 0.2% of 1000px */
 .ITEM_NUM  { width: 50px; }     /* 5% */
 .CAM       { width: 30px; }     /* 3% */
-.SHOT      { width: 70px; }     /* 7% */
+.SHOT     { width: 100px; }     /* 7% */
 .TAL       { width: 70px; }
-.SLUG      { width: 200px; }    /* 20% */
-.FORMAT    { width: 80px; }     /* 8% */
-.READ      { width: 40px; }     /* 4% */
-.SOT       { width: 40px; }
-.TOTAL     { width: 40px; }
-.OK        { width: 70px; }     /* 7% */
+.SLUG     { width: 220px; }    /* 20% */
+.FORMAT   { width: 150px; }     /* 8% */
+.READ      { width: 100px; }     /* 4% */
+.SOT       { width: 100px; }
+.TOTAL     { width: 100px; }
+.OK       { width: 180px; }    /* 7% */
 .CHANNEL   { width: 30px; }     /* 3% */
 .WRITER    { width: 60px; }     /* 6% */
 .EDITOR    { width: 60px; }
-.MODIFIED  { width: 70px; }     /* 7% */
-.MOD_BY    { width: 60px; }     /* 6% */
+.MODIFIED  { width: 150px; }     /* 7% */
+.MOD_BY    { width: 150px; }     /* 6% */
 
-.grid-input-data{
-    width: 95%;
-    height: 17px;
-    font-size: 15px;
+
+.grid-input-data {
+  width: 100%;
+  height: 25px;
+  font-size: 14px;
+  border: none;
+  text-align: center;
+  background-color: #f8f8f8;
+  color: #000;
+  box-sizing: border-box;
+}
+
+.shotDropdown,
+.okDropdown,
+.formatDropdown {
+    width: 100%;
+    font-size: 14px;
     border: none;
-    text-align: center;
     background-color: #f8f8f8;
-    color: #000;
+    color: black;
+    box-sizing: border-box;
 }
 
 .js-ID{
@@ -272,9 +292,10 @@ td {
 .table-head-css{
     background-color: #333;
     color: white;
-    font-size: 10px;
+    font-size: 11px;
     height: 24px;
-    
+    white-space: normal;
+    word-wrap: break-word;
 }
 /*inside table*/
 .table-data-css{
