@@ -1,6 +1,3 @@
-#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton, #addRundown2Template, #manageShots, #manageFormats {
-    padding: 0.5rem 1rem;
-  }
 /*dropdown for the buttons in header*/
   #templateBox, #startBreakBox, #exportBox, #manageShotsBox, #manageFormatsBox  {
     position: absolute;
@@ -79,17 +76,9 @@ ul {
   }
   
   .list-temp-css:hover {
-    border: 2px solid;
+    /* border: 2px solid; */
+    background-color:#ddd;
   }
-
-
-
-.div1-css{
-    background-color: rgb(40, 74, 102);
-    color:black;
-    padding: 10px;
-    margin: 5px;
-}
 
 
 .checkbox-temp{
@@ -137,7 +126,7 @@ input[type="checkbox"] {
 .table-temp-css{
     max-width: 150px;
     overflow-x: auto;
-    font-size: 15px;
+    font-size: 13px;
     cursor: pointer;
     white-space: nowrap;
     padding:2px;
@@ -149,18 +138,26 @@ input[type="checkbox"] {
 
 
 #openModalBtn, #add-start-row, #add-break-row, #export-table-row, #export-scripts-row{
-    background-color: white;
+    background-color: transparent;
     color: black;
     overflow-x: auto;
     font-size: 15px;
     cursor: pointer;
     padding-left:5px;
     border: none;
+    align-items: left;
+    text-align: left;
+
 
 }
+
+#openModalBtn:hover, #add-start-row:hover, #add-break-row:hover, #export-table-row:hover, #export-scripts-row:hover{
+  background-color: #ddd;
+}
+
+
 selected-row {
     background-color: transparent; /* remove default */
-    border-left: 3px solid #0ea5e9; /* cyan-ish left border */
   }
   
   .selected-row td, .selected-row td input, .selected-row td select {
@@ -208,7 +205,7 @@ selected-row {
     overflow-x: auto;
 }
 /*box widths*/
-.BLOCK { width: 3.5%; }
+/* .BLOCK { width: 0.2%; }
 .ITEM_NUM { width: 5%; }
 .CAM { width: 3%; }
 .SHOT { width: 7%; }
@@ -223,8 +220,24 @@ selected-row {
 .WRITER { width: 6%; }
 .EDITOR { width: 6%; }
 .MODIFIED { width: 7%; }
-.MOD_BY { width: 6%; }
+.MOD_BY { width: 6%; }  */
 
+.BLOCK     { width: 2px; }      /* 0.2% of 1000px */
+.ITEM_NUM  { width: 50px; }     /* 5% */
+.CAM       { width: 30px; }     /* 3% */
+.SHOT      { width: 70px; }     /* 7% */
+.TAL       { width: 70px; }
+.SLUG      { width: 200px; }    /* 20% */
+.FORMAT    { width: 80px; }     /* 8% */
+.READ      { width: 40px; }     /* 4% */
+.SOT       { width: 40px; }
+.TOTAL     { width: 40px; }
+.OK        { width: 70px; }     /* 7% */
+.CHANNEL   { width: 30px; }     /* 3% */
+.WRITER    { width: 60px; }     /* 6% */
+.EDITOR    { width: 60px; }
+.MODIFIED  { width: 70px; }     /* 7% */
+.MOD_BY    { width: 60px; }     /* 6% */
 
 .grid-input-data{
     width: 95%;
@@ -257,10 +270,9 @@ td {
 }
 /* table header*/
 .table-head-css{
-    background-color: rgb(59, 67, 88);
+    background-color: #333;
     color: white;
-    font-weight: bold;
-    font-size: 13px;
+    font-size: 10px;
     height: 24px;
     
 }

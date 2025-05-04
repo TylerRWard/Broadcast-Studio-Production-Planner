@@ -2,27 +2,41 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: rgb(27,30,48);/*dark blue gray*/
+    background-color: rgb(165, 163, 157);/*dark blue gray*/
 }
 /*News Production program login header*/
 .header-content {
+    height: 120px;
     display: flex;
     align-items: center;
-    padding: 10px;
-    background-color: #f8f8f8; /*very light gray almost white*/
-    color: rgb(27,30,48); /*dark blue gray*/
+    padding: 0px 20px;
+    position: fixed;
+    font-size: 1.5rem; /* Try 2.8rem or 3rem if you want bigger */
+    font-weight: 700;
+    top: 0;
+    left: 0;
+    gap: 10px;
+    width: 100%;
+    z-index: 10;
+    background-color: white;
+    color: rgb(27,30,48);
+    /* padding: 10px; */
+    /* background-color: #f8f8f8; very light gray almost white */
+    /* color: rgb(27,30,48); dark blue gray */
 }
 
-.logo {
-    height: 50px;
-    margin-right: 10px;
-}
+  /*logo structure*/
+  .logo {
+    width: 120px;  
+    height: auto;
+    padding-right: 10px;
+  }
 
 .container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 70px);
+    height: calc(100vh - 50px);
 }
 
 .login-container {
@@ -36,11 +50,14 @@ body {
 h2 {
     margin-bottom: 20px;
     text-align: center;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 h4 {
     margin-bottom: 20px;
     text-align: center;
+    font-size: 15px;
 }
 
 .input-wrapper {
@@ -53,13 +70,14 @@ input[type="password"] {
     width: 100%;
     padding: 10px 10px 10px 40px; /* Space for icon */
     margin: 0;
-    border: 1px solid #ccc;
+    border: 1px solid rgb(40, 37, 37);
     border-radius: 4px;
     box-sizing: border-box;
     background-color: white;
     background-repeat: no-repeat;
     background-position: 10px center; /* Position the icon */
     background-size: 20px 20px; /* Size of the icon */
+    font-size: 15px;
 }
 
 input[type="email"] {
@@ -77,7 +95,7 @@ input[type="email"]:active,
 input[type="password"]:hover,
 input[type="password"]:focus,
 input[type="password"]:active {
-    border-color: #b5a36a;
+    border-color: rgb(55, 49, 49);
     outline: none;
     background-color: white; /* Preserve background */
  
@@ -87,7 +105,7 @@ input[type="password"]:active {
     display: block;
     text-align: right;
     margin: 10px 0;
-    color: #007bff;
+    color: #49627c;
     text-decoration: none;
 }
 
@@ -96,15 +114,18 @@ input[type="password"]:active {
 }
 
 .login-button {
-    background-color: #e0c080;
+    background-color: #d6ba77;
     color: rgb(27,30,48);
     padding: 10px;
     border: none;
-    border-radius: 4px;
+    border-radius: 12px;
     cursor: pointer;
     width: 100%;
+    font-size: 15px;
+    font-weight: bold;
 }
 
 .login-button:hover {
-    background-color: hsl(46,34%,45%);
+    background-color: #cba95f;
+    transform: scale(1.02);
 }

@@ -7,13 +7,19 @@ body {
     padding: 0;
     text-align: center;
     background-color: #f4f4f4;
+    font: 12px;
+}
+
+button{
+    font-weight: 400;
 }
 /*User management header*/
 header {
     background: #f8f8f8;
     color: rgb(27,30,48);
-    padding: 10px 0;
+    padding: 0px 0;
     border-bottom: 2px solid black;
+    font-size: 17px;
 }
 
 .header-content {
@@ -22,11 +28,13 @@ header {
     justify-content: center;
     gap: 10px;
 }
-/*program logo*/
-.logo {
-    width: 50px;
+  /*logo structure*/
+  .logo {
+    width: 100px;  
     height: auto;
-}
+    padding-right: 10px;
+  }
+
 /*body inner box*/
 .container {
     margin: 20px auto;
@@ -247,7 +255,7 @@ input {
 .action-button {
     width: 100%;
     padding: 10px;
-    background: #e0c080;
+    background: #d6ba77;
     color: black;
     border: none;
     border-radius: 4px;
@@ -256,15 +264,15 @@ input {
 }
 
 .action-button:hover {
-    background: hsl(46,34%,45%);
+    background: #cba95f;
 }
 
 .delete-button {
-    background: #e0c080;
+    background: #d6ba77;
 }
 
     .delete-button:hover {
-        background: hsl(46,34%,45%);
+        background: #cba95f;
     }
 
 .navigation {
@@ -298,12 +306,12 @@ input {
     .action-buttons .action-button {
         width: auto;
         padding: 10px 20px;
-        background: #e0c080;
+        background: #d6ba77;
         font-size: 16px;
     }
 
 .action-buttons .action-button:hover {
-    background: hsl(46,34%,45%);
+    background: #cba95f;
 }
 
 .content-wrapper {

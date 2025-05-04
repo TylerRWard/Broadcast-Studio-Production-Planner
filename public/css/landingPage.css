@@ -26,15 +26,15 @@ header {
     display: flex;
     justify-content: center; /* Center contents horizontally */
     align-items: center;
-    padding: 8px 20px;
+    padding: 0px 20px;
     position: fixed;
-    font-size: 1.5rem; /* Try 2.8rem or 3rem if you want bigger */
+    font-size: 1.8rem; /* Try 2.8rem or 3rem if you want bigger */
     font-weight: 700;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 10;
-    background-color: rgba(248, 248, 248, 0.9);
+    background-color: white;
     color: rgb(27,30,48);
 }
   
@@ -45,9 +45,9 @@ header {
 
   /*logo structure*/
   .logo {
-    width: 150px;  
+    width: 130px;  
     height: auto;
-    padding-right: 30px;
+    padding-right: 10px;
   }
 
  
@@ -72,10 +72,11 @@ header {
 }
 /* Efficient, User-friendly, secure*/
 .tagline {
-    font-size: 4.2rem;
+    font-size: 4.3rem;
     font-weight: 700;
     margin-bottom: 15px;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+    text-shadow: 1px 1px 4px rgba(255, 244, 244, 0.6);
+    color: black;
 }
 /*Modern way text*/
 .subtext {
@@ -84,14 +85,16 @@ header {
     margin-bottom: 40px;
     max-width: 1000px;
     line-height: 1;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+    text-shadow: 1px 1px 4px rgba(18, 16, 16, 0.6);
+    font-weight: bold;
 }
 
 .main-button {
     padding: 16px 36px;
     font-size: 1.4rem;
     background-color: #d6ba77;
-    color: white;
+    font-weight: bold;
+    color: black;
     border: none;
     border-radius: 12px;
     cursor: pointer;
