@@ -49,14 +49,20 @@ function drawActualTable(columnNames, scriptName, showDate){
 
 
 
-    loadFormats();
+    Promise.all([loadFormats(), loadShots()])
+    .then(() => {
+        // Retrieve data from database for selected rundown 
+      getScriptsData(selectedRundown.show_name, selectedRundown.show_date);
+    })
+    .catch((err) => {
+      console.error("Dropdown load failed:", err);
+      alert("Could not load FORMAT/SHOT options.");
+    });
+
+    /*loadFormats();
     loadShots();
-
-
-
-
     // Retrieve data from database for selected rundown 
-    getScriptsData(selectedRundown.show_name, selectedRundown.show_date);
+    getScriptsData(selectedRundown.show_name, selectedRundown.show_date);*/
 }
 
 

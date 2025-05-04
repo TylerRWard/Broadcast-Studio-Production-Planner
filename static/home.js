@@ -755,225 +755,33 @@ async function loadShots() {
 }
 
 
-
-
-
-/*
-document.addEventListener("DOMContentLoaded", () => {
-  // Grab tabs & views
-  const dirTab   = document.getElementById("directory-tab");
-  const archTab  = document.getElementById("archive-tab");
-  const dirView  = document.getElementById("directory-view");
-  const archView = document.getElementById("archive-view");
-
-  // Wire Directory button
-  dirTab.addEventListener("click", () => {
-    active = true;
-    dirView.style.display  = "block";
-    archView.style.display = "none";
-    dirTab.classList.add("active");
-    archTab.classList.remove("active");
-    getDirectory();
-  });
-
-  // Wire Archive button
-  archTab.addEventListener("click", () => {
-    active = false;
-    dirView.style.display  = "none";
-    archView.style.display = "block";
-    archTab.classList.add("active");
-    dirTab.classList.remove("active");
-    getArchive();
-  });
-
-  // go to the directory
-  dirTab.click();
-
-
-  const manageShotsBtn = document.getElementById("manageShots"); // Your trigger button
-  const overlay = document.getElementById("manageShots-overlay");
-  const modal = document.getElementById("manageShots-modal");
-  const cancelBtn = document.getElementById("cancelShotsModal");
-
-  manageShotsBtn.addEventListener("click", () => {
-    modal.style.display = "block";
-    overlay.style.display = "block";
-    loadShots(); // Your custom function
-  });
-
-  cancelBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-    overlay.style.display = "none";
-  });
-
-  overlay.addEventListener("click", () => {
-    modal.style.display = "none";
-    overlay.style.display = "none";
-  });
-
-
-
-  function setupManageShotsModal() {
-    const manageShotsBtn = document.getElementById("manageShots");
-    const modal = document.getElementById("manageShots-modal");
-    const overlay = document.getElementById("manageShots-overlay");
-    const cancelBtn = document.getElementById("cancelShotsModal");
-    const addShotBtn = document.getElementById("addShotBtn");
-    const deleteShotBtn = document.getElementById("deleteShotBtn");
-  
-    manageShotsBtn.addEventListener("click", () => {
-      modal.style.display = "block";
-      overlay.style.display = "block";
-      loadShots();
-    });
-  
-    overlay.addEventListener("click", () => {
-      modal.style.display = "none";
-      overlay.style.display = "none";
-    });
-  
-    cancelBtn.addEventListener("click", () => {
-      modal.style.display = "none";
-      overlay.style.display = "none";
-    });
-  
-    addShotBtn.addEventListener("click", async () => {
-      const val = document.getElementById("newShotInput").value.trim();
-      if (!val) return alert("Enter a shot to add.");
-  
-      try {
-        const res = await fetch("/shots", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ shot: val })
-        });
-        if (!res.ok) throw new Error(await res.text());
-        document.getElementById("newShotInput").value = "";
-        await loadShots();
-      } catch (err) {
-        console.error("Add shot failed:", err);
-        alert("Could not add shot.");
-      }
-    });
-  
-    deleteShotBtn.addEventListener("click", async () => {
-      const val = document.getElementById("shotSelect").value;
-      if (!val) return alert("Pick a shot to delete.");
-      if (!confirm(`Delete "${val}"?`)) return;
-  
-      try {
-        const res = await fetch(`/shots/${encodeURIComponent(val)}`, {
-          method: "DELETE"
-        });
-        if (!res.ok) throw new Error(await res.text());
-        await loadShots();
-      } catch (err) {
-        console.error("Delete shot failed:", err);
-        alert("Could not delete shot.");
-      }
-    });
-  }
-  
-
-
-  const manageFormatsBtn = document.getElementById("manageFormats"); // Button that opens it
-  const manageFormatsModal = document.getElementById("manageFormats-modal");
-  const manageFormatsOverlay = document.getElementById("manageFormats-overlay");
-  const cancelFormatsModal = document.getElementById("cancelFormatsModal");
-  const addFormatBtn = document.getElementById("addFormatBtn");
-  addFormatBtn.addEventListener("click", async () => {
-    const val = document.getElementById("newFormatInput").value.trim();
-    if (!val) return alert("Enter a format to add.");
-
-    try {
-      const res = await fetch("/formats", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ format: val })
-      });
-      if (!res.ok) throw new Error(await res.text());
-      document.getElementById("newFormatInput").value = "";
-      await loadFormats();
-    } catch (err) {
-      console.error("Add format failed:", err);
-      alert("Could not add format.");
-    }
-  });
-
-  manageFormatsBtn.addEventListener("click", () => {
-    manageFormatsModal.style.display = "block";
-    manageFormatsOverlay.style.display = "block";
-    loadFormats();
-  });
-
-  cancelFormatsModal.addEventListener("click", () => {
-    manageFormatsModal.style.display = "none";
-    manageFormatsOverlay.style.display = "none";
-  });
-
-  const deleteFormatBtn = document.getElementById("deleteFormatBtn");
-deleteFormatBtn.addEventListener("click", async () => {
-  const val = document.getElementById("formatSelect").value;
-  if (!val) return alert("Pick a format to delete.");
-  if (!confirm(`Delete "${val}"?`)) return;
-
-  try {
-    const res = await fetch(`/formats/${encodeURIComponent(val)}`, {
-      method: "DELETE"
-    });
-    if (!res.ok) throw new Error(await res.text());
-    await loadFormats();
-  } catch (err) {
-    console.error("Delete format failed:", err);
-    alert("Could not delete format.");
-  }
-});
-
-
-
-
-dirTab.click(); // default tab
-
-// Modular setup calls
-setupManageShotsModal();
-setupManageFormatsModal();
-
-// Load data and initialize
-getDirectory();
-setupAddFolderForm();
-loadFormats();
-loadShots();
-getScriptTags();
-resetScriptBox();
-});
-
-  */
-
-
-
 // === SHOTS MODAL ===
 function setupManageShotsModal() {
-  const manageShotsBtn = document.getElementById("manageShots");
-  const modal = document.getElementById("manageShots-modal");
-  const overlay = document.getElementById("manageShots-overlay");
-  const cancelBtn = document.getElementById("cancelShotsModal");
-  const addShotBtn = document.getElementById("addShotBtn");
-  const deleteShotBtn = document.getElementById("deleteShotBtn");
+  const manageShotsBtn = document.getElementById("manageShots"); // Trigger button
+  const modal = document.getElementById("manageShots-modal"); // Modal box
+  const overlay = document.getElementById("manageShots-overlay"); // Background overlay
+  const cancelBtn = document.getElementById("cancelShotsModal"); // Cancel button
+  const addShotBtn = document.getElementById("addShotBtn"); // Add button
+  const deleteShotBtn = document.getElementById("deleteShotBtn"); // Delete button
 
+
+  // Open the modal and load existing shots
   manageShotsBtn.addEventListener("click", () => {
     modal.style.display = "block";
     overlay.style.display = "block";
-    loadShots();
+    loadShots(); // Populate the select with current shot options
   });
 
   overlay.addEventListener("click", close);
   cancelBtn.addEventListener("click", close);
 
+    // Close modal on overlay or cancel button click
   function close() {
     modal.style.display = "none";
     overlay.style.display = "none";
   }
 
+    // Add a new shot option
   addShotBtn.addEventListener("click", async () => {
     const val = document.getElementById("newShotInput").value.trim();
     if (!val) return alert("Enter a shot to add.");
@@ -991,7 +799,7 @@ function setupManageShotsModal() {
       alert("Could not add shot.");
     }
   });
-
+  // Delete a selected shot option
   deleteShotBtn.addEventListener("click", async () => {
     const val = document.getElementById("shotSelect").value;
     if (!val) return alert("Pick a shot to delete.");
@@ -1012,6 +820,7 @@ function setupManageShotsModal() {
 
 
 // === FORMATS MODAL ===
+// Set up the modal for managing "FORMAT" options
 function setupManageFormatsModal() {
   const manageFormatsBtn = document.getElementById("manageFormats");
   const modal = document.getElementById("manageFormats-modal");
@@ -1020,12 +829,14 @@ function setupManageFormatsModal() {
   const addFormatBtn = document.getElementById("addFormatBtn");
   const deleteFormatBtn = document.getElementById("deleteFormatBtn");
 
+    // Open the modal and load existing formats
   manageFormatsBtn.addEventListener("click", () => {
     modal.style.display = "block";
     overlay.style.display = "block";
     loadFormats();
   });
 
+    // Close modal on overlay or cancel button click
   overlay.addEventListener("click", close);
   cancelBtn.addEventListener("click", close);
 
@@ -1034,6 +845,7 @@ function setupManageFormatsModal() {
     overlay.style.display = "none";
   }
 
+    // Add a new format option
   addFormatBtn.addEventListener("click", async () => {
     const val = document.getElementById("newFormatInput").value.trim();
     if (!val) return alert("Enter a format to add.");
@@ -1051,7 +863,7 @@ function setupManageFormatsModal() {
       alert("Could not add format.");
     }
   });
-
+  // Delete a selected format option
   deleteFormatBtn.addEventListener("click", async () => {
     const val = document.getElementById("formatSelect").value;
     if (!val) return alert("Pick a format to delete.");
@@ -1072,12 +884,13 @@ function setupManageFormatsModal() {
 
 // === DOM READY INITIALIZATION ===
 document.addEventListener("DOMContentLoaded", () => {
-  // Tabs
+  // Handle Directory/Archive tab toggling
   const dirTab   = document.getElementById("directory-tab");
   const archTab  = document.getElementById("archive-tab");
   const dirView  = document.getElementById("directory-view");
   const archView = document.getElementById("archive-view");
 
+  // Switch to directory tab
   dirTab.addEventListener("click", () => {
     active = true;
     dirView.style.display = "block";
@@ -1087,6 +900,7 @@ document.addEventListener("DOMContentLoaded", () => {
     getDirectory();
   });
 
+  // Switch to archive tab
   archTab.addEventListener("click", () => {
     active = false;
     dirView.style.display = "none";
