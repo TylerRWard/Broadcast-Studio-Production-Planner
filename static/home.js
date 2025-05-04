@@ -537,7 +537,7 @@ function createAddShowForm(folder) {
   // get the show name and date
   const nameInput = document.createElement("input");
   nameInput.type = "text";
-  nameInput.placeholder = "Show name";
+  nameInput.placeholder = "Enter show name...";
   nameInput.required = true;
 
   const dateInput = document.createElement("input");
@@ -548,7 +548,7 @@ function createAddShowForm(folder) {
 
   const submit = document.createElement("button");
   submit.type = "submit";
-  submit.textContent = "Submit";
+  submit.textContent = "Submit Show";
 
   // put together the form elements in order
   form.appendChild(nameInput);

@@ -128,21 +128,21 @@ details summary {
     padding: 6px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 100%; 
-    max-width: 50%;
+    width: 70%; 
+
   }
   
   .add-folder-form button {
     padding: 6px 10px;
     border: none;
-    background-color: hsl(0, 0%, 73%);
+    background-color: #4caf50;
     color: white;
     border-radius: 4px;
     cursor: pointer;
   }
   
   .add-folder-form button:hover {
-    background-color: hsl(0, 0%, 80%);
+    background-color: #4caf49;
   }
 
 
@@ -151,7 +151,7 @@ details summary {
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 0.5rem;
+    margin: 0.5rem auto 0; /* center horizontally */
     width: 100%;
     max-width: 200px;
   }
