@@ -688,6 +688,146 @@ function setupAddFolderForm() {
   });
 }
 
+
+/*
+async function loadFormats() {
+  let rows = [];
+  try {
+    const res = await fetch("/formats");
+    if (!res.ok) throw new Error(res.statusText);
+    rows = await res.json();  // expects [{ format: "ONCAM" }, …]
+  } catch (err) {
+    console.error("Couldn’t load formats:", err);
+    return;
+  }
+
+  // 1) Populate the modal <select>
+  const modalSelect = document.getElementById("formatSelect");
+  if (modalSelect) {
+    modalSelect.innerHTML = `<option value="" disabled selected>Select format…</option>`;
+    rows.forEach(({ format }) => {
+      const opt = document.createElement("option");
+      opt.value = format;
+      opt.textContent = format;
+      modalSelect.appendChild(opt);
+    });
+  }
+
+  // 2) Populate every table <select class="formatDropdown">
+  document.querySelectorAll(".formatDropdown").forEach(select => {
+    select.innerHTML = `<option value="" disabled selected>Format…</option>`;
+    rows.forEach(({ format }) => {
+      const opt = document.createElement("option");
+      opt.value = format;
+      opt.textContent = format;
+      select.appendChild(opt);
+    });
+  });
+}*/
+
+async function loadFormats() {
+  let rows = [];
+  try {
+    const res = await fetch("/formats");
+    if (!res.ok) throw new Error(res.statusText);
+    rows = await res.json();
+  } catch (err) {
+    console.error("Couldn’t load formats:", err);
+    return;
+  }
+
+  // Panel select
+  const formatSelect = document.getElementById("formatSelect");
+  formatSelect.innerHTML = `<option value="" disabled selected>Select format…</option>`;
+  rows.forEach(({ format }) => {
+    const opt = document.createElement("option");
+    opt.value = format;
+    opt.textContent = format;
+    formatSelect.appendChild(opt);
+  });
+
+  // Table dropdowns
+  document.querySelectorAll(".formatDropdown").forEach(select => {
+    select.innerHTML = `<option value="" disabled selected>Format…</option>`;
+    rows.forEach(({ format }) => {
+      const opt = document.createElement("option");
+      opt.value = format;
+      opt.textContent = format;
+      select.appendChild(opt);
+    });
+  });
+}
+
+
+
+async function loadShots() {
+  try {
+    const res = await fetch("/shots");
+    if (!res.ok) throw new Error("Failed to load shots");
+    const rows = await res.json();
+
+    // Fill panel dropdown
+    const select = document.getElementById("shotSelect");
+    select.innerHTML = `<option value="" disabled selected>Select shot…</option>`;
+    rows.forEach(({ shot }) => {
+      const opt = document.createElement("option");
+      opt.value = shot;
+      opt.textContent = shot;
+      select.appendChild(opt);
+    });
+
+    // Fill all table dropdowns
+    document.querySelectorAll(".shotDropdown").forEach(drop => {
+      drop.innerHTML = `<option value="" disabled selected>shot</option>`;
+      rows.forEach(({ shot }) => {
+        const opt = document.createElement("option");
+        opt.value = shot;
+        opt.textContent = shot;
+        drop.appendChild(opt);
+      });
+    });
+  } catch (err) {
+    console.error("Couldn’t load shots:", err);
+  }
+}
+
+
+
+document.getElementById("addShotBtn").addEventListener("click", async () => {
+  const val = document.getElementById("newShotInput").value.trim();
+  if (!val) return alert("Enter a shot to add.");
+  try {
+    const res = await fetch("/shots", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shot: val })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    document.getElementById("newShotInput").value = "";
+    await loadShots();
+  } catch (err) {
+    console.error("Add failed:", err);
+    alert("Could not add shot.");
+  }
+});
+
+document.getElementById("deleteShotBtn").addEventListener("click", async () => {
+  const shot = document.getElementById("shotSelect").value;
+  if (!shot) return alert("Please pick a shot to delete.");
+  if (!confirm(`Delete shot "${shot}"?`)) return;
+  try {
+    const res = await fetch(`/shots/${encodeURIComponent(shot)}`, {
+      method: "DELETE"
+    });
+    if (!res.ok) throw new Error(await res.text());
+    await loadShots();
+  } catch (err) {
+    console.error("Delete failed:", err);
+    alert("Could not delete shot.");
+  }
+});
+
+
 document.addEventListener("DOMContentLoaded", () => {
   // Grab tabs & views
   const dirTab   = document.getElementById("directory-tab");
@@ -718,9 +858,157 @@ document.addEventListener("DOMContentLoaded", () => {
   // go to the directory
   dirTab.click();
 
+
+  const manageShotsBtn = document.getElementById("manageShots"); // Your trigger button
+  const overlay = document.getElementById("manageShots-overlay");
+  const modal = document.getElementById("manageShots-modal");
+  const cancelBtn = document.getElementById("cancelShotsModal");
+
+  manageShotsBtn.addEventListener("click", () => {
+    modal.style.display = "block";
+    overlay.style.display = "block";
+    loadShots(); // Your custom function
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+    overlay.style.display = "none";
+  });
+
+  overlay.addEventListener("click", () => {
+    modal.style.display = "none";
+    overlay.style.display = "none";
+  });
+
+
+
+  function setupManageShotsModal() {
+    const manageShotsBtn = document.getElementById("manageShots");
+    const modal = document.getElementById("manageShots-modal");
+    const overlay = document.getElementById("manageShots-overlay");
+    const cancelBtn = document.getElementById("cancelShotsModal");
+    const addShotBtn = document.getElementById("addShotBtn");
+    const deleteShotBtn = document.getElementById("deleteShotBtn");
+  
+    manageShotsBtn.addEventListener("click", () => {
+      modal.style.display = "block";
+      overlay.style.display = "block";
+      loadShots();
+    });
+  
+    overlay.addEventListener("click", () => {
+      modal.style.display = "none";
+      overlay.style.display = "none";
+    });
+  
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+      overlay.style.display = "none";
+    });
+  
+    addShotBtn.addEventListener("click", async () => {
+      const val = document.getElementById("newShotInput").value.trim();
+      if (!val) return alert("Enter a shot to add.");
+  
+      try {
+        const res = await fetch("/shots", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ shot: val })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        document.getElementById("newShotInput").value = "";
+        await loadShots();
+      } catch (err) {
+        console.error("Add shot failed:", err);
+        alert("Could not add shot.");
+      }
+    });
+  
+    deleteShotBtn.addEventListener("click", async () => {
+      const val = document.getElementById("shotSelect").value;
+      if (!val) return alert("Pick a shot to delete.");
+      if (!confirm(`Delete "${val}"?`)) return;
+  
+      try {
+        const res = await fetch(`/shots/${encodeURIComponent(val)}`, {
+          method: "DELETE"
+        });
+        if (!res.ok) throw new Error(await res.text());
+        await loadShots();
+      } catch (err) {
+        console.error("Delete shot failed:", err);
+        alert("Could not delete shot.");
+      }
+    });
+  }
+  
+
+
+  const manageFormatsBtn = document.getElementById("manageFormats"); // Button that opens it
+  const manageFormatsModal = document.getElementById("manageFormats-modal");
+  const manageFormatsOverlay = document.getElementById("manageFormats-overlay");
+  const cancelFormatsModal = document.getElementById("cancelFormatsModal");
+  const addFormatBtn = document.getElementById("addFormatBtn");
+  addFormatBtn.addEventListener("click", async () => {
+    const val = document.getElementById("newFormatInput").value.trim();
+    if (!val) return alert("Enter a format to add.");
+
+    try {
+      const res = await fetch("/formats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format: val })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      document.getElementById("newFormatInput").value = "";
+      await loadFormats();
+    } catch (err) {
+      console.error("Add format failed:", err);
+      alert("Could not add format.");
+    }
+  });
+
+  manageFormatsBtn.addEventListener("click", () => {
+    manageFormatsModal.style.display = "block";
+    manageFormatsOverlay.style.display = "block";
+    loadFormats();
+  });
+
+  cancelFormatsModal.addEventListener("click", () => {
+    manageFormatsModal.style.display = "none";
+    manageFormatsOverlay.style.display = "none";
+  });
+
+  const deleteFormatBtn = document.getElementById("deleteFormatBtn");
+deleteFormatBtn.addEventListener("click", async () => {
+  const val = document.getElementById("formatSelect").value;
+  if (!val) return alert("Pick a format to delete.");
+  if (!confirm(`Delete "${val}"?`)) return;
+
+  try {
+    const res = await fetch(`/formats/${encodeURIComponent(val)}`, {
+      method: "DELETE"
+    });
+    if (!res.ok) throw new Error(await res.text());
+    await loadFormats();
+  } catch (err) {
+    console.error("Delete format failed:", err);
+    alert("Could not delete format.");
+  }
+});
+
+
+
+
+  setupManageShotsModal();
+
   // start up
   getDirectory();
   setupAddFolderForm();
+
+  loadFormats();
+  loadShots();
 
   getScriptTags()
   resetScriptBox()

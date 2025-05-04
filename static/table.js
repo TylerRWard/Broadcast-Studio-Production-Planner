@@ -385,52 +385,19 @@ const dataInputObject = {
     'CAM': `<input class="grid-input-data js-CAM" placeholder="" type="number"></input>`,
 
     'SHOT': `<select class="shotDropdown">
-                        <option value="" disabled selected>shot</option> <!-- Placeholder -->
-                        <option value="1-SHOT">1-SHOT</option>
-                        <option value="OTS">OTS</option>
-                        <option value="2-SHOT">2-SHOT</option>
-                        <option value="3-SHOT">3-SHOT</option>
-                        <option value="CHROMA">CHROMA</option>
-                        <option value="NEWSROOM">NEWSROOM</option>
-                        <option value="PLASMA">PLASMA</option>
-                        <option value="INTERVIEW">INTERVIEW</option>
-                        <option value="LIVE">LIVE</option>
-                    </select>`,
+            <option value="" disabled selected>shot</option>
+            </select>`,
 
     'TAL': `<input class="grid-input-data js-TAL" placeholder="" maxlength="8">`,
 
     'SLUG': `<input class="grid-input-data js-SLUG" placeholder="" maxlength="30">`,
 
     //'FORMAT': `<input class="grid-input-data js-FORMAT" placeholder="" maxlength="12">`,
-    'FORMAT':`<label for="formatInput"></label>
-                            <input
-                            id="formatInput"
-                            name="format"
-                            list="formatOptions"
-                            placeholder="Type or select a format…"
-                            style="text-align: center;"
-                            />
-
-                            <datalist id="formatOptions">
-                            <option value="ONCAM">
-                            <option value="RDR">
-                            <option value="FS">
-                            <option value="OTS">
-                            <option value="PKG">
-                            <option value="VO">
-                            <option value="SOT/VO">
-                            <option value="SOT">
-                            <option value="NAT/VO">
-                            <option value="OTS/FS">
-                            <option value="DOUBLE-BOX">
-                            <option value="LIVE">
-                            <option value="PLASMA-VO">
-                            <option value="CHROMA-VO">
-                            <option value="WIPE VO">
-                            <option value="WIPE FS">
-                            <option value="MON VO">
-                            <option value="MON FS">
-                            </datalist>`, 
+   'FORMAT': `
+            <select class="grid-input-data formatDropdown">
+                <option value="" disabled selected>Format…</option>
+            </select>
+            `, 
 
     'READ': `<input class="grid-input-data js-READ" placeholder="">`,
 

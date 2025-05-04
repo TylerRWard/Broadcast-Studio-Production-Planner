@@ -784,59 +784,181 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
     }
 });
 
+app.get("/formats", isAuthenticated, async (req, res) => {
+    const { rows } = await pool.query(
+      `SELECT format
+         FROM format_t5
+        ORDER BY format`
+    );
+    res.json(rows);
+  });
+
+  app.post("/formats", isAuthenticated, async (req, res) => {
+    const { format } = req.body;
+    if (!format) return res.status(400).send("Missing format.");
+    try {
+      await pool.query(
+        `INSERT INTO format_t5 (format) VALUES ($1) ON CONFLICT (format) DO NOTHING`,
+        [format]
+      );
+      res.sendStatus(200);
+    } catch (err) {
+      console.error("Insert error:", err);
+      res.status(500).send("Failed to insert format.");
+    }
+  });
+  
+  app.delete("/formats/:name", isAuthenticated, async (req, res) => {
+    const format = decodeURIComponent(req.params.name);
+  
+    try {
+      // Step 1: Null out all usages in scripts_t5
+      await pool.query(
+        `UPDATE scripts_t5
+         SET format = NULL
+         WHERE format = $1`,
+        [format]
+      );
+  
+      // Step 2: Delete from format_t5
+      await pool.query(
+        `DELETE FROM format_t5 WHERE format = $1`,
+        [format]
+      );
+  
+      res.status(200).send("Format deleted and cleared from scripts.");
+    } catch (err) {
+      console.error("Error deleting format:", err.message);
+      res.status(500).send("Failed to delete format.");
+    }
+  });
+  
+
+  app.post("/shots", isAuthenticated, async (req, res) => {
+    const { shot } = req.body;
+  
+    if (!shot || shot.trim() === "") {
+      return res.status(400).send("Shot is required.");
+    }
+  
+    try {
+      await pool.query(
+        `INSERT INTO shot_t5 (shot)
+         VALUES ($1)
+         ON CONFLICT (shot) DO NOTHING`,
+        [shot.trim()]
+      );
+      res.status(200).send("Shot added successfully.");
+    } catch (err) {
+      console.error("Error adding shot:", err);
+      res.status(500).send("Failed to add shot.");
+    }
+  });
+
+  
+  app.delete("/shots/:name", isAuthenticated, async (req, res) => {
+    const shot = decodeURIComponent(req.params.name);
+  
+    try {
+      // Step 1: Null out all usages in scripts_t5
+      await pool.query(
+        `UPDATE scripts_t5
+         SET shot = NULL
+         WHERE shot = $1`,
+        [shot]
+      );
+  
+      // Step 2: Delete from shot_t5
+      await pool.query(
+        `DELETE FROM shot_t5 WHERE shot = $1`,
+        [shot]
+      );
+  
+      res.status(200).send("Shot deleted and cleared from scripts.");
+    } catch (err) {
+      console.error("Error deleting shot:", err.message);
+      res.status(500).send("Failed to delete shot.");
+    }
+  });
+  
+
 
 //update-data-in-rundown
 app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
     const userEmail = req.session.user.email;
     const { show_name, show_date, row_number, block, item_num, column_name, data } = req.body;
 
-    //Prevent having two start rows
+    // 🔒 Validate column_name against allowed columns
+    const allowedColumns = [
+        "block", "item_num", "cam", "shot", "tal", "slug",
+        "format", "read", "sot", "total", "ok", "channel",
+        "writer", "editor"
+    ];
+
+    if (!allowedColumns.includes(column_name)) {
+        return res.status(400).send("Invalid column name.");
+    }
+
+    // Prevent having two start rows
     if (block === 'A' && item_num === 0) {
-        // Check if start row already exists
         const checkStartRow = await pool.query(`
             SELECT 1 FROM scripts_t5
             WHERE show_name = $1 AND show_date = $2 AND block = 'A' AND item_num = 0
             LIMIT 1
         `, [show_name, show_date]);
-    
+
         if (checkStartRow.rowCount > 0) {
             return res.status(400).send("Start row already exists. No insert performed.");
         }
     }
 
+    // If inserting new format
     if (column_name === 'format') {
         await pool.query(
-          `INSERT INTO format_t5 (format)
+            `INSERT INTO format_t5 (format)
              VALUES ($1)
-           ON CONFLICT (format) DO NOTHING;`,
-          [data]
+             ON CONFLICT (format) DO NOTHING;`,
+            [data]
         );
-      }
-    
-    // Prevent mod_by from changing if the OK column is being changed
+    }
+
+    // Conditionally include mod_by
     const mod_by_query = column_name === "ok" ? "" : ", mod_by = $7";
 
     const update_query = `
-    UPDATE scripts_t5
-    SET ${column_name} = $6,
-        modified = now() AT TIME ZONE 'America/Chicago'${mod_by_query}
-    WHERE show_name = $1 
-      AND show_date = $2 
-      AND row_num = $3 
-      AND block = $4 
-      AND item_num = $5;
-`;
-    try{
-        const values = [show_name, show_date, row_number, block, item_num, data]
-        if (column_name !== "ok") values.push(userEmail)
+        UPDATE scripts_t5
+        SET ${column_name} = $6,
+            modified = now() AT TIME ZONE 'America/Chicago'${mod_by_query}
+        WHERE show_name = $1 
+          AND show_date = $2 
+          AND row_num = $3 
+          AND block = $4 
+          AND item_num = $5;
+    `;
+
+    try {
+        const values = [show_name, show_date, row_number, block, item_num, data];
+        if (column_name !== "ok") values.push(userEmail);
+
         await pool.query(update_query, values);
-        //console.log(result);
         res.status(200).send("Data inserted successfully!");
     } catch (err) {
         console.error("Error inserting data:", err.message);
         res.status(500).send("Failed to insert data.");
     }
 });
+
+app.get("/shots", isAuthenticated, async (req, res) => {
+    try {
+      const { rows } = await pool.query(
+        `SELECT shot FROM shot_t5 ORDER BY shot`
+      );
+      res.json(rows);
+    } catch (err) {
+      console.error("Error fetching shots:", err);
+      res.status(500).send("Failed to fetch shots.");
+    }
+  });
 
 
 //show-just-update-data

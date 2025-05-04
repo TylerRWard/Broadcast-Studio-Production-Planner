@@ -42,7 +42,8 @@
             <button id="templatesButton">Templates</button> 
             <button id="addRundown2Template">Add rundown to templates</button> 
             <button id="exportButton">Export</button>
-            
+            <button id="manageFormats">Manage Formats</button>
+            <button id="manageShots">Manage Shots</button>
         </div>
         <div class="search-bar">
             <input type = "search" placeholder = "Search..." class="search-input">
@@ -91,6 +92,49 @@
         
     </div>
 
+    <div class="modal-overlay" id="manageFormats-overlay"></div>
+
+    <div class="modal" id="manageFormats-modal">
+        <h3 class="title-of-modal1">Manage FORMAT Options</h3>
+        <p>Add/Delete format options</p>
+
+        <select id="formatSelect">
+            <option value="" disabled selected>Loading…</option>
+        </select>
+        <button id="deleteFormatBtn">Delete Selected</button>
+
+
+        <input type="text" id="newFormatInput" placeholder="New format…" />
+
+        <div class="modal-buttons">
+            <button id="cancelFormatsModal">Cancel</button>
+            <button id="addFormatBtn">Add</button>
+        </div>
+    </div>
+
+    
+
+      <!--Button for managing shots dropdown-->
+      <div class="modal-overlay" id="manageShots-overlay"></div>
+
+        <div class="modal" id="manageShots-modal">
+            <h3 class="title-of-modal1">Manage SHOT Options</h3>
+            <p>Add/Delete shot options</p>
+
+            <select id="shotSelect">
+                <option value="" disabled selected>Loading…</option>
+            </select>
+            <button id="deleteShotBtn">Delete Selected</button>
+
+        
+
+            <input type="text" id="newShotInput" placeholder="New shot…" />
+
+            <div class="modal-buttons">
+                <button id="cancelShotsModal">Cancel</button>
+                <button id="addShotBtn">Add</button>
+            </div>
+        </div>
     
 
     <!-- Add rundown to templates -->

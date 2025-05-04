@@ -20,7 +20,7 @@ function drawActualTable(columnNames, scriptName, showDate){
     const table = document.getElementById('data-table-temp');
     const actualTable = document.getElementById('data-table');
 
-    // Optional: hide the temp table and show the main one
+    // Optional: hide the temp table and show the in one
     table.style.display = 'none';
     actualTable.style.display = 'table'; // or 'block' if styled differently
 
@@ -46,6 +46,10 @@ function drawActualTable(columnNames, scriptName, showDate){
     dataHTML = `<tbody id="data-table-tbody">${dataHTML}</tbody>`;
     let headRowHTML = `<thead><tr class="head-row-css">${headHTML}</tr></thead>`;
     document.querySelector('#data-table').innerHTML = headRowHTML + dataHTML;
+
+    loadFormats();
+    loadShots();
+
 
     // Retrieve data from database for selected rundown 
     getScriptsData(selectedRundown.show_name, selectedRundown.show_date);
@@ -353,6 +357,34 @@ tableActual.addEventListener('change', function(event) {
             }
     }
 
+    if (event.target.matches('.formatDropdown')) {
+        columnName = "FORMAT";
+        row = event.target.closest('tr');
+        rowIndex = Array.from(tableActual.rows).indexOf(row);
+        console.log(`Selected "${event.target.value}" from "FORMAT" in row ${rowIndex}`);
+    
+        previousTypedData.row_number = rowIndex;
+        previousTypedData.block = row.querySelector('[data-column="BLOCK"] input')?.value ?? null;
+        previousTypedData.item_num = row.querySelector('[data-column="ITEM_NUM"] input')?.value ?? null;
+        previousTypedData.column_name = columnName;
+        previousTypedData.data = event.target.value;
+    
+        if (previousTypedData.block !== "" && previousTypedData.item_num !== "" && previousTypedData.data != null) {
+            updateData(previousTypedData, selectedRundown);
+        } else {
+            alert("Your data will not be saved without having BLOCK and ITEM_NUM first!");
+            event.target.selectedIndex = 0;
+        }
+    
+        previousTypedData = {
+            row_number: null,
+            block: null,
+            item_num: null,
+            column_name: null,
+            data: null
+        };
+    }
+
     
 
     //console.log(previousTypedData.block, previousTypedData.column_name, previousTypedData.data )
@@ -455,7 +487,7 @@ async function showUpdateData(previousTypedData, selectedRundown) {
                 let column = Object.keys(responsedData[0])[0].toUpperCase();
                 console.log(responsedData[0].row_num, responsedData[0].modified, column)
 
-                if ((column === "SHOT") ||(column === "OK"))
+                if ((column === "SHOT") ||(column === "OK") || (column === "FORMAT"))
                 {
                     tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value = responsedData[0][column.toLowerCase()];
                     console.log(tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] select`).value, responsedData[0][column.toLowerCase()]);
@@ -628,7 +660,7 @@ function showScriptsData(data) {
                     const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
                     tableActual.rows[(data[i].row_num)].querySelector(`[data-column=${column}]`).textContent = centralTimeString;
                 }
-                else if ((column === "SHOT") ||(column === "OK"))
+                else if ((column === "SHOT") ||(column === "OK") || (column === "FORMAT"))
                 {
                     //tableActual.rows[(data[i].row_num)].querySelector(`[data-column=${column}] select`).value = data[i][column.toLowerCase()];
                     const selectElem = tableActual.rows[data[i].row_num].querySelector(`[data-column=${column}] select`);

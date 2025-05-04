@@ -1,8 +1,8 @@
-#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton, #addRundown2Template {
+#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton, #addRundown2Template, #manageShots, #manageFormats {
     padding: 0.5rem 1rem;
   }
 /*dropdown for the buttons in header*/
-  #templateBox, #startBreakBox, #exportBox {
+  #templateBox, #startBreakBox, #exportBox, #manageShotsBox, #manageFormatsBox  {
     position: absolute;
     display: none;
     background: #fff;
@@ -359,6 +359,16 @@ select {
   }
   
   #saveTemplate {
+    background: #4CAF50;
+    color: white;
+  }
+
+  #addShotBtn {
+    background: #4CAF50;
+    color: white;
+  }
+
+  #addFormatBtn {
     background: #4CAF50;
     color: white;
   }
