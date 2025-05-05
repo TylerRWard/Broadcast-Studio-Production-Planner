@@ -230,21 +230,21 @@ white-space: nowrap;
 .MOD_BY { width: 6%; }  */
 
 .BLOCK     { width: 2px; }      /* 0.2% of 1000px */
-.ITEM_NUM  { width: 50px; }     /* 5% */
+.ITEM_NUM  { width: 30px; }     /* 5% */
 .CAM       { width: 30px; }     /* 3% */
 .SHOT     { width: 100px; }     /* 7% */
-.TAL       { width: 70px; }
+.TAL       { width: 50px; }
 .SLUG     { width: 220px; }    /* 20% */
-.FORMAT   { width: 150px; }     /* 8% */
-.READ      { width: 100px; }     /* 4% */
-.SOT       { width: 100px; }
-.TOTAL     { width: 100px; }
-.OK       { width: 180px; }    /* 7% */
+.FORMAT   { width: 150px; font-size: .85rem; }     /* 8% */
+.READ      { width: 90px; }     /* 4% */
+.SOT       { width: 90px; }
+.TOTAL     { width: 90px; }
+.OK       { width: 115px; }    /* 7% */
 .CHANNEL   { width: 30px; }     /* 3% */
 .WRITER    { width: 60px; }     /* 6% */
 .EDITOR    { width: 60px; }
-.MODIFIED  { width: 150px; }     /* 7% */
-.MOD_BY    { width: 150px; }     /* 6% */
+.MODIFIED  { width: 180px; }     /* 7% */
+.MOD_BY    { width: 200px; }     /* 6% */
 
 
 .grid-input-data {

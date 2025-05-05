@@ -293,33 +293,37 @@ function createFolderElement(folder, shows) {
   summary.appendChild(title);
 
 
+
+
   // Right-click (contextmenu) on the folder title to delete the entire folder
+  // only for professor
   summary.addEventListener("contextmenu", async e => {
     e.preventDefault(); // Prevent the browser context menu
-
-   // Only allow deletion for users with adminLevel === "professor"
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.adminLevel === "professor") {
-      if (!confirm(`Delete entire folder "${folder}" and all its shows?`)) {
-        return;
-      }
   
-      try {  // Send DELETE request to backend endpoint
-        const resp = await fetch(`/delete-folder/${encodeURIComponent(folder)}`, {
-          method: "DELETE"
-        });
-        if (!resp.ok) throw new Error(await resp.text());
-       // Refresh both active and archived lists
-        await getDirectory();
-        await getArchive();
-      } catch (err) {
-        console.error("Failed to delete folder:", err);
-        alert("Could not delete folder.");
-      }
-    } else {
-        alert("You don't have permission to delete folders");
+    const user = JSON.parse(localStorage.getItem("user"));
+  
+    if (!user || user.adminLevel !== "professor") {
+      return; // STOP here if not professor
+    }
+  
+    if (!confirm(`Delete entire folder "${folder}" and all its shows?`)) {
+      return;
+    }
+  
+    try {
+      const resp = await fetch(`/delete-folder/${encodeURIComponent(folder)}`, {
+        method: "DELETE"
+      });
+      if (!resp.ok) throw new Error(await resp.text());
+      await getDirectory();
+      await getArchive();
+    } catch (err) {
+      console.error("Failed to delete folder:", err);
+      alert("Could not delete folder.");
     }
   });
+
+
 
     // Container for shows and “add show” form
   const folderContent = document.createElement("div");
