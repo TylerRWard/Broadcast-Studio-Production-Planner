@@ -993,11 +993,3 @@ document.addEventListener("DOMContentLoaded", () => {
   getScriptTags();
   resetScriptBox();
 });
-
-
-
-
-
-
-
-

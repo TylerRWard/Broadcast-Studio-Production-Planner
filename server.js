@@ -193,7 +193,7 @@ app.get("/", (req, res) => {
 //generateRundownPDF
 app.get("/generate-rundownpdf/:show_name/:show_date", isAuthenticated, async (req, res) =>{
     const {show_name, show_date} = req.params;
-
+// Query to retrieve basic show information if active
     const show_info_query = `
     SELECT show_name, show_date 
     FROM rundown_t5 
@@ -202,7 +202,7 @@ app.get("/generate-rundownpdf/:show_name/:show_date", isAuthenticated, async (re
     AND show_date = $2 
     LIMIT 1
 `;
-
+// Query to retrieve rundown script details for the specified show
     const scripts_query = `
         SELECT 
             cam, shot, tal, slug, format, 
@@ -215,7 +215,7 @@ app.get("/generate-rundownpdf/:show_name/:show_date", isAuthenticated, async (re
     `;
 
     try {
-
+// Run show info query
         const showInfo = await pool.query(show_info_query, [show_name, show_date]);
 
         console.log("Querying with:", showInfo);
@@ -224,19 +224,20 @@ app.get("/generate-rundownpdf/:show_name/:show_date", isAuthenticated, async (re
 
         if (!showRow) throw new Error("No active rundown found.");
 
-
+     // Fetch scripts
         const scriptData = await pool.query(scripts_query, [show_name, show_date]);
         const scripts = scriptData.rows;
 
         console.log(scripts);
-
+ // Sanitize filename
         const safeShowName = show_name.replace(/[\\/:*?"<>|]/g, '_');
+        // Create new landscape A4 PDF document
         const doc = new PDFDocument({ margin: 40, size: 'A4', layout: 'landscape' });
 
         res.setHeader('Content-Disposition', `attachment; filename=${safeShowName}_Rundown.pdf`);
         res.setHeader('Content-Type', 'application/pdf');
         doc.pipe(res);
-
+// Format date for display
         const formattedDate = new Date(show_date).toLocaleDateString();
 
         // Header
@@ -260,11 +261,11 @@ app.get("/generate-rundownpdf/:show_name/:show_date", isAuthenticated, async (re
                 align: 'left'
             });
         });
-
+// Draw line under headers
         y += 15;
         doc.moveTo(startX, y).lineTo(startX + columnWidths.reduce((a, b) => a + b), y).stroke();
 
-        // Draw rows
+        // write rows
         scripts.forEach((row, index) => {
             y += 12;
             if (y > doc.page.height - 40) {
@@ -310,7 +311,7 @@ app.get("/generate-rundownpdf/:show_name/:show_date", isAuthenticated, async (re
 
 app.get("/generate-scriptpdf/:show_name/:show_date", isAuthenticated, async (req, res) =>{
     const {show_name, show_date} = req.params;
-
+// Query to verify show exists and is active
     const show_info_query = `
     SELECT show_name, show_date 
     FROM rundown_t5 
@@ -320,7 +321,7 @@ app.get("/generate-scriptpdf/:show_name/:show_date", isAuthenticated, async (req
     LIMIT 1
 `;
 
-        // Query to get scripts for the show ordered by row_num
+     // Query to retrieve script lines for the show
     const select_query = `
     SELECT row_num, speaking_line 
     FROM scripts_t5 
@@ -330,7 +331,7 @@ app.get("/generate-scriptpdf/:show_name/:show_date", isAuthenticated, async (req
 `;
 
     try {
-
+// Check if the show exists and is active
         const showInfo = await pool.query(show_info_query, [show_name, show_date]);
         const showRow = showInfo.rows[0];
 
@@ -362,7 +363,7 @@ app.get("/generate-scriptpdf/:show_name/:show_date", isAuthenticated, async (req
         doc.fontSize(20).text('Script File', { align: 'center' });
         doc.moveDown(1);
 
-        // Script lines
+        // Render script lines in order
         data.forEach((row, index) => {
             const scriptLine = row.speaking_line || '[Empty Line]';
             doc.fontSize(12)
@@ -789,7 +790,7 @@ app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, 
     
     const { show_name, show_date } = req.params;
 
-    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total, mod_by from scripts_t5
+    const select_query = `select block, item_num, row_num, cam, shot, tal, slug, format, TO_CHAR(read, 'SS:MI')as read, ok, channel, writer, editor, modified, TO_CHAR(sot, 'SS:MI')as sot, TO_CHAR(total, 'SS:MI')as total, mod_by, speaking_line from scripts_t5
                     where show_name = $1 and show_date = $2
                     order by row_num`;
     try {
@@ -1429,24 +1430,24 @@ app.post("/add-show", async (req, res) => {
 //**************************Insert script text*****************************//
 app.post("/insert-script-text", isAuthenticated, async (req, res) => {
     const { show_name, show_date, row_num, scriptText, readTime } = req.body;
-
+// SQL query to update the speaking line and read time for a specific row in the scripts_t5 table
     const update_query = `
         UPDATE scripts_t5 
         SET speaking_line = $4, read = $5, modified = now() AT TIME ZONE 'America/Chicago'
         WHERE show_name = $1 AND show_date = $2 AND row_num = $3  
     `;
 
-    try {
+    try {// Execute the update query to modify the script line and read time
         const result = await pool.query(update_query, [show_name, show_date, row_num, scriptText, readTime]);
-
+// Query to update the 'total' field by adding the 'read' and 'sot' values
         const update_query2 = `
         UPDATE scripts_t5 
         SET total = read + sot
         WHERE show_name = $1 AND show_date = $2 AND row_num = $3  
     `;
-
+// Execute the second update query to update the 'total' field
     const update = await pool.query(update_query2, [show_name, show_date, row_num]);
-
+// SQL query to select the updated read time, total time, and last modified timestamp for the row
         const select_query = `
             select TO_CHAR(read, 'SS:MI')as read, TO_CHAR(total, 'SS:MI')as total, modified
             from scripts_t5
@@ -1455,9 +1456,9 @@ app.post("/insert-script-text", isAuthenticated, async (req, res) => {
 
         const result2 = await pool.query(select_query, [show_name, show_date, row_num]);
 
-
+// Send the updated script details back in the response
         res.status(200).json(result2.rows[0]);
-    } catch (err) {
+    } catch (err) {// Log error and send response with a 500 status code if there's an issue
         console.error("Error inserting script text row:", err.message);
         res.status(500).send("Failed to insert script text row.");
     }
@@ -1465,6 +1466,7 @@ app.post("/insert-script-text", isAuthenticated, async (req, res) => {
 });
 
 app.get("/get-tags", isAuthenticated, async (req, res) => {
+    // SQL query to retrieve all tag options from the tags_t5 table
     const select_query = `
         SELECT tag_option 
         FROM tags_t5
