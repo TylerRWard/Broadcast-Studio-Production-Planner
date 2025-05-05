@@ -135,7 +135,7 @@ async function dragAndDropInDB(draggedIndx, targetIndx) {
         });
 
         if (response.ok) {
-            alert("Dragged and dropped successfully!");
+            //alert("Dragged and dropped successfully!"); //debugging
             focusedRow = null;
             
         } else {

@@ -498,7 +498,7 @@ app.post("/add-template", isAuthenticated, async(req, res) => {
     try{
         const result = await pool.query(insert_query, [templateName, columnNames]);
         //console.log(result);
-        res.status(200).send("Data inserted successfully!");
+        //res.status(200).send("Data inserted successfully!");
     } catch (err) {
         console.error("Error inserting data:", err.message);
         res.status(500).send("Failed to insert data.");
@@ -620,7 +620,7 @@ app.post("/add-rundown", isAuthenticated, async(req, res) => {
         );
 
         await client.query('COMMIT');
-        res.status(200).send("Data inserted successfully!");
+        //res.status(200).send("Data inserted successfully!");
     } catch (err) {
         console.error("Error inserting data:", err.message);
         res.status(500).send("Failed to insert data.");
@@ -941,7 +941,7 @@ app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
         if (column_name !== "ok") values.push(userEmail);
 
         await pool.query(update_query, values);
-        res.status(200).send("Data inserted successfully!");
+        //res.status(200).send("Data inserted successfully!");
     } catch (err) {
         console.error("Error inserting data:", err.message);
         res.status(500).send("Failed to insert data.");

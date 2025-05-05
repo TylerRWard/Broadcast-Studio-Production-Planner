@@ -27,45 +27,58 @@ let detailsForScriptEditor = {
 
 // calculating the script read time
 function calculateTime(textarea) {
-    const text = textarea.value.trim();
-    const words = text.split(/\s+/).filter(word => word.length > 0).length;
-    const wpm = 183;
-    const totalSeconds = Math.ceil((words / wpm) * 60);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    const readTime = `${minutes}:${seconds}`;
-    // Get the container of the textarea
-    const container = textarea.closest(".scriptBox-container");
-    // Get the heading inside that container
-    const heading = container.querySelector(".scriptBox-heading");
-    // Update the headings text
-    heading.textContent = `Script Editing (Current length: ${minutes} min ${seconds} sec)`;
-
-    // store the read time and script after hitting submit
-    document.getElementById("scriptSubmit").onclick = function() {
-        if(selectedRundown.show_name && detailsForScriptEditor.block && detailsForScriptEditor.item_num)
-        {
-            
-            // save the script to a string
-            const textarea = document.querySelector(".scriptBox");
-            const scriptText = textarea.value;
-            // clear the textarea
-            //textarea.value = "";
-            // heading.textContent = `Script Editing (Current length: 0 min 0 sec)`;
-            // log the script and the final time after submitting
-            console.log(`selectedScriptRow: ${detailsForScriptEditor.row_num} show name ${selectedRundown.show_name} Script: \n${scriptText}`)
-            console.log(`Final time: ${totalSeconds} seconds`);
-            alert(`Time saved: ${Math.floor(totalSeconds / 60)} min ${totalSeconds % 60} sec`);
-
-            //Once they click submit insert scriptText into database
-            insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime)
+  let text = textarea.value.trim();
+  
+  // Remove table content (including cell text) if a table is present
+  if (text.includes('+----------+')) {
+    // Split into lines
+    const lines = text.split('\n');
+    // Find the start and end indices of the table
+    let tableStart = -1;
+    let tableEnd = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes('+----------+')) {
+        if (tableStart === -1) {
+          tableStart = i;
+        } else {
+          tableEnd = i;
+          break;
         }
-        else
-        {
-            alert("You have not selected a row or don't have block or item_num")
-        }
-    };
+      }
+    }
+    // Remove the table lines
+    if (tableStart !== -1 && tableEnd !== -1) {
+      text = [
+        ...lines.slice(0, tableStart),
+        ...lines.slice(tableEnd + 1)
+      ].join('\n').trim();
+    }
+  }
+  
+  // Count words, excluding empty strings
+  const words = text.split(/\s+/).filter(word => word.length > 0).length;
+  const wpm = 183;
+  const totalSeconds = Math.ceil((words / wpm) * 60);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  const readTime = `${minutes}:${seconds}`;
+  // Update the heading
+  const container = textarea.closest(".scriptBox-container");
+  const heading = container.querySelector(".scriptBox-heading");
+  heading.textContent = `Script Editing (Current length: ${minutes} min ${seconds} sec)`;
+
+  // Store the read time and script after hitting submit
+  document.getElementById("scriptSubmit").onclick = function() {
+    if (selectedRundown.show_name && detailsForScriptEditor.block && detailsForScriptEditor.item_num) {
+      const scriptText = textarea.value;
+      console.log(`selectedScriptRow: ${detailsForScriptEditor.row_num} show name ${selectedRundown.show_name} Script: \n${scriptText}`);
+      console.log(`Final time: ${totalSeconds} seconds`);
+      insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime);
+    } else {
+      alert("You have not selected a row or don't have block or item_num");
+    }
+  };
 }
 
 async function getScriptTags() {
@@ -98,6 +111,36 @@ function resetScriptBox() {
     scriptBox.value = ''
     calculateTime(scriptBox)
 }
+// Function to insert a 2x2 table into the scriptBox textarea
+function insertTable() {
+  const scriptBox = document.querySelector(".scriptBox");
+  // Define a simple text-based 2x2 table format
+  const tableTemplate = `
++----------+----------+
+| Cell 1   | Cell 2   |
++----------+----------+
+| Cell 3   | Cell 4   |
++----------+----------+
+`;
+  // Insert the table at the current cursor position
+  const startPos = scriptBox.selectionStart;
+  const endPos = scriptBox.selectionEnd;
+  const textBefore = scriptBox.value.substring(0, startPos);
+  const textAfter = scriptBox.value.substring(endPos);
+  scriptBox.value = textBefore + tableTemplate + textAfter;
+  // Move cursor to the first cell (after "Cell 1")
+  scriptBox.selectionStart = scriptBox.selectionEnd = startPos + 15; // Adjust based on tableTemplate
+  // Recalculate read time
+  calculateTime(scriptBox);
+}
+
+// Attach event listener to the insert table button (add this in DOMContentLoaded)
+document.addEventListener("DOMContentLoaded", () => {
+  // Existing DOMContentLoaded code...
+  document.getElementById("insertTableBtn").addEventListener("click", insertTable);
+  // Rest of your existing DOMContentLoaded code...
+});
+
 
 //insert a script and then get the modified time back (and mod_by in future)
 async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime) {

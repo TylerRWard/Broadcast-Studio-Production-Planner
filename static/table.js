@@ -159,7 +159,7 @@ async function addTemplate() {
         });
 
         if (response.ok) {
-            alert("Data inserted successfully!");
+            //alert("Data inserted successfully!"); //debugging
             getTemplates();
         } else {
             alert("Failed to insert data.", forMessage);
@@ -333,11 +333,6 @@ async function getColumnNames(selectedTemplate) {
         alert("Error fetching data.");
     }
 }
-
-
-
-
-
 
 // this will only draw table head columns
 function drawTable(temp_name){
