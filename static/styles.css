@@ -17,14 +17,16 @@ header {
 }
 
 .header-content {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+    width: 100%;
+    padding: 0 5px;
+    position: relative;
 }
 /*program logo*/
 .logo {
-    width: 50px;
+    width: 100px;
     height: auto;
 }
 /*body inner box*/
@@ -33,7 +35,7 @@ header {
     padding: 20px;
     max-width: 1200px;
     background: #ccc;
-    border: 2px solid #000;
+    border: 2px solid rgb(27,30,48);
     border-radius: 0;
     box-shadow: none;
 }
@@ -284,9 +286,9 @@ input {
 
 /* Styles for user management page */
 .action-header {
-    background: #444;
+    background: rgb(27,30,48);
     padding: 10px 0;
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid rgb(27,30,48);
 }
 
 .action-buttons {
@@ -346,13 +348,13 @@ input {
     white-space: nowrap; /* Prevents wrapping */
 }
 
-.users-table th {
-    background-color: #333; /* Matches header color */
-    color: white;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 14px;
-}
+    .users-table th {
+        background-color: rgb(27,30,48); /* Matches header color */
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
+    }
 
 .users-table td {
     background-color: #fff;

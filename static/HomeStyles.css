@@ -13,8 +13,11 @@ body {
 
 header {
     background-color: #f8f8f8; /* Adjust as needed */
-    padding: 10px 20px;
+    padding: -5px 20px;
     border-bottom: 1px solid black;
+
+    height: 66px; /*  fix the height */
+    overflow: hidden;
 
 }
 
@@ -22,13 +25,14 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 1200px;
+    max-width: 1350px;
     margin: 0 auto;
 }
 
 .logo {
-    height: 40px;
-    margin-right: 190px;
+    height: 70px;
+    margin-right: 175px;
+    max-height: 100%;
 }
 
 h1 {

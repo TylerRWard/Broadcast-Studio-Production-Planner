@@ -8,14 +8,19 @@ body {
 .header-content {
     display: flex;
     align-items: center;
-    padding: 10px;
-    background-color: #f8f8f8; /*very light gray almost white*/
-    color: rgb(27,30,48); /*dark blue gray*/
+    justify-content: center; /* centers the text horizontally */
+    gap: 10px;
+    padding: 0 20px;
+    background-color: #f8f8f8;
+    color: rgb(27,30,48);
+    height: 80px; /* fixed height to prevent resizing */
+    overflow: hidden;
+    position: relative;
 }
 
 .logo {
-    height: 50px;
-    margin-right: 10px;
+    height: auto;
+    max-height: 100% 
 }
 
 .container {

@@ -43,12 +43,12 @@ header {
   }
 
 
-  /*logo structure*/
-  .logo {
-    width: 150px;  
-    height: auto;
-    padding-right: 30px;
-  }
+.logo {
+    height: 125px; /* increase or tweak as needed */
+    width: auto;
+    margin-right: 20px;
+    flex-shrink: 0; /* prevents shrinking */
+}
 
  
   
