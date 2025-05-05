@@ -150,7 +150,7 @@ async function addTemplate() {
     //console.log(JSON.stringify(data));
 
     try {
-        const response = await fetch("http://localhost:3000/add-template", {
+        const response = await fetch("/add-template", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -174,7 +174,7 @@ async function addTemplate() {
 
 async function getTemplates() {  // get all the template versions' names from the database
     try {
-        const response = await fetch("http://localhost:3000/get-templates");
+        const response = await fetch("/get-templates");
         if (!response.ok) {
             throw new Error("Failed to fetch data.");
         }
@@ -267,7 +267,7 @@ document.addEventListener('keydown', function(event) {
 // Delete a template in the database
 async function deleteTemplate(temp_name) {
     try {
-        const response = await fetch(`http://localhost:3000/delete-template`, {
+        const response = await fetch(`/delete-template`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -292,7 +292,7 @@ async function deleteTemplate(temp_name) {
 /// Get relevant columns names for selected template from view list.
 async function getColumnNames(selectedTemplate) {
     try {
-        const response = await fetch(`http://localhost:3000/get-column-names/${selectedTemplate}`);
+        const response = await fetch(`/get-column-names/${selectedTemplate}`);
         if (!response.ok) throw new Error("Failed to fetch data.");
         
         const data = await response.json();
@@ -456,7 +456,7 @@ async function regenerateItemNum(selectedRundown) {
         show_date: selectedRundown.show_date
     }
     try {
-        const response = await fetch(`http://localhost:3000/regenerate-item-number`, {
+        const response = await fetch(`/regenerate-item-number`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -533,7 +533,7 @@ async function saveRunsownAsTemplate(name, selectedRundown) {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/save-rundown-as-template`, {
+        const response = await fetch(`/save-rundown-as-template`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

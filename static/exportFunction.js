@@ -43,7 +43,7 @@ exportScriptsButton.addEventListener('click', async () => {
 
 async function fetchScripts(show_name, show_date) {
     try {
-        const url = `http://localhost:3000/get-scripts-data/${show_name}/${show_date}`
+        const url = `/get-scripts-data/${show_name}/${show_date}`
         const response = await fetch(url, {
             method: "GET",
             headers: {

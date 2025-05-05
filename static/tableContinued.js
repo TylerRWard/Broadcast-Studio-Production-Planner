@@ -145,7 +145,7 @@ async function dragAndDropInDB(draggedIndx, targetIndx) {
     }
 
     try {
-        const response = await fetch("http://localhost:3000/update-after-dragNdrop", {
+        const response = await fetch("/update-after-dragNdrop", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -424,7 +424,7 @@ tableActual.addEventListener('change', function(event) {
 async function getSpeakingLines(show_name, show_date, row_num) {
     
     try {
-        const response = await fetch(`http://localhost:3000/get-speaking-lines/${show_name}/${show_date}/${row_num}`);
+        const response = await fetch(`/get-speaking-lines/${show_name}/${show_date}/${row_num}`);
 
         if (response.ok) {
             const result = await response.json();
@@ -462,7 +462,7 @@ async function updateData(previousTypedData, selectedRundown) {
     console.log(JSON.stringify(data));
 
     try {
-        const response = await fetch("http://localhost:3000/update-data-in-rundown", {
+        const response = await fetch("/update-data-in-rundown", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -500,7 +500,7 @@ async function showUpdateData(previousTypedData, selectedRundown) {
     console.log(JSON.stringify(data));
 
     try {
-        const response = await fetch("http://localhost:3000/show-just-update-data", {
+        const response = await fetch("/show-just-update-data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -566,7 +566,7 @@ async function insertRowScripts_t() {
     console.log(JSON.stringify(data));
 
     try {
-        const response = await fetch("http://localhost:3000/add-row-scripts_t5", {
+        const response = await fetch("/add-row-scripts_t5", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -630,7 +630,7 @@ async function insertRowScripts_t() {
 async function getScriptsData(show_name, show_date) {
     console.log(show_name, show_date)
     try {
-        const response = await fetch(`http://localhost:3000/get-scripts-data/${show_name}/${show_date}`);
+        const response = await fetch(`/get-scripts-data/${show_name}/${show_date}`);
         if (!response.ok) 
             {throw new Error("Failed to fetch data.");}
         
@@ -872,7 +872,7 @@ async function shiftRowsDown(rowIndex, selectedRundown) {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/shift-rows-down`, {
+        const response = await fetch(`/shift-rows-down`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -899,7 +899,7 @@ async function deleteRow(rowIndex, selectedRundown) {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/delete-a-row`, {
+        const response = await fetch(`/delete-a-row`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -981,7 +981,7 @@ async function insertStart(selectedRundown) {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/insert-start-row`, {
+        const response = await fetch(`/insert-start-row`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1077,7 +1077,7 @@ let numOfBReakLines = 0;
   //Find next available block for break
   async function findNextBlockForBreak(show_name, show_date) {
     try {
-        const response = await fetch(`http://localhost:3000/find-next-block-break/${show_name}/${show_date}`);
+        const response = await fetch(`/find-next-block-break/${show_name}/${show_date}`);
         if (!response.ok) throw new Error("Failed to fetch data.");
         
         const data = await response.json();
@@ -1102,7 +1102,7 @@ let numOfBReakLines = 0;
     console.log(data.row_num)
 
     try {
-        const response = await fetch(`http://localhost:3000/insert-a-break-row`, {
+        const response = await fetch(`/insert-a-break-row`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

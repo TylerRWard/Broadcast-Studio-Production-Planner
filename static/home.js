@@ -83,7 +83,7 @@ function calculateTime(textarea) {
 
 async function getScriptTags() {
     try {
-        const resp = await fetch("http://localhost:3000/get-tags");
+        const resp = await fetch("/get-tags");
         if (!resp.ok) throw new Error(resp.status);
         const tags = await resp.json();
 
@@ -153,7 +153,7 @@ async function insertScriptText(selectedRundown, detailsForScriptEditor, scriptT
   }
 
     try {
-      const response = await fetch("http://localhost:3000/insert-script-text", {
+      const response = await fetch("/insert-script-text", {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
@@ -200,7 +200,7 @@ let template_version = 'Default';
 // get the rundowns that are active and show them on the "directory" side
 async function getDirectory() {
   try {
-    const resp = await fetch("http://localhost:3000/rundowns?active=true");
+    const resp = await fetch("/rundowns?active=true");
     if (!resp.ok) throw new Error(resp.status);
     const rows = await resp.json();
     renderDirectory(rows);
@@ -239,7 +239,7 @@ function renderDirectory(rows) {
 async function getArchive() {
   // get the inactive rundowns
   try {
-    const resp = await fetch("http://localhost:3000/rundowns?active=false");
+    const resp = await fetch("/rundowns?active=false");
     if (!resp.ok) throw new Error(resp.status);
     const rows = await resp.json();
     renderArchive(rows);
@@ -666,7 +666,7 @@ async function getDetailsRundown(name, folder, active, template_version) {
   });
 
   try {
-    const response = await fetch(`http://localhost:3000/get-details-rundown?${params}`, {
+    const response = await fetch(`/get-details-rundown?${params}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
     });
