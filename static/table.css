@@ -1,214 +1,218 @@
-#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton, #addRundown2Template, #manageShots, #manageFormats {
-    padding: 0.5rem 1rem;
-  }
 /*dropdown for the buttons in header*/
-  #templateBox, #startBreakBox, #exportBox, #manageShotsBox, #manageFormatsBox  {
-    position: absolute;
-    display: none;
-    background: #fff;
-    border: 1px solid #aaa;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 9999;
-    min-width: 120px;
-    text-align: left;
-  }
+#templateBox, #startBreakBox, #exportBox, #manageShotsBox, #manageFormatsBox  {
+  position: absolute;
+  display: none;
+  background: #fff;
+  border: 1px solid #aaa;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+  min-width: 120px;
+  text-align: left;
+}
 
-  /* Overlay Style */
+/* Overlay Style */
 .overlay {
-    display: none; /* Hidden by default */
-    position: fixed; /* Fixed at the top */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
-    z-index: 999; /* Behind the modal */
+  display: none; /* Hidden by default */
+  position: fixed; /* Fixed at the top */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  z-index: 999; /* Behind the modal */
 }
 
 /* Modal Style */
 .modalfortemp {
-    display: none; /* Hidden by default */
-    position: fixed; /* Fixed at the top */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%); /* Adjust positioning to perfectly center */
-    width: 300px; /* Set width of the modal */
-    height: 500px; /* Set height of the modal */
-    background-color: white; /* White background */
-    border: 1px solid #888; /* Border */
-    z-index: 1000; /* Modal on top */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow for a better effect */
-    padding: 5px;
+  display: none; /* Hidden by default */
+  position: fixed; /* Fixed at the top */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust positioning to perfectly center */
+  width: 300px; /* Set width of the modal */
+  height: 500px; /* Set height of the modal */
+  background-color: white; /* White background */
+  border: 1px solid #888; /* Border */
+  z-index: 1000; /* Modal on top */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow for a better effect */
+  padding: 5px;
 }
 
 /* Modal Content */
 .modal-content {
-    padding: 1px;
+  padding: 1px;
 }
 
 /* Close Button */
 .close-btn {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .close-btn:hover,
 .close-btn:focus {
-    color: black;
-    text-decoration: none;
+  color: black;
+  text-decoration: none;
 }
 
 
 ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 
-  .list-temp-css{
-    padding: 2px;
-    margin-bottom: 2px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: border 0.02s ease;
-  }
-  
-  .list-temp-css:hover {
-    border: 2px solid;
-  }
+.list-temp-css{
+  padding: 2px;
+  margin-bottom: 2px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: border 0.02s ease;
+}
 
-
-
-.div1-css{
-    background-color: rgb(40, 74, 102);
-    color:black;
-    padding: 10px;
-    margin: 5px;
+.list-temp-css:hover {
+  /* border: 2px solid; */
+  background-color:#ddd;
 }
 
 
 .checkbox-temp{
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .checkbox-container {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Optional: adds space between checkbox and text */
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Optional: adds space between checkbox and text */
 }
 
 /* Optional: Style the checkbox */
 input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .input-temp-name-css, .js-show-date{
-    margin-top: 5px;
-    margin-right: 5px;
-    height: 25px;
-    width: 200px;
-    border-radius: 2px;
-    border-width: 1px;
+  margin-top: 5px;
+  margin-right: 5px;
+  height: 25px;
+  width: 200px;
+  border-radius: 2px;
+  border-width: 1px;
 
 }
 
 .js-show-date{
-    height: 22px;
-    align-items: center;
+  height: 22px;
+  align-items: center;
 }
 
 .add-button-css{
-    height: 23px;
-    cursor: pointer;
-    background-color: rgb(10, 12, 41);
-    color: white;
-    border-color: rgb(51, 55, 80);
-    border-radius: 5px;
+  height: 23px;
+  cursor: pointer;
+  background-color: rgb(10, 12, 41);
+  color: white;
+  border-color: rgb(51, 55, 80);
+  border-radius: 5px;
 }
 
 .table-temp-css{
-    max-width: 150px;
-    overflow-x: auto;
-    font-size: 15px;
-    cursor: pointer;
-    white-space: nowrap;
-    padding:2px;
-    text-align: left;
-    
-    
+  max-width: 150px;
+  overflow-x: auto;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  padding:2px;
+  text-align: left;
+  
+  
 }
 
 
 
 #openModalBtn, #add-start-row, #add-break-row, #export-table-row, #export-scripts-row{
-    background-color: white;
-    color: black;
-    overflow-x: auto;
-    font-size: 15px;
-    cursor: pointer;
-    padding-left:5px;
-    border: none;
+  background-color: transparent;
+  color: black;
+  overflow-x: auto;
+  font-size: 15px;
+  cursor: pointer;
+  padding-left:5px;
+  border: none;
+  align-items: left;
+  text-align: left;
+
 
 }
+
+#openModalBtn:hover, #add-start-row:hover, #add-break-row:hover, #export-table-row:hover, #export-scripts-row:hover{
+background-color: #ddd;
+}
+
+
 selected-row {
-    background-color: transparent; /* remove default */
-    border-left: 3px solid #0ea5e9; /* cyan-ish left border */
-  }
+  background-color: transparent; /* remove default */
+}
+
+.selected-row td, .selected-row td input, .selected-row td select {
+  background-color: #ccc; /* light gray */
   
-  .selected-row td, .selected-row td input, .selected-row td select {
-    background-color: #ccc; /* light gray */
-    
-  }
+}
 .selectable{
-    background-color: white;
-    color: black;
-    border-color: black;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: white;
+  color: black;
+  border-color: black;
+  border-radius: 5px;
+  cursor: pointer;
 
 }
- /* Style for selected row */
- .selected {
-    background-color: rgb(4, 8, 44);
-    color: white;
-    border-color: rgb(0, 0, 0);
-    border-radius: 5px;              
+/* Style for selected row */
+.selected {
+  background-color: rgb(4, 8, 44);
+  color: white;
+  border-color: rgb(0, 0, 0);
+  border-radius: 5px;              
 }
 
 
 #data-table, #data-table-temp {
-    width: 100%;
-    border-collapse: collapse;
+  width: max-content;
+  border-collapse: collapse;
+  margin: 0 auto;          
 }
 
 #data-table thead, #data-table-temp thead{
-    position: sticky;
-    top: 0;
-    background-color: #fff;
-    z-index: 5; /* Ensure headers stay above table content */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow for visual separation */
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 5; /* Ensure headers stay above table content */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow for visual separation */
 }
 
 #data-table td, #data-table-temp td {
-    border: 0.1px solid #ddd;
-    padding: 0px;
+  border: 0.1px solid #ddd;
+  padding: 2px 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 1px;
 }
 
 
 .table-css {
-    width: 100%;
-    overflow-x: auto;
+display: block;         
+width: 100%;            
+overflow-x: auto;      
+white-space: nowrap;    
 }
 /*box widths*/
-.BLOCK { width: 3.5%; }
+/* .BLOCK { width: 0.2%; }
 .ITEM_NUM { width: 5%; }
 .CAM { width: 3%; }
 .SHOT { width: 7%; }
@@ -223,153 +227,181 @@ selected-row {
 .WRITER { width: 6%; }
 .EDITOR { width: 6%; }
 .MODIFIED { width: 7%; }
-.MOD_BY { width: 6%; }
+.MOD_BY { width: 6%; }  */
+
+.BLOCK     { width: 2px; }      /* 0.2% of 1000px */
+.ITEM_NUM  { width: 50px; }     /* 5% */
+.CAM       { width: 30px; }     /* 3% */
+.SHOT     { width: 100px; }     /* 7% */
+.TAL       { width: 70px; }
+.SLUG     { width: 220px; }    /* 20% */
+.FORMAT   { width: 150px; }     /* 8% */
+.READ      { width: 100px; }     /* 4% */
+.SOT       { width: 100px; }
+.TOTAL     { width: 100px; }
+.OK       { width: 180px; }    /* 7% */
+.CHANNEL   { width: 30px; }     /* 3% */
+.WRITER    { width: 60px; }     /* 6% */
+.EDITOR    { width: 60px; }
+.MODIFIED  { width: 150px; }     /* 7% */
+.MOD_BY    { width: 150px; }     /* 6% */
 
 
-.grid-input-data{
-    width: 95%;
-    height: 17px;
-    font-size: 15px;
-    border: none;
-    text-align: center;
-    background-color: #f8f8f8;
-    color: #000;
+.grid-input-data {
+width: 100%;
+height: 25px;
+font-size: 14px;
+border: none;
+text-align: center;
+background-color: #f8f8f8;
+color: #000;
+box-sizing: border-box;
+}
+
+.shotDropdown,
+.okDropdown,
+.formatDropdown {
+  width: 100%;
+  font-size: 14px;
+  border: none;
+  background-color: #f8f8f8;
+  color: black;
+  box-sizing: border-box;
 }
 
 .js-ID{
-    width: 80%;
+  width: 80%;
 
 }
 
 .js-CAM{
-    width: 90%;
+  width: 90%;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 td {
-    text-align: center;
+  text-align: center;
 
 }
 /* table header*/
 .table-head-css{
-    background-color: rgb(59, 67, 88);
-    color: white;
-    font-weight: bold;
-    font-size: 13px;
-    height: 24px;
-    
+  background-color: #333;
+  color: white;
+  font-size: 11px;
+  height: 24px;
+  white-space: normal;
+  word-wrap: break-word;
 }
 /*inside table*/
 .table-data-css{
-    background-color: #f8f8f8;
-    color: black;
-    font-size: 16px;
-    height: 25px;
-    white-space: nowrap;       /* Keeps text in one line */
-    overflow: hidden;          /* Hides overflow text */
-    text-overflow: ellipsis;
+  background-color: #f8f8f8;
+  color: black;
+  font-size: 16px;
+  height: 25px;
+  white-space: nowrap;       /* Keeps text in one line */
+  overflow: hidden;          /* Hides overflow text */
+  text-overflow: ellipsis;
 }
 
 /*inside table*/
 select {
-    border: none;
-    color: black;             /* text color */
-    background-color: #f8f8f8;  /* background color */
-        
-  }
+  border: none;
+  color: black;             /* text color */
+  background-color: #f8f8f8;  /* background color */
+      
+}
 
 /*select dropdown on table*/
-  select option {
-    color: black;
-    background-color: #f8f8f8;
-  }
+select option {
+  color: black;
+  background-color: #f8f8f8;
+}
 
 .temp-view-table {
-    background-color:white ;
+  background-color:white ;
 }
 
 .shotDropdown{ /* for the SHOT colomn*/
 
-    width: 100%;
-    font-size: 10px;
-    
-    /****************/
-    }
+  width: 100%;
+  font-size: 10px;
+  
+  /****************/
+  }
 
 .okDropdown{
-    width: 100%;
-    font-size: 10px;
-    
+  width: 100%;
+  font-size: 10px;
+  
 }
 
 .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-  }
-  
-  .modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 10px;
-    padding: 1.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    width: 400px;
-    height: 250px;
-    z-index: 1001;
-    text-align: center;
-  }
-  
-  .modal input {
-    width: 100%;
-    padding: 0.5rem;
-    margin: 1rem 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  .modal-buttons {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .modal-buttons button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  #cancelModal {
-    background: #ccc;
-  }
-  
-  #saveTemplate {
-    background: #4CAF50;
-    color: white;
-  }
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
 
-  #addShotBtn {
-    background: #4CAF50;
-    color: white;
-  }
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  width: 400px;
+  height: 250px;
+  z-index: 1001;
+  text-align: center;
+}
 
-  #addFormatBtn {
-    background: #4CAF50;
-    color: white;
-  }
-  
+.modal input {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 1rem 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#cancelModal {
+  background: #ccc;
+}
+
+#saveTemplate {
+  background: #4CAF50;
+  color: white;
+}
+
+#addShotBtn {
+  background: #4CAF50;
+  color: white;
+}
+
+#addFormatBtn {
+  background: #4CAF50;
+  color: white;
+}

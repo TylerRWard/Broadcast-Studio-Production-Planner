@@ -441,7 +441,7 @@ document.getElementById('regenerate_item_num').addEventListener('click', () =>{
     console.log(selectedRundown.show_name && selectedRundown.show_date)
     if((selectedRundown.show_name!== "") && (selectedTemplate.show_date!==""))
     {
-       // regenerateItemNum(selectedRundown);
+         regenerateItemNum(selectedRundown);
     }
     else
     {
@@ -466,6 +466,7 @@ async function regenerateItemNum(selectedRundown) {
 
         if (response.ok) {
             console.log("successed!")
+            drawActualTable(selectedRundown.needed_columns, selectedRundown.show_name, selectedRundown.show_date)
         } else if (response.status === 400) {
            console.log("unsuccessed!")
         } else {

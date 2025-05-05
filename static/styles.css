@@ -7,35 +7,40 @@ body {
     padding: 0;
     text-align: center;
     background-color: #f4f4f4;
+    font: 12px;
+}
+
+button{
+    font-weight: 400;
 }
 /*User management header*/
 header {
     background: #f8f8f8;
     color: rgb(27,30,48);
-    padding: 10px 0;
-    border-bottom: 2px solid black;
+    padding: 0px 0;
+    font-size: 17px;
 }
 
 .header-content {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
     align-items: center;
-    width: 100%;
-    padding: 0 5px;
-    position: relative;
+    justify-content: center;
+    gap: 10px;
 }
-/*program logo*/
-.logo {
-    width: 100px;
+  /*logo structure*/
+  .logo {
+    width: 100px;  
     height: auto;
-}
+    padding-right: 10px;
+  }
+
 /*body inner box*/
 .container {
     margin: 20px auto;
     padding: 20px;
     max-width: 1200px;
     background: #ccc;
-    border: 2px solid rgb(27,30,48);
+    border: 2px solid #000;
     border-radius: 0;
     box-shadow: none;
 }
@@ -249,7 +254,7 @@ input {
 .action-button {
     width: 100%;
     padding: 10px;
-    background: #e0c080;
+    background: #d6ba77;
     color: black;
     border: none;
     border-radius: 4px;
@@ -258,15 +263,15 @@ input {
 }
 
 .action-button:hover {
-    background: hsl(46,34%,45%);
+    background: #cba95f;
 }
 
 .delete-button {
-    background: #e0c080;
+    background: #d6ba77;
 }
 
     .delete-button:hover {
-        background: hsl(46,34%,45%);
+        background: #cba95f;
     }
 
 .navigation {
@@ -286,9 +291,9 @@ input {
 
 /* Styles for user management page */
 .action-header {
-    background: rgb(27,30,48);
-    padding: 10px 0;
-    border-bottom: 2px solid rgb(27,30,48);
+    background: #444;
+    padding: 5px;
+    border-bottom: 6px solid #444;
 }
 
 .action-buttons {
@@ -300,12 +305,12 @@ input {
     .action-buttons .action-button {
         width: auto;
         padding: 10px 20px;
-        background: #e0c080;
+        background: #d6ba77;
         font-size: 16px;
     }
 
 .action-buttons .action-button:hover {
-    background: hsl(46,34%,45%);
+    background: #cba95f;
 }
 
 .content-wrapper {

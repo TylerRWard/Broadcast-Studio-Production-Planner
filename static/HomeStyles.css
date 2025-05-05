@@ -9,40 +9,35 @@ body {
     padding:0;
     text-align: center;
     background-color: #f4f4f4;
+    font-size: 12px;
 }
 
 header {
     background-color: #f8f8f8; /* Adjust as needed */
-    padding: -5px 20px;
+    padding: 0px 20px;
     border-bottom: 1px solid black;
-
-    height: 66px; /*  fix the height */
-    overflow: hidden;
-
 }
 
 .header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 1350px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
-.logo {
-    height: 70px;
-    margin-right: 175px;
-    max-height: 100%;
-}
-
-h1 {
-    flex-grow: 1;
-    font-size: 2.5rem;
-    margin: 0;
-}
+ /*logo structure*/
+ .logo {
+    width: 110px;  
+    height: auto;
+    padding-right: 10px;
+  }
 
 .header-content h1 {
     color: rgb(27,30,48);
+    flex-grow: 1;
+    font-size: 3.2rem;
+    margin: 0;
 }
 
 .header-buttons {
@@ -51,26 +46,29 @@ h1 {
 }
 
 .header-button {
-    background-color: #e0c080; /* gold */
+    background-color: #d6ba77; /* gold */
     color: black;
-    border: none;
+    border: 1px;
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s;
+    font-weight: bold;
 }
 
-    .header-button#logout-btn {
-        background-color: #e0c080; /* gold */
-    }
+.header-button#logout-btn {
+    background-color: #d6ba77; /* gold */
+    font-weight: bold;
+}
 
 .header-button:hover {
-    background-color: hsl(46,34%,45%); /* Darker gold on hover for User Management */
+    background-color: #cba95f; /* Darker gold on hover for User Management */
+    
 }
 
 .header-button#logout-btn:hover {
-    background-color: hsl(46,34%,45%); /* Darker gold on hover for Logout */
+    background-color: #cba95f; /* Darker gold on hover for Logout */
 }
 
 .container {
@@ -83,43 +81,59 @@ h1 {
     box-shadow: none;
 }
 
+/* Nav Bar */
 .nav-bar {
-    background-color: rgb(27,30,48);
-    height: 45px;
+    background-color: #444;
+    height: 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 2px;
-    border-bottom: 2px solid rgb(27, 30, 48);
-    gap: 20px; /* Space between hamburger and search */
-    z-index: 1000; /* Slightly lower than header but above table */
 }
 
-.hamburger {
-    display: flex;
-    align-items: center;
-}
+/* Button List */
+#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton, #addRundown2Template, #manageShots, #manageFormats {
+    padding: 0.5rem 1rem;
+    font-size: 13px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    font-weight: bold;
+  }
 
-.hamburger-icon {
-    width: 30px;
-    height: auto;
-    cursor: pointer;
-}
+  #templatesButton:hover, #addStartBreakButton:hover, #regenerate_item_num:hover, #exportButton:hover, #addRundown2Template:hover, #manageShots:hover, #manageFormats:hover {
+    background-color: #ddd;
+  }
 
+/* Search Bar */
 .search-input {
-    padding: 8px 12px;
-    font-size: 16px;
+    padding: 0.5rem 1rem;
     border: 1px solid #000;
     border-radius: 5px;
     width: 200px;
-    background-color: #f8f8f8;
     outline: none;
+}
+
+.search-input:hover{
+    background-color: #f4f4f4;
 }
 
 .search-input:focus {
     border-color: #666;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }
+
+
+ /*****************************/
+
+ .main-content-div{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 145px;
+    left: 0%;
+    background-color: rgb(27,30,48);
+}
+
 
 /* New Working Directory Styling */
 .working-directory {
@@ -184,18 +198,6 @@ h1 {
     margin: 0;
 }
 
- /****************/
-
- .main-content-div{
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 110px;
-    left: 0%;
-    background-color: rgb(27,30,48);
-    
-}
-
 .div-1{     /*Left most column (working directory)*/
     position: absolute;
     height: 99.7%;
@@ -203,7 +205,6 @@ h1 {
     background-color: rgb(27, 30, 48);
     top: 0.125%;
     left: 0.125%;
-    border-radius: 5px;
     color: white;
     text-align: center;
     font-size: 16px;
@@ -211,6 +212,7 @@ h1 {
     
 }
 
+/* Rundown Name Box */
 .div-rundown-name{
     position: absolute;
     height: 3%;
@@ -218,15 +220,17 @@ h1 {
     top: 0.125%;
     left: 15%;
     background-color:#ccc;
-    border-radius: 5px;
-    color: rgb(27,30,48);
+    color: black;
+    font-weight: bold;
     font-size: 15px;
     padding-top: 2px;
     padding-left: 4px;
     display: flex;
-    justify-content: flex-start; /* Horizontal left */
+    align-items: center;
 }
 
+
+/* Rundown Box */
 .div-2 {
     position: absolute;
     height: 61.25%;
@@ -234,31 +238,23 @@ h1 {
     top: 3.25%;
     left: 15%;
     background-color: #ccc;
-    overflow-y: auto; /* Allow vertical scrolling */
-    overflow-x: auto;
-    z-index: 500;
+    
+    overflow-y: hidden; 
    
 }
 
-#data-table {
+.div-2-inside {
     width: 100%;
+    height: 100%;
+    overflow-x: auto;        /* allows horizontal scroll */
+    overflow-y: auto;        /* allows vertical scroll if table is tall */
+    white-space: nowrap;     /* prevents table from wrapping */
+}
+
+table {
     border-collapse: collapse;
-    z-index: 400;
+    min-width: 100px;
 }
-
-#data-table thead {
-    position: sticky;
-    top: 0;
-    background-color: #fff;
-    z-index: 5; /* Ensure headers stay above table content */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow for visual separation */
-}
-
-#data-table td {
-    border: 0.1px solid #ddd;
-    padding: 0px;
-}
-
 
 /* Script Box */
 .scriptBox-container {
@@ -268,7 +264,6 @@ h1 {
     bottom: 0.125%;
     left: 15%;
     background-color: #ccc;
-    border-radius: 5px;
     color: rgb(27,30,48);
     padding: 10px;
     display: flex;
@@ -323,6 +318,9 @@ h1 {
 
 
    
+  
+
+   
 .scriptBox-controls {
     display: flex;
     gap: 10px;
@@ -357,3 +355,4 @@ h1 {
 .scriptBox-controls button[onclick="resetScriptBox()"]:hover {
     background-color: #cc0000;
 }
+

@@ -766,6 +766,24 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
 });
 
 
+// Get the last row_num of the relevant show to check how many rows should draw
+app.get("/get-last-row_num", isAuthenticated, async (req, res) => {
+    const { show_name, show_date } = req.query;
+  
+    try {
+      const result = await pool.query(`
+        SELECT MAX(row_num) AS last_row_num
+        FROM scripts_t5
+        WHERE show_name = $1 AND show_date = $2;
+      `, [show_name, show_date]);
+  
+      res.status(200).json({ last_row_num: result.rows[0].last_row_num ?? 0 });
+    } catch (err) {
+      console.error("Error fetching data:", err.message);
+      res.status(500).send("Failed to fetch data.");
+    }
+  });
+  
 // Get the data of relevant rundown from scripts_t4
 app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, res) => {
     
@@ -1650,7 +1668,73 @@ app.post("/regenerate-item-number", isAuthenticated, async (req, res) => {
   }
 
   try {
-    await pool.query("CALL reset_blocks($1, $2)", [show_name, show_date]);
+    const select_curr_order = `select block, item_num, row_num from scripts_t5 where show_name = $1 and show_date = $2 order by row_num asc;`
+    let curr_order = await pool.query(select_curr_order, [show_name, show_date]);
+
+    if(curr_order.rowCount = 0)
+        {res.status(200).json({ message: "No rows!" });}
+    
+    curr_order = curr_order.rows;
+    let curr_Block = 'A';
+    let curr_item_num = curr_order[0].item_num;
+    const len_curr_order = curr_order.length;
+
+    // Update first object manually
+    curr_order[0].block = curr_Block;
+    curr_order[0].item_num = curr_item_num;
+    curr_item_num++;
+
+    for (let i = 1; i < len_curr_order; i++) {
+        if(curr_order[i].item_num === 0)
+        {
+            curr_item_num = 0;
+            curr_Block = String.fromCharCode(curr_Block.charCodeAt(0) + 1)
+        }
+
+        curr_order[i].block = curr_Block;
+        curr_order[i].item_num = curr_item_num
+        curr_item_num++;
+      }
+
+    // Batch update
+    let caseBlock = '';
+    let caseItemNum = '';
+    let rowNums = [];
+
+    for (let item of curr_order) {
+    caseBlock += `WHEN ${item.row_num} THEN '${item.block}' `;
+    caseItemNum += `WHEN ${item.row_num} THEN ${item.item_num} `;
+    rowNums.push(item.row_num);
+    }
+
+    const updateQuery = `
+    UPDATE scripts_t5
+    SET 
+        block = CASE row_num ${caseBlock} END,
+        item_num = CASE row_num ${caseItemNum} END
+    WHERE row_num IN (${rowNums.join(',')})
+        AND show_name = $1
+        AND show_date = $2;
+    `;
+
+    await pool.query(updateQuery, [show_name, show_date]);
+
+    const updateRowNumQuery = `
+    WITH ordered AS (
+        SELECT row_num, ROW_NUMBER() OVER (ORDER BY row_num) AS new_row_num
+        FROM scripts_t5
+        WHERE show_name = $1 AND show_date = $2
+    )
+    UPDATE scripts_t5
+    SET row_num = ordered.new_row_num
+    FROM ordered
+    WHERE scripts_t5.row_num = ordered.row_num
+        AND show_name = $1 AND show_date = $2;
+    `;
+
+    await pool.query(updateRowNumQuery, [show_name, show_date]);
+
+    
     res.status(200).json({ message: "Blocks and item numbers reset successfully." });
   } catch (err) {
     console.error("❌ Error calling reset_blocks:", err.message);

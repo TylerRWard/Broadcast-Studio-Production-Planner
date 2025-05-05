@@ -1000,34 +1000,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-  
-/************************Export Functions**************************** */
-
-//This is just for testing export function
-//generateRundownPDF("Tonight News", "2025-04-20");
-//generateScriptPDF("Tonight News", "2025-04-20")
-
-async function generateRundownPDF(show_name, show_date) {
-  try {
-      window.location.href = `http://localhost:3000/generate-rundownpdf/${show_name}/${show_date}`;
-      alert(`${show_name} - ${show_date} is being downloaded!`);
-  } catch (error) {
-      console.error("Download error:", error);
-      alert(`No data found for ${show_name} - ${show_date}`);
-  }
-}
-
-async function generateScriptPDF(show_name, show_date) {
-  try {
-      window.location.href = `http://localhost:3000/generate-scriptpdf/${show_name}/${show_date}`;
-      alert(`${show_name} - ${show_date} is being downloaded!`);
-  } catch (error) {
-      console.error("Download error:", error);
-      alert(`No data found for ${show_name} - ${show_date}`);
-  }
-}
-/******************************************************************* */
-
-
-
 

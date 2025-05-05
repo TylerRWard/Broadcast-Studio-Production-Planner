@@ -11,59 +11,78 @@ selectedRundown = {
     show_name: '',
     show_date: '',
     needed_columns: [],
-    template_version: ''
+    template_version: '',
+    
 }
 
 // Draw an empty rundown with 100 rows
-function drawActualTable(columnNames, scriptName, showDate){
+async function drawActualTable(columnNames, scriptName, showDate) {
+    // ✅ Wait for lastRowNum
+    const lastRow = await lastRowNum(selectedRundown);
+    console.log("last row is", lastRow);
 
     const table = document.getElementById('data-table-temp');
     const actualTable = document.getElementById('data-table');
 
-    // Optional: hide the temp table and show the in one
     table.style.display = 'none';
-    actualTable.style.display = 'table'; // or 'block' if styled differently
+    actualTable.style.display = 'table';
 
     document.querySelector('.js-create').innerHTML = `${scriptName} Rundown - ${showDate}`;
-    let headHTML=``;
-    let dataHTML=``;
+    
+    let headHTML = ``;
+    let dataHTML = ``;
 
     columnNames.forEach(function (column) {
-        const rowHTML = `<th class="table-head-css ${column}">${column}</th>`
-        headHTML += rowHTML;
-    })
-
-    for (let i = 0; i < 100; i++)
-        {
-            let datarow =``;
-            columnNames.forEach(function (column) {
-                const datarowHTML = `<td data-column=${column} class="table-data-css ${column}">${createARowInput(column)}</td>`
-                datarow += datarowHTML;
-            })
-            dataHTML += `<tr class="rundown-row" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)" >${datarow}</tr>`;
-        }
-
-    dataHTML = `<tbody id="data-table-tbody">${dataHTML}</tbody>`;
-    let headRowHTML = `<thead><tr class="head-row-css">${headHTML}</tr></thead>`;
-    document.querySelector('#data-table').innerHTML = headRowHTML + dataHTML;
-
-
-
-    Promise.all([loadFormats(), loadShots()])
-    .then(() => {
-        // Retrieve data from database for selected rundown 
-      getScriptsData(selectedRundown.show_name, selectedRundown.show_date);
-    })
-    .catch((err) => {
-      console.error("Dropdown load failed:", err);
-      alert("Could not load FORMAT/SHOT options.");
+        headHTML += `<th class="table-head-css ${column}">${column}</th>`;
     });
 
-    /*loadFormats();
-    loadShots();
-    // Retrieve data from database for selected rundown 
-    getScriptsData(selectedRundown.show_name, selectedRundown.show_date);*/
+    // ✅ Use lastRow instead of hardcoded 100
+    for (let i = 0; i < lastRow; i++) {
+        let datarow = ``;
+        columnNames.forEach(function (column) {
+            datarow += `<td data-column=${column} class="table-data-css ${column}">${createARowInput(column)}</td>`;
+        });
+        dataHTML += `<tr class="rundown-row" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)">${datarow}</tr>`;
+    }
+
+    const headRowHTML = `<thead><tr class="head-row-css">${headHTML}</tr></thead>`;
+    dataHTML = `<tbody id="data-table-tbody">${dataHTML}</tbody>`;
+    document.querySelector('#data-table').innerHTML = headRowHTML + dataHTML;
+
+    try {
+        await Promise.all([loadFormats(), loadShots()]);
+        getScriptsData(selectedRundown.show_name, selectedRundown.show_date);
+    } catch (err) {
+        console.error("Dropdown load failed:", err);
+        alert("Could not load FORMAT/SHOT options.");
+    }
 }
+
+
+async function lastRowNum(selectedRundown) {
+    try {
+        const response = await fetch(`/get-last-row_num?show_name=${selectedRundown.show_name}&show_date=${selectedRundown.show_date}`);
+
+        if (response.ok) {
+            const data = await response.json();
+            let last_row_num = data.last_row_num;
+
+            if (last_row_num < 100)
+            {last_row_num = 100;}
+            else
+            {last_row_num +=50;}
+
+            return last_row_num;           
+
+        } else {
+            alert("Failed to get the last row_num.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error connecting to the server.");
+    }
+}
+
 
 
 /****************************************Drag and Drop Start********************************************************/
@@ -942,7 +961,7 @@ function drawStart(startRow){
     const mergedCell = startRow.insertCell();
     mergedCell.colSpan = numOfColumns - 4; // This cell will span across 2 columns
     mergedCell.textContent = 'START';
-    mergedCell.style.backgroundColor = '#e0c080';
+    mergedCell.style.backgroundColor = '#cba95f';
     mergedCell.style.textAlign = 'center';
     mergedCell.style.fontWeight = 'bold';
 
@@ -1041,7 +1060,7 @@ let numOfBReakLines = 0;
     const mergedCell = breakRow.insertCell();
     mergedCell.colSpan = numOfColumns - 4; // This cell will span across 2 columns
     mergedCell.textContent = 'BREAK';
-        mergedCell.style.backgroundColor = '#ff6b6b';
+        mergedCell.style.backgroundColor = '#cba95f';
     mergedCell.style.textAlign = 'center';
     mergedCell.style.fontWeight = 'bold';
 
