@@ -27,34 +27,15 @@ let detailsForScriptEditor = {
 
 // calculating the script read time
 function calculateTime(textarea) {
-  let text = textarea.value.trim();
-  
-  // Remove table content (including cell text) if a table is present
-  if (text.includes('+----------+')) {
-    // Split into lines
-    const lines = text.split('\n');
-    // Find the start and end indices of the table
-    let tableStart = -1;
-    let tableEnd = -1;
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].includes('+----------+')) {
-        if (tableStart === -1) {
-          tableStart = i;
-        } else {
-          tableEnd = i;
-          break;
-        }
-      }
-    }
-    // Remove the table lines
-    if (tableStart !== -1 && tableEnd !== -1) {
-      text = [
-        ...lines.slice(0, tableStart),
-        ...lines.slice(tableEnd + 1)
-      ].join('\n').trim();
-    }
+  // Ensure textarea exists
+  if (!textarea) {
+    console.error("Textarea not provided to calculateTime");
+    return;
   }
-  
+
+  // Get the text from the textarea
+  const text = textarea.value;
+
   // Count words, excluding empty strings
   const words = text.split(/\s+/).filter(word => word.length > 0).length;
   const wpm = 183;
@@ -62,23 +43,19 @@ function calculateTime(textarea) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
 
-  const readTime = `${minutes}:${seconds}`;
+  // Format readTime as MM:SS with padded seconds
+  const readTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+
   // Update the heading
   const container = textarea.closest(".scriptBox-container");
-  const heading = container.querySelector(".scriptBox-heading");
-  heading.textContent = `Script Editing (Current length: ${minutes} min ${seconds} sec)`;
+  const heading = container?.querySelector(".scriptBox-heading");
+  if (heading) {
+    heading.textContent = `Script Editing (Current length: ${minutes} min ${seconds} sec)`;
+  } else {
+    console.warn("ScriptBox heading not found");
+  }
 
-  // Store the read time and script after hitting submit
-  document.getElementById("scriptSubmit").onclick = function() {
-    if (selectedRundown.show_name && detailsForScriptEditor.block && detailsForScriptEditor.item_num) {
-      const scriptText = textarea.value;
-      console.log(`selectedScriptRow: ${detailsForScriptEditor.row_num} show name ${selectedRundown.show_name} Script: \n${scriptText}`);
-      console.log(`Final time: ${totalSeconds} seconds`);
-      insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime);
-    } else {
-      alert("You have not selected a row or don't have block or item_num");
-    }
-  };
+  return readTime; // Optionally return readTime for use elsewhere
 }
 
 async function getScriptTags() {
@@ -116,11 +93,8 @@ function insertTable() {
   const scriptBox = document.querySelector(".scriptBox");
   // Define a simple text-based 2x2 table format
   const tableTemplate = `
-+----------+----------+
-| Cell 1   | Cell 2   |
-+----------+----------+
-| Cell 3   | Cell 4   |
-+----------+----------+
+  Top line:
+  Bottom line:
 `;
   // Insert the table at the current cursor position
   const startPos = scriptBox.selectionStart;
@@ -138,7 +112,29 @@ function insertTable() {
 document.addEventListener("DOMContentLoaded", () => {
   // Existing DOMContentLoaded code...
   document.getElementById("insertTableBtn").addEventListener("click", insertTable);
-  // Rest of your existing DOMContentLoaded code...
+  document.getElementById("scriptSubmit").addEventListener("click", async () => {
+    const textarea = document.querySelector(".scriptBox");
+    if (!textarea) {
+      alert("Script textarea not found");
+      return;
+    }
+    const scriptText = textarea.value;
+    const readTime = calculateTime(textarea); // Calculate readTime
+    if (
+      selectedRundown?.show_name &&
+      detailsForScriptEditor.block &&
+      detailsForScriptEditor.item_num &&
+      detailsForScriptEditor.row_num
+    ) {
+      console.log(
+        `selectedScriptRow: ${detailsForScriptEditor.row_num} show name ${selectedRundown.show_name} Script: \n${scriptText}`
+      );
+      console.log(`Final time: ${readTime}`);
+      await insertScriptText(selectedRundown, detailsForScriptEditor, scriptText, readTime);
+    } else {
+      alert("You have not selected a row or don't have block or item_num");
+    }
+    });
 });
 
 
