@@ -63,10 +63,10 @@ app.get("/user-management.html", isAuthenticated, (req, res) => {
 });
 //handle log in 
 app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     try {
-        const query = "SELECT * FROM users_t5 WHERE email = $1";
-        const result = await pool.query(query, [email]);
+        const query = "SELECT * FROM users_t5 WHERE username = $1";
+        const result = await pool.query(query, [username]);
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
@@ -74,7 +74,7 @@ app.post("/login", async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
             req.session.isAuthenticated = true;
-            req.session.user = { name: user.name, email: user.email, adminLevel: user.admin_level };
+            req.session.user = { name: user.name, username: user.username, adminLevel: user.admin_level };
             res.status(200).json({
                 message: "Login successful",
                 user: req.session.user
@@ -98,7 +98,7 @@ app.post("/logout", (req, res) => {
 });
 //register user
 app.post("/register", isAuthenticated, async (req, res) => {
-    const { name, email, password, adminLevel } = req.body;
+    const { name, username, password, adminLevel } = req.body;
     const saltRounds = 10;
     try {
         if (!name || !password || !adminLevel) {
@@ -106,11 +106,11 @@ app.post("/register", isAuthenticated, async (req, res) => {
         }
         const passwordHash = await bcrypt.hash(password, saltRounds);
         const insertQuery = `
-            INSERT INTO users_t5 (name, password, email, admin_level)
+            INSERT INTO users_t5 (name, password, username, admin_level)
             VALUES ($1::varchar, $2::varchar, $3::varchar, $4::varchar)
-            RETURNING name, email, admin_level
+            RETURNING name, username, admin_level
         `;
-        const result = await pool.query(insertQuery, [name, passwordHash, email, adminLevel]);
+        const result = await pool.query(insertQuery, [name, passwordHash, username, adminLevel]);
         res.status(201).json({
             message: "User registered successfully",
             user: result.rows[0]
@@ -122,16 +122,16 @@ app.post("/register", isAuthenticated, async (req, res) => {
 });
 //delete user
 app.delete("/delete-user", isAuthenticated, async (req, res) => {
-    const { email } = req.body;
-    console.log("Delete request received for:", email);
+    const { username } = req.body;
+    console.log("Delete request received for:", username);
     try {
-        const query = "DELETE FROM users_t5 WHERE email = $1 RETURNING email";
-        const result = await pool.query(query, [email]);
+        const query = "DELETE FROM users_t5 WHERE username = $1 RETURNING username";
+        const result = await pool.query(query, [username]);
         if (result.rowCount === 0) {
-            console.log("No user found with email:", email);
+            console.log("No user found with username:", username);
             return res.status(404).json({ message: "User not found" });
         }
-        console.log("User deleted:", email);
+        console.log("User deleted:", username);
         res.status(200).json({ message: "User deleted successfully" });
     } catch (err) {
         console.error("Error deleting user:", err.message);
@@ -140,26 +140,26 @@ app.delete("/delete-user", isAuthenticated, async (req, res) => {
 });
 //change password
 app.put("/change-password", isAuthenticated, async (req, res) => {
-    const { email, newPassword } = req.body;
+    const { username, newPassword } = req.body;
     const saltRounds = 10;
-    console.log("Change password request received for:", email);
+    console.log("Change password request received for:", username);
     try {
-        if (!email || !newPassword) {
-            return res.status(400).json({ message: "Email and new password are required" });
+        if (!username || !newPassword) {
+            return res.status(400).json({ message: "username and new password are required" });
         }
         const passwordHash = await bcrypt.hash(newPassword, saltRounds);
         const query = `
             UPDATE users_t5
             SET password = $1 
-            WHERE email = $2 
-            RETURNING email, name
+            WHERE username = $2 
+            RETURNING username, name
         `;
-        const result = await pool.query(query, [passwordHash, email]);
+        const result = await pool.query(query, [passwordHash, username]);
         if (result.rowCount === 0) {
-            console.log("No user found with email:", email);
+            console.log("No user found with username:", username);
             return res.status(404).json({ message: "User not found" });
         }
-        console.log("Password updated for:", email);
+        console.log("Password updated for:", username);
         res.status(200).json({ message: "Password changed successfully" });
     } catch (err) {
         console.error("Error changing password:", err.message);
@@ -171,7 +171,7 @@ app.put("/change-password", isAuthenticated, async (req, res) => {
 // Get all users
 app.get("/get-users", isAuthenticated, async (req, res) => {
     try {
-        const query = "SELECT name, email, admin_level FROM users_t5 ORDER BY name";
+        const query = "SELECT name, username, admin_level FROM users_t5 ORDER BY name";
         const result = await pool.query(query);
         res.status(200).json({ users: result.rows });
     } catch (err) {
@@ -699,7 +699,7 @@ app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
 
 // Insert a row into scripts_t5
 app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
-    const userEmail = req.session.user.email;
+    const username = req.session.user.username;
     const { item_num, block, show_date, show_name, row_num } = req.body;
 
     //Prevent having two start rows
@@ -747,14 +747,14 @@ app.post("/add-row-scripts_t5", isAuthenticated, async (req, res) => {
 
         if (existingRowCheck.rowCount > 0) {
             
-            await pool.query(updateQuery, [block, item_num, show_name, show_date, row_num, userEmail]);
+            await pool.query(updateQuery, [block, item_num, show_name, show_date, row_num, username]);
             
             const result =await pool.query(getInsertedData, [show_name, show_date, row_num]);
             return res.status(200).json(result.rows[0]);
 
         } else {
             
-            await pool.query(insertQuery, [show_name, show_date, row_num, block, item_num, userEmail]);
+            await pool.query(insertQuery, [show_name, show_date, row_num, block, item_num, username]);
 
             const result =await pool.query(getInsertedData, [show_name, show_date, row_num]);
             return res.status(200).json(result.rows[0]);
@@ -903,7 +903,7 @@ app.get("/formats", isAuthenticated, async (req, res) => {
 
 //update-data-in-rundown
 app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
-    const userEmail = req.session.user.email;
+    const username = req.session.user.username;
     const { show_name, show_date, row_number, block, item_num, column_name, data } = req.body;
 
     // 🔒 Validate column_name against allowed columns
@@ -956,7 +956,7 @@ app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
 
     try {
         const values = [show_name, show_date, row_number, block, item_num, data];
-        if (column_name !== "ok") values.push(userEmail);
+        if (column_name !== "ok") values.push(username);
 
         await pool.query(update_query, values);
         //res.status(200).send("Data inserted successfully!");

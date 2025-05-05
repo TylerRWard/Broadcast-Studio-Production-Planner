@@ -66,7 +66,7 @@ h4 {
     margin: 10px 0;
 }
 
-input[type="email"],
+input[type="username"],
 input[type="password"] {
     width: 100%;
     padding: 10px 10px 10px 40px; /* Space for icon */
@@ -81,7 +81,7 @@ input[type="password"] {
     font-size: 15px;
 }
 
-input[type="email"] {
+input[type="username"] {
     background-image: url("/public/images/user-solid.svg");
 }
 
@@ -90,9 +90,9 @@ input[type="password"] {
 }
 
 /* Input states */
-input[type="email"]:hover,
-input[type="email"]:focus,
-input[type="email"]:active,
+input[type="username"]:hover,
+input[type="username"]:focus,
+input[type="username"]:active,
 input[type="password"]:hover,
 input[type="password"]:focus,
 input[type="password"]:active {

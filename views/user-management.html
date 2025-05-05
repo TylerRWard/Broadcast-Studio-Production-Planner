@@ -29,7 +29,7 @@
                     <h2>Add New User</h2>
                     <form id="add-user-form">
                         <input type="text" placeholder="Name" id="add-name" required>
-                        <input type="email" placeholder="Email" id="add-email" required>
+                        <input type="username" placeholder="username" id="add-username" required>
                         <input type="password" placeholder="Password" id="add-password" required>
                         <select id="add-user-level" required>
                             <option value="" disabled selected>Select User Level</option>
@@ -44,7 +44,7 @@
                 <div class="management-container" id="delete-user-section" style="display: none;">
                     <h2>Delete User</h2>
                     <form id="delete-user-form">
-                        <input type="email" placeholder="User Email" id="delete-email" required>
+                        <input type="username" placeholder="Username" id="delete-username" required>
                         <button type="submit" class="action-button delete-button">Delete User</button>
                     </form>
                 </div>
@@ -53,7 +53,7 @@
                 <div class="management-container" id="change-password-section" style="display: none;">
                     <h2>Change Password</h2>
                     <form id="change-password-form">
-                        <input type="email" placeholder="User Email" id="change-email" required>
+                        <input type="username" placeholder="Username" id="change-username" required>
                         <input type="password" placeholder="New Password" id="change-password" required>
                         <input type="password" placeholder="Confirm New Password" id="confirm-password" required>
                         <button type="submit" class="action-button">Change Password</button>
@@ -68,7 +68,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Email</th>
+                            <th>Username</th>
                             <th>User Level</th>
                         </tr>
                     </thead>

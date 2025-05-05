@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
                         <td>${user.name}</td>
-                        <td>${user.email}</td>
+                        <td>${user.username}</td>
                         <td>${user.admin_level}</td>
                     `;
                     usersList.appendChild(row);
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         addForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const name = document.getElementById("add-name").value;
-            const email = document.getElementById("add-email").value;
+            const username = document.getElementById("add-username").value;
             const password = document.getElementById("add-password").value;
             const adminLevel = document.getElementById("add-user-level").value;
 
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const response = await fetch("/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, password, email, adminLevel })
+                    body: JSON.stringify({ name, password, username, adminLevel })
                 });
                 const data = await response.json();
                 if (response.ok) {
@@ -107,31 +107,31 @@ document.addEventListener("DOMContentLoaded", () => {
     if (deleteForm) {
         deleteForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById("delete-email").value.trim();
+            const username = document.getElementById("delete-username").value.trim();
 
-            if (!email) {
-                alert("Please enter an email address");
+            if (!username) {
+                alert("Please enter a username");
                 return;
             }
 
-            const confirmDelete = window.confirm(`Are you sure you want to delete the user with email: ${email}?`);
+            const confirmDelete = window.confirm(`Are you sure you want to delete the user with username: ${username}?`);
             console.log("Confirmation dialog shown, response:", confirmDelete);
 
             if (!confirmDelete) {
-                console.log(`Deletion cancelled for ${email}`);
+                console.log(`Deletion cancelled for ${username}`);
                 return;
             }
 
             try {
-                console.log(`Attempting to delete user: ${email}`);
+                console.log(`Attempting to delete user: ${username}`);
                 const response = await fetch("/delete-user", {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ username })
                 });
                 const data = await response.json();
                 if (response.ok) {
-                    console.log(`User with email ${email} successfully removed from database`);
+                    console.log(`User with username ${username} successfully removed from database`);
                     alert("User deleted successfully!");
                     deleteForm.reset();
                     fetchUsers(); // Refresh user list
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (changeForm) {
         changeForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById("change-email").value;
+            const username = document.getElementById("change-username").value;
             const newPassword = document.getElementById("change-password").value;
             const confirmPassword = document.getElementById("confirm-password").value;
 
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const response = await fetch("/change-password", {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, newPassword })
+                    body: JSON.stringify({ username, newPassword })
                 });
                 const data = await response.json();
                 if (response.ok) {
