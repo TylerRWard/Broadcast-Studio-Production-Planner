@@ -104,6 +104,23 @@ header {
     background-color: #ddd;
   }
 
+/* Search Bar */
+.search-input {
+    padding: 0.5rem 1rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+    width: 200px;
+    outline: none;
+}
+
+.search-input:hover{
+    background-color: #f4f4f4;
+}
+
+.search-input:focus {
+    border-color: #666;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
 
 
  /*****************************/
