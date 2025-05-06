@@ -1,3 +1,4 @@
+require('dotenv').config(); // This will automatically look for a `.env` file in the root.
 const express = require("express");
 const fs = require("fs").promises;
 const path = require("path");
@@ -6,17 +7,18 @@ const bcrypt = require("bcryptjs");
 const session = require("express-session");
 const { isatty } = require("tty");
 const PDFDocument = require('pdfkit');
+const pgSession = require("connect-pg-simple")(session);
 
 const app = express();
-const port = 3000;
+const port = 3005;
 
 const pool = new Pool({
-    user: "postgres",
-    host: "news-team-db1.cdm082ocayd0.us-east-2.rds.amazonaws.com",
-    database: "studio_db",
-    password: "stuP455W0RD!",
-    port: 5432,
-    ssl: { rejectUnauthorized: false }
+        user: process.env.DB_USER,
+        host: process.env.DB_HOST,
+        database: process.env.DB_NAME,
+        password: process.env.DB_PASSWORD,
+        port: process.env.DB_PORT,
+        ssl: { rejectUnauthorized: false }
 });
 
 pool.connect()
@@ -26,13 +28,24 @@ pool.connect()
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Use session with PostgreSQL store
 app.use(session({
-    secret: "your-secret-key",
+    store: new pgSession({
+        pool: pool,                  // Reuse the same connection pool
+        tableName: 'user_sessions',   // Optional: custom session table name
+        createTableIfMissing: true,    // Optional: automatically create table if it doesn't exist
+        cleanupInterval: 60 * 60 // Every hour, clean expired sessions
+    }),
+    secret: process.env.SESSION_SECRET, // Replace with process.env.SESSION_SECRET in production
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }
+    cookie: {
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        secure: false,                    // Set to true in production with HTTPS
+        httpOnly: true,                   // Helps prevent XSS
+        sameSite: 'strict'                // Helps prevent CSRF
+    }
 }));
-
 
 
 //Middlewere to check authentication
@@ -960,7 +973,7 @@ app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
         if (column_name !== "ok") values.push(username);
 
         await pool.query(update_query, values);
-        //res.status(200).send("Data inserted successfully!");
+        res.status(200).send("Data inserted successfully!");
     } catch (err) {
         console.error("Error inserting data:", err.message);
         res.status(500).send("Failed to insert data.");
@@ -1015,7 +1028,7 @@ app.post("/show-just-update-data", isAuthenticated, async (req, res) => {
             result = await pool.query(select_query, [show_name, show_date, row_number]);
         }
        
-        //console.log(result);
+        console.log(result);
         res.status(200).json(result.rows);
     } catch (err) {
         console.error("Error fetching data:", err.message);

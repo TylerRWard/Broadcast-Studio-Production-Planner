@@ -92,7 +92,7 @@ header {
 }
 
 /* Button List */
-#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton, #addRundown2Template, #manageShots, #manageFormats {
+#templatesButton, #addStartBreakButton, #regenerate_item_num, #exportButton, #addRundown2Template, #manageShots, #manageFormats,.scriptBox-tags-select, #insertTableBtn, #scriptSubmit, #resume  {
     padding: 0.5rem 1rem;
     font-size: 13px;
     border: 1px solid #000;
@@ -100,7 +100,7 @@ header {
     font-weight: bold;
   }
 
-  #templatesButton:hover, #addStartBreakButton:hover, #regenerate_item_num:hover, #exportButton:hover, #addRundown2Template:hover, #manageShots:hover, #manageFormats:hover {
+  #templatesButton:hover, #addStartBreakButton:hover, #regenerate_item_num:hover, #exportButton:hover, #addRundown2Template:hover, #manageShots:hover, #manageFormats:hover, .scriptBox-tags-select:hover,#insertTableBtn:hover, #scriptSubmit:hover, #resume:hover {
     background-color: #ddd;
   }
 
@@ -265,7 +265,7 @@ table {
     left: 15%;
     background-color: #ccc;
     color: rgb(27,30,48);
-    padding: 10px;
+    padding: 2px;
     display: flex;
     flex-direction: column;
 }
@@ -274,26 +274,16 @@ table {
     font-size: 15px;
     font-weight: bold;
     margin-bottom: 8px; 
-    margin-top: 3px;
     text-align: center;
     width: 100%;
 }
 
 .scriptBox-heading-container {
   display: flex;
+  align-items: center;
 }
 
-.scriptBox-tags-select {
-  background-color: white;
-  border-radius: 5px;
-  color: black;
-  font-size: 16px;
-  font-weight: bold;
-  resize: none; 
-  border: 2px solid rgb(99, 104, 141);
-  outline: none;
-  flex-grow: 1; 
-}
+
 
 .scriptBox {
     background-color: #f8f8f8;
@@ -318,15 +308,12 @@ table {
 
 
    
-  
-
-   
 .scriptBox-controls {
     display: flex;
     gap: 10px;
     margin-top: 10px;
 }
-
+/*
 #insertTableBtn {
     padding: 5px 10px;
     background-color: #4CAF50;
@@ -335,24 +322,10 @@ table {
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
-}
-
+} */
+/* 
 #insertTableBtn:hover {
     background-color: #45a049;
-}
+} */
 
-/* Ensure the reset button matches the submit button's style for consistency */
-.scriptBox-controls button[onclick="resetScriptBox()"] {
-    padding: 5px 10px;
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.scriptBox-controls button[onclick="resetScriptBox()"]:hover {
-    background-color: #cc0000;
-}
 

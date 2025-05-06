@@ -45,9 +45,6 @@
             <button id="manageFormats">Manage Formats</button>
             <button id="manageShots">Manage Shots</button>
         </div>
-        <div class="search-bar">
-            <input type = "search" placeholder = "Search..." class="search-input">
-        </div>
     </div>
 
     <!-- Buttons across the top-->
@@ -241,13 +238,12 @@
             <option value="" disabled selected>Add TAG</option>
         </select>
         <h2 class="scriptBox-heading">Script Editing (Current length: 0 min 0 sec)</h2>
+        
+        <button type="button" id="insertTableBtn" style=" white-space: nowrap;">Insert Graphic</button>
+        
+        <button id="scriptSubmit" style="height: 30px; cursor: pointer; font-size: 1rem; border-radius: 7px; margin-left: 3px;">Submit</button>
     </div>
     <textarea class="scriptBox" placeholder="Enter script here..." oninput="calculateTime(this)"></textarea>
-    <div class="scriptBox-controls">
-        <button type="button" id="insertTableBtn">Insert Graphic</button>
-        
-        <button id="scriptSubmit" style="height: 30px; cursor: pointer; font-size: 1rem; border-radius: 7px;">Submit</button>
-    </div>
 </div>
 
 
