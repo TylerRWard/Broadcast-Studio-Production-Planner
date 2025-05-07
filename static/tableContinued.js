@@ -1,4 +1,4 @@
-/* Places I changed focusedRow to null- focusedRow will listen to the row which is selected by the user/
+/* Places that is changed focusedRow to null- focusedRow will listen to the row which is selected by the user/
  Once drag & drop a row
  Once delete a row
  Once insert a start row
@@ -17,7 +17,7 @@ selectedRundown = {
 
 // Draw an empty rundown with 100 rows
 async function drawActualTable(columnNames, scriptName, showDate) {
-    // ✅ Wait for lastRowNum
+    // Wait for lastRowNum
     const lastRow = await lastRowNum(selectedRundown);
     console.log("last row is", lastRow);
 
@@ -36,7 +36,7 @@ async function drawActualTable(columnNames, scriptName, showDate) {
         headHTML += `<th class="table-head-css ${column}">${column}</th>`;
     });
 
-    // ✅ Use lastRow instead of hardcoded 100
+    // Use lastRow instead of hardcoded 100
     for (let i = 0; i < lastRow; i++) {
         let datarow = ``;
         columnNames.forEach(function (column) {
@@ -58,7 +58,7 @@ async function drawActualTable(columnNames, scriptName, showDate) {
     }
 }
 
-
+// find the last row number used in selected rundown to find how many rows needs to be populated
 async function lastRowNum(selectedRundown) {
     try {
         const response = await fetch(`/get-last-row_num?show_name=${selectedRundown.show_name}&show_date=${selectedRundown.show_date}`);
@@ -104,10 +104,6 @@ function drop(event) {
     if (draggedRow && targetRow && draggedRow !== targetRow) {
         let tableBody = document.querySelector("#data-table-tbody"); // Explicitly get tbody
 
-        //console.log("Dragged row parent:", draggedRow.parentNode);
-        //console.log("Target row parent:", targetRow.parentNode);
-        //console.log("Table tbody:", tableBody);
-
         if (draggedRow.parentNode !== tableBody || targetRow.parentNode !== tableBody) {
             console.error("Dragged row and target row belong to different parents!");
             return; // Prevent incorrect row movement
@@ -116,9 +112,7 @@ function drop(event) {
         // Move row within tbody
         let rows = Array.from(tableBody.children);
         let draggedIndex = rows.indexOf(draggedRow);
-        //console.log("draggedIndex: ",draggedIndex);
         let targetIndex = rows.indexOf(targetRow);
-        //console.log("targetIndex: ", targetIndex);
 
         if (draggedIndex > targetIndex) {
             tableBody.insertBefore(draggedRow, targetRow);
@@ -128,8 +122,6 @@ function drop(event) {
 
         // Changing relevant row_num for relevent rows in the database table
         dragAndDropInDB(draggedIndex+1, targetIndex+1);
-        //console.log("Row moved successfully!", draggedIndex+1, "  ", targetIndex+1);
-
         focusedRow = null;
     }
 }
@@ -154,7 +146,6 @@ async function dragAndDropInDB(draggedIndx, targetIndx) {
         });
 
         if (response.ok) {
-            //alert("Dragged and dropped successfully!"); //debugging
             focusedRow = null;
             
         } else {
@@ -196,10 +187,8 @@ tableActual.addEventListener('click', function(event) {
     
     // If a row has updated data, do updateDat(), if not, do inserRowScript_t()
     if (previousTypedData.block != null && previousTypedData.item_num != null && previousTypedData.data != null) {
-        //console.log("Going to update", previousTypedData.data);
         updateData(previousTypedData, selectedRundown);
     } else if (previousTypedData.block != null && previousTypedData.item_num != null) {
-        //console.log("Going to insert new row into scripts_t5");
         insertRowScripts_t();
     }
 
@@ -226,10 +215,8 @@ tableActual.addEventListener('keydown', function(event) {
 
         // If a row has updated data, do updateDat(), if not, do inserRowScript_t()
         if (previousTypedData.block != null && previousTypedData.item_num != null && previousTypedData.data != null) {
-            //console.log("Going to update", previousTypedData.data);
             updateData(previousTypedData, selectedRundown);
         } else if (previousTypedData.block != null && previousTypedData.item_num != null) {
-            //console.log("Going to insert new row into scripts_t5");
             insertRowScripts_t();
         }
 
@@ -413,11 +400,6 @@ tableActual.addEventListener('change', function(event) {
             data: null
         };
     }
-
-    
-
-    //console.log(previousTypedData.block, previousTypedData.column_name, previousTypedData.data )
-    //// have to update database here too.
 });
 
 // Retrieve speaking_lines for selectedScriptRow from database
@@ -471,13 +453,10 @@ async function updateData(previousTypedData, selectedRundown) {
         });
 
         if (response.ok) {
-            //alert("Data inserted successfully!");
             showUpdateData(previousTypedData, selectedRundown);
-
             detailsForScriptEditor.row_num = data.row_num;
             detailsForScriptEditor.block = data.block;
             detailsForScriptEditor.item_num = data.item_num;
-            
         } else {
             alert("Failed to insert data.", forMessage);
         }
@@ -529,7 +508,6 @@ async function showUpdateData(previousTypedData, selectedRundown) {
                 else
                 {
                     tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] input`).value = responsedData[0][column.toLowerCase()];
-                   // console.log(tableActual.rows[responsedData[0].row_num].querySelector(`[data-column=${column}] input`).value, responsedData[0][column.toLowerCase()]);
                 }
 
                 const date = new Date(responsedData[0].modified);
@@ -540,7 +518,6 @@ async function showUpdateData(previousTypedData, selectedRundown) {
                 tableActual.rows[responsedData[0].row_num].querySelector(`[data-column="MOD_BY"]`).textContent = responsedData[0].mod_by;
 
             }
-            //alert("Update just inserted data successfully!");
             
         } else {
             alert("Failed to insert data.", forMessage);
@@ -580,7 +557,6 @@ async function insertRowScripts_t() {
 
             const date = new Date(responsedData.modified);
             const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
-           // console.log(centralTimeString);
             tableActual.rows[data.row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
             tableActual.rows[data.row_num].querySelector(`[data-column="MOD_BY"]`).textContent = responsedData.mod_by;
 
@@ -610,10 +586,6 @@ async function insertRowScripts_t() {
                 previousTypedData.column_name = column;
                 showUpdateData(previousTypedData, selectedRundown);
             });
-
-            //previousTypedData.row_number = null;
-            //previousTypedData.column_name = null;
-
 
         } else {
             alert("Failed to insert data.");
@@ -672,11 +644,7 @@ function showScriptsData(data) {
 
             tableActual.rows[(data[i].row_num)].querySelector(`[data-column="BLOCK"] input`).value = data[i].block;
             tableActual.rows[(data[i].row_num)].querySelector(`[data-column="ITEM_NUM"] input`).value = data[i].item_num;
-            tableActual.rows[(data[i].row_num)].querySelector(`[data-column="MOD_BY"]`).textContent = data[i].mod_by;
-
-            //tableActual.rows[(data[i].row_num)].querySelector('[data-column="BLOCK"] input').readOnly = true;
-            //tableActual.rows[(data[i].row_num)].querySelector('[data-column="ITEM_NUM"] input').readOnly = true;
-            
+            tableActual.rows[(data[i].row_num)].querySelector(`[data-column="MOD_BY"]`).textContent = data[i].mod_by;            
         }
         else
         {
@@ -691,7 +659,6 @@ function showScriptsData(data) {
                 }
                 else if ((column === "SHOT") ||(column === "OK") || (column === "FORMAT"))
                 {
-                    //tableActual.rows[(data[i].row_num)].querySelector(`[data-column=${column}] select`).value = data[i][column.toLowerCase()];
                     const selectElem = tableActual.rows[data[i].row_num].querySelector(`[data-column=${column}] select`);
                     selectElem.value = data[i][column.toLowerCase()] ?? ''; // fallback to '' (usually the placeholder)
 
@@ -736,10 +703,8 @@ tableActual.addEventListener('keydown', function(event) {
     
         // If a row has updated data, do updateDat(), if not, do inserRowScript_t()
         if (previousTypedData.block != null && previousTypedData.item_num != null && previousTypedData.data != null) {
-            //console.log("Going to update", previousTypedData.data);
             updateData(previousTypedData, selectedRundown);
         } else if (previousTypedData.block != null && previousTypedData.item_num != null) {
-            //console.log("Going to insert new row into scripts_t5");
             insertRowScripts_t();
         }
 
@@ -758,7 +723,6 @@ tableActual.addEventListener('keydown', function(event) {
         }
     }
 });
-
 
 
 // Track the currently focused row in the table
@@ -808,10 +772,8 @@ document.addEventListener('click', (e) => {
 
       // If a row has updated data, do updateDat(), if not, do inserRowScript_t()
       if (previousTypedData.block != null && previousTypedData.item_num != null && previousTypedData.data != null) {
-        //console.log("Going to update", previousTypedData.data);
         updateData(previousTypedData, selectedRundown);
     } else if (previousTypedData.block != null && previousTypedData.item_num != null) {
-        //console.log("Going to insert new row into scripts_t5");
         insertRowScripts_t();
     }
 
@@ -995,7 +957,6 @@ async function insertStart(selectedRundown) {
 
           const date = new Date(respondedData.modified);
           const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
-          // console.log(centralTimeString);
           tableActual.rows[1].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
 
         console.log(`Start row inserted successfully!`);
@@ -1022,6 +983,10 @@ let numOfBReakLines = 0;
     const breakBlock = await findNextBlockForBreak(selectedRundown.show_name, selectedRundown.show_date);
     if (breakBlock) {
         const row_num = focusedRow.rowIndex + 1;
+        if (row_num === 0) {
+            alert("Please select a row to insert the break row.");
+            return;
+          }
         insertBreak(selectedRundown, breakBlock, row_num);
     
 
@@ -1116,7 +1081,6 @@ let numOfBReakLines = 0;
 
         const date = new Date(respondedData.modified);
         const centralTimeString = new Date(date).toLocaleString('en-US', {timeZone: 'America/Chicago', hour12: false}).replace(',', '');
-        // console.log(centralTimeString);
         tableActual.rows[row_num].querySelector(`[data-column="MODIFIED"]`).textContent = centralTimeString;
 
         focusedRow = null;

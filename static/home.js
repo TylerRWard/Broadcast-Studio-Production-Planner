@@ -983,4 +983,5 @@ document.addEventListener("DOMContentLoaded", () => {
   loadShots();
   getScriptTags();
   resetScriptBox();
+  getTemplates();
 });

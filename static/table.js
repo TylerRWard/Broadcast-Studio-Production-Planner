@@ -2,205 +2,218 @@ let temp_columns = ['BLOCK', 'ITEM_NUM'];  // Collecting columns for creating ne
 let temp_name;                       // The name of new template version
 let template_versions = [];          // All created template versions so far --Will hold only names of each template versions
 let selectedTemplate ='';            // Template that selected from the template list
-let columnNames;
+let columnNames;                    // Column names of selected template
+let selectedRundown = {};           // Details of selected rundown
 
-getTemplates();
-let selectedRundown = {};
 
+// Get buttons and corresponding dropdown boxes
 const btn = document.getElementById('templatesButton');
 const box = document.getElementById('templateBox');
 const btn2 = document.getElementById('addStartBreakButton');
 const box2 = document.getElementById('startBreakBox');
 
+// Toggle visibility and position of the "Templates" dropdown
 btn.addEventListener('click', () => {
   const rect = btn.getBoundingClientRect();
+  // Show or hide the box
   box.style.display = box.style.display === 'block' ? 'none' : 'block';
+  // Position the box just below the button
   box.style.top = `${rect.bottom + window.scrollY + 5}px`;
   box.style.left = `${rect.left + window.scrollX}px`;
-  
 });
 
+// Toggle visibility and position of the "Start Break" dropdown
 btn2.addEventListener('click', () => {
   const rect2 = btn2.getBoundingClientRect();
+  // Show or hide the box
   box2.style.display = box2.style.display === 'block' ? 'none' : 'block';
+  // Position the box just below the button
   box2.style.top = `${rect2.bottom + window.scrollY + 5}px`;
   box2.style.left = `${rect2.left + window.scrollX}px`;
 });
 
-// Optional: close if clicked outside either box
+// Hide "Templates" dropdown if clicking outside of it
 document.addEventListener('click', (e) => {
-  if (
-    !box.contains(e.target) && e.target !== btn
-  ) {
+  if (!box.contains(e.target) && e.target !== btn) {
     box.style.display = 'none';
   }
 });
 
+// Hide "Start Break" dropdown if clicking outside of it
 document.addEventListener('click', (e) => {
-    if (
-      !box2.contains(e.target) && e.target !== btn2
-    ) {
-      box2.style.display = 'none';
-    }
-  });
+  if (!box2.contains(e.target) && e.target !== btn2) {
+    box2.style.display = 'none';
+  }
+});
 
-
-// Get modal, overlay, and buttons
+// Get modal, overlay, and buttons for opening/closing
 const modal2 = document.getElementById('simpleModal');
 const overlay2 = document.getElementById('rundwntotemp-overlay');
 const openModalBtn = document.getElementById('openModalBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
 
-// Open modal when button is clicked
+// Show modal and overlay when open button is clicked
 openModalBtn.addEventListener('click', function() {
-    modal2.style.display = 'block';  // Show the modal
-    overlay2.style.display = 'block'; // Show the overlay
+  modal2.style.display = 'block';
+  overlay2.style.display = 'block';
 });
 
-// Close modal when the close button is clicked
+// Hide modal and overlay when close button is clicked
 closeModalBtn.addEventListener('click', function() {
-    modal2.style.display = 'none';  // Hide the modal
-    overlay2.style.display = 'none'; // Hide the overlay
+  modal2.style.display = 'none';
+  overlay2.style.display = 'none';
 });
 
-// Close modal if clicked outside of the modal content
+// Hide modal and overlay when clicking outside the modal content
 document.addEventListener('click', function(event) {
-    if (!modal2.contains(event.target) && event.target !== openModalBtn) {
-        modal2.style.display = 'none';
-        overlay2.style.display = 'none';
-    }
+  if (!modal2.contains(event.target) && event.target !== openModalBtn) {
+    modal2.style.display = 'none';
+    overlay2.style.display = 'none';
+  }
 });
 
 
- //  creating a template as desired before inserting data into it.
-//let template = ['BLOCK', 'ITEM_NUM'];
+// This script handles the creation of a custom template before inserting data into it.
+// Example: let template = ['BLOCK', 'ITEM_NUM'];
 
-function addColumn(columnName){
+// Add a column name to the temporary list if it's not already added
+function addColumn(columnName) {
     let index = temp_columns.indexOf(columnName);
     
-    if(index===-1)
-    {
-        temp_columns.push(columnName); // add column names once they check the box.
+    if (index === -1) {
+        temp_columns.push(columnName); // Add column name when its checkbox is checked
     }   
 }
 
-function deleteColumn(columnName){
+// Remove a column name from the temporary list if it exists
+function deleteColumn(columnName) {
     let index = temp_columns.indexOf(columnName);
 
-    if(index!==-1)
-    {
-        temp_columns.splice(index, 1); // remove column names once they uncheck the box
+    if (index !== -1) {
+        temp_columns.splice(index, 1); // Remove column name when its checkbox is unchecked
     }
 }
 
-function checkedStatus(js_check_what){  // make every check box uncheck once they add a new template version
+// Check if a given checkbox selector is currently checked
+function checkedStatus(js_check_what) {
     const if_check = document.querySelector(js_check_what);
     
-    if(if_check.checked)
-        {return true;}
-    if(if_check.checked=== false)
-        {return false;}
+    if (if_check.checked) {
+        return true;
+    }
+    if (if_check.checked === false) {
+        return false;
+    }
 }
 
+// If the 'Enter' key is pressed, create the template
 function enter(key) { 
-    if (key === 'Enter')
-        { createTemplate(); }
+    if (key === 'Enter') {
+        createTemplate();
+    }
 }
 
-
-//let temp_name; // give a name for that template you created
-
-function createTemplate(){
+// Create a new template with selected columns
+function createTemplate() {
     temp_name = document.querySelector(".js-input-temp-name").value;
 
-    if(temp_name===""){
-        alert("Please give a name for the template!");} //making sure they give a name for their newly created template
-    else if(temp_name in template_versions){
+    // Alert if no name is provided
+    if (temp_name === "") {
+        alert("Please give a name for the template!");
+    }
+    // Alert if the name is already used
+    else if (temp_name in template_versions) {
         alert(`${temp_name} is already reserved. Please give another name for the template
         or delete previous ${temp_name} template from the template table!`);
     }
-    else{
+    // Proceed to create the template
+    else {
+        // Add system columns for tracking changes
         temp_columns.push('MODIFIED', 'MOD_BY');
 
-        addTemplate(); // adding newly created template into database
+        // Call the function to insert the template into the database
+        addTemplate();
 
+        // Uncheck all checkboxes (except the one with id "exceptID", if applicable)
         let checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    
-        // Loop through each checkbox and uncheck it
         checkboxes.forEach(function(checkbox) {
-            if (checkbox.id !== "exceptID")
-                {checkbox.checked = false;}
+            if (checkbox.id !== "exceptID") {
+                checkbox.checked = false;
+            }
         });
-        document.querySelector(".js-input-temp-name").value = '';
-        document.getElementById('simpleModal').style.display='none';
-        
-        
-    }
 
+        // Clear the input field and close the modal
+        document.querySelector(".js-input-temp-name").value = '';
+        document.getElementById('simpleModal').style.display = 'none';
+    }
 }
+
 
 // Add a template to the database
 async function addTemplate() {
-    
     const data = {
-        templateName:temp_name, 
-        columnNames: temp_columns
-    }
+        templateName: temp_name,         // Template name entered by the user
+        columnNames: temp_columns        // Columns selected by the user
+    };
 
-    //console.log(JSON.stringify(data));
-
+    // Send the data to the server via POST request
     try {
         const response = await fetch("/add-template", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/json", // Specify JSON format
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(data), // Convert JS object to JSON string
         });
 
         if (response.ok) {
-            //alert("Data inserted successfully!"); //debugging
+            // If insertion is successful, fetch updated template list
             getTemplates();
         } else {
+            // Show an error if the server responds with an error status
             alert("Failed to insert data.", forMessage);
         }
     } catch (error) {
+        // Handle network or server connection issues
         console.error("Error:", error);
         alert("Error connecting to the server.");
     }
 }
 
-
-
-async function getTemplates() {  // get all the template versions' names from the database
+// Fetch all saved template names from the database
+async function getTemplates() {
     try {
-        const response = await fetch("/get-templates");
+        const response = await fetch("/get-templates"); // Request template data from the backend
+        
         if (!response.ok) {
-            throw new Error("Failed to fetch data.");
-        }
-            template_versions = [];
-            const data = await response.json();
-            //console.log(data.rows);
-
-            data.rows.forEach((row) => {
-                template_versions.push(row.template_version);
-            });
-            
-            //console.log(template_versions);
-            showTemplates(); // After getting all the names, show those template in view section.
-            
-            
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Error fetching data.");
+            throw new Error("Failed to fetch data."); // Throw error if fetch fails
         }
 
+        // Clear the current list of templates
+        template_versions = [];
 
+        // Parse JSON response
+        const data = await response.json();
+
+        // Extract each template name from the returned rows and store it
+        data.rows.forEach((row) => {
+            template_versions.push(row.template_version);
+        });
+
+        // Display templates in the view (UI)
+        showTemplates();
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error fetching data.");
+    }
 }
 
+// Below code about selecting a template in template dropdown
 let selectedItem = null;
 let isListFocused = false;
 
+
+// Show the list of template
 function showTemplates() {
     let showHTML = ``;
 
@@ -286,8 +299,6 @@ async function deleteTemplate(temp_name) {
 }
 
 
-//let selectedTemplate ='';
-//let columnNames;
 
 /// Get relevant columns names for selected template from view list.
 async function getColumnNames(selectedTemplate) {
@@ -305,21 +316,14 @@ async function getColumnNames(selectedTemplate) {
                 selectedRundown.show_name = data.show_name;
                 selectedRundown.show_date = data.show_date;
                 selectedRundown.needed_columns = data.columnNames;
-                //drawTable(selectedTemplate);
-                //getScriptsData(selectedRundown.show_name, selectedRundown.show_date);
                 drawActualTable(columnNames, data.show_name, data.show_date)
 
                 document.querySelector('.js-create').innerHTML = `View of ${selectedTemplate} Template`;
-                //selectedRundown.show_name = "";
-                //selectedRundown.show_date = "";
-                //selectedRundown.needed_columns = [];
                 
             }
             else
             {
                 alert(`You do not have the original rundown to populate ${selectedTemplate} template. This template will be removed soon !`)
-                //drawTable(selectedTemplate);
-                //Delete the selectedTemplate
                 deleteTemplate(selectedTemplate)
             }
         }
@@ -372,7 +376,6 @@ function drawTable(temp_name){
 
 
 const dataInputObject = {
-    //'ID': `<input class="grid-input-data js-ID" type="Number">`,
     'BLOCK': `<input class="grid-input-data js-BLOCK" placeholder="" maxlength="2">`,
 
     'ITEM_NUM': `<input class="grid-input-data js-ITEM_NUM" placeholder="" type="number">`,
@@ -387,7 +390,6 @@ const dataInputObject = {
 
     'SLUG': `<input class="grid-input-data js-SLUG" placeholder="" maxlength="30">`,
 
-    //'FORMAT': `<input class="grid-input-data js-FORMAT" placeholder="" maxlength="12">`,
    'FORMAT': `
             <select class="grid-input-data formatDropdown">
                 <option value="" disabled selected>Format…</option>
@@ -413,7 +415,7 @@ const dataInputObject = {
 
     'EDITOR': `<input class="grid-input-data js-EDITOR" placeholder="" maxlength="8">`,
 
-    'MODIFIED': ``, //type="datetime-local"
+    'MODIFIED': ``, 
 
     'MOD_BY': ``,
 }
@@ -525,7 +527,7 @@ saveBtn.addEventListener('click', () => {
   modal.style.display = 'none';
 });
 
-
+// Save a rundown as a template
 async function saveRunsownAsTemplate(name, selectedRundown) {
     const data = {
         temp_name:name,

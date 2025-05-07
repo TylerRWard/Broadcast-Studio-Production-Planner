@@ -676,6 +676,19 @@ app.patch("/update-show-folder", isAuthenticated, async (req, res) => {
     }
   });
 
+// Get rundown list 
+app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
+    const select_query = `
+                    select show_name, show_date from rundown_t5
+                    `;
+    try {
+        const result = await pool.query(select_query);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        res.status(500).send("Failed to fetch data.");
+    }
+});
 
 // Retrieve relevant columns for specific show name and show date
 app.get("/get-column-names/:show_name/:show_date", isAuthenticated, async (req, res) => {
@@ -689,21 +702,6 @@ app.get("/get-column-names/:show_name/:show_date", isAuthenticated, async (req, 
                     `;
     try {
         const result = await pool.query(select_query, [show_name, show_date]);
-        res.status(200).json(result);
-    } catch (err) {
-        console.error("Error fetching data:", err.message);
-        res.status(500).send("Failed to fetch data.");
-    }
-});
-
-
-// Get rundown list 
-app.get("/get-rundown-list", isAuthenticated, async (req, res) => {
-    const select_query = `
-                    select show_name, show_date from rundown_t5
-                    `;
-    try {
-        const result = await pool.query(select_query);
         res.status(200).json(result);
     } catch (err) {
         console.error("Error fetching data:", err.message);
@@ -797,8 +795,9 @@ app.get("/get-last-row_num", isAuthenticated, async (req, res) => {
       res.status(500).send("Failed to fetch data.");
     }
   });
+
   
-// Get the data of relevant rundown from scripts_t4
+// Get the data of relevant rundown from scripts_t5
 app.get("/get-scripts-data/:show_name/:show_date", isAuthenticated, async (req, res) => {
     
     const { show_name, show_date } = req.params;
@@ -865,7 +864,20 @@ app.get("/formats", isAuthenticated, async (req, res) => {
     }
   });
   
+// Retrieve all available shots
+app.get("/shots", isAuthenticated, async (req, res) => {
+    try {
+      const { rows } = await pool.query(
+        `SELECT shot FROM shot_t5 ORDER BY shot`
+      );
+      res.json(rows);
+    } catch (err) {
+      console.error("Error fetching shots:", err);
+      res.status(500).send("Failed to fetch shots.");
+    }
+  });
 
+  // Add a shot
   app.post("/shots", isAuthenticated, async (req, res) => {
     const { shot } = req.body;
   
@@ -887,7 +899,7 @@ app.get("/formats", isAuthenticated, async (req, res) => {
     }
   });
 
-  
+  // Delete a shot
   app.delete("/shots/:name", isAuthenticated, async (req, res) => {
     const shot = decodeURIComponent(req.params.name);
   
@@ -913,8 +925,6 @@ app.get("/formats", isAuthenticated, async (req, res) => {
     }
   });
   
-
-
 //update-data-in-rundown
 app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
     const username = req.session.user.username;
@@ -980,19 +990,6 @@ app.post("/update-data-in-rundown", isAuthenticated, async (req, res) => {
     }
 });
 
-app.get("/shots", isAuthenticated, async (req, res) => {
-    try {
-      const { rows } = await pool.query(
-        `SELECT shot FROM shot_t5 ORDER BY shot`
-      );
-      res.json(rows);
-    } catch (err) {
-      console.error("Error fetching shots:", err);
-      res.status(500).send("Failed to fetch shots.");
-    }
-  });
-
-
 //show-just-update-data
 app.post("/show-just-update-data", isAuthenticated, async (req, res) => {
     const { show_name, show_date, row_number, column_name } = req.body;
@@ -1036,7 +1033,7 @@ app.post("/show-just-update-data", isAuthenticated, async (req, res) => {
     }
 });
 
-
+// Detele a row in a rundown
 app.delete("/delete-a-row", isAuthenticated, async (req, res) => {
     const { row_num, show_name, show_date } = req.body;
 
@@ -1096,7 +1093,6 @@ app.delete("/delete-a-row", isAuthenticated, async (req, res) => {
         client.release();
     }
 });
-
 
 
 // shift existing rows down
@@ -1270,8 +1266,6 @@ app.get("/find-next-block-break/:show_name/:show_date", isAuthenticated, async (
 });
 
 
-
-
 //insert-a-break-row
 app.post("/insert-a-break-row", isAuthenticated, async (req, res) => {
     const { show_name, show_date, breakBlock, row_num } = req.body;
@@ -1311,6 +1305,7 @@ app.post("/insert-a-break-row", isAuthenticated, async (req, res) => {
 
 });
 
+// add a show into rundown_t5
 app.post("/add-show", async (req, res) => {
     const { show_name, show_date, folder, template_version } = req.body;
   
