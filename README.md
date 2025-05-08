@@ -14,13 +14,17 @@ This project, **Broadcast Studio Production Planner**, is designed to streamline
 ## Features  
 - **Production Scheduling** – Plan and manage broadcast schedules efficiently.  
 - **Resource Allocation** – Assign crew, equipment, and time slots effectively.  
-- **Workflow Optimization** – Ensure smooth operations with an intuitive interface.  
+- **Workflow Optimization** – Ensure smooth operations with an intuitive interface.
+
+## Website
+Visit the live website at: 
+   * http://18.224.57.15:3006/
 
 ## Installation  
 1. Clone the repository:  
    ```bash
    git clone https://github.com/TylerRWard/Broadcast-Studio-Production-Planner.git
-2. to run the server you need to do these steps
+2. to run the server locally you need to do these steps
     * npm install express if you don't have npm installed
     * node server.js
     * Then out this in your browser http://localhost:3000
@@ -29,4 +33,7 @@ This project, **Broadcast Studio Production Planner**, is designed to streamline
     * npm install bcryptjs for encryption
     * npm install express-session
     * npm install pdfkit
+
+## Documentation
+Documentation and Technical Manual [here](https://lindenwood0-my.sharepoint.com/:w:/r/personal/mj603_lindenwood_edu/Documents/senior%20project%20documentation%20.docx?d=we5a3b93f556d4e7b883210ee92ab0a4a&csf=1&web=1&e=ZERwYs)
     
