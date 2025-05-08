@@ -1761,7 +1761,7 @@ app.post("/regenerate-item-number", isAuthenticated, async (req, res) => {
 app.use((req, res) => {
     res.redirect("/");
 });
-
+//Local hosting on port 3000. 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`)});
 

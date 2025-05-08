@@ -29,6 +29,4 @@ This project, **Broadcast Studio Production Planner**, is designed to streamline
     * npm install bcryptjs for encryption
     * npm install express-session
     * npm install pdfkit
-
-    Bennett Is cool
     
