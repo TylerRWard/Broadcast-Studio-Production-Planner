@@ -35,5 +35,5 @@ Visit the live website at:
     * npm install pdfkit
 
 ## Documentation
-Documentation and Technical Manual [here](https://lindenwood0-my.sharepoint.com/:w:/r/personal/mj603_lindenwood_edu/Documents/senior%20project%20documentation%20.docx?d=we5a3b93f556d4e7b883210ee92ab0a4a&csf=1&web=1&e=ZERwYs)
+Documentation, User Manual, and Technical Manual [here](https://lindenwood0-my.sharepoint.com/:w:/r/personal/mj603_lindenwood_edu/Documents/senior%20project%20documentation%20.docx?d=we5a3b93f556d4e7b883210ee92ab0a4a&csf=1&web=1&e=ZERwYs)
     
