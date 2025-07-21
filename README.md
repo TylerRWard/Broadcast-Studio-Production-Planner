@@ -27,7 +27,7 @@ Visit the live website at:
 2. to run the server locally you need to do these steps
     * npm install express if you don't have npm installed
     * node server.js
-    * Then out this in your browser http://localhost:3000
+    * Then out this in your browser http://localhost:3005
 
 ## Requirements
     * npm install bcryptjs for encryption
